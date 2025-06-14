@@ -87,9 +87,10 @@ ul li, ol li {
 }
 
 .navbar__center {
-  position: relative;
-  justify-self: center;
-  width: 500px;
+  width: 60%;
+  border-radius: 20px;
+  align-self: start;
+  flex-direction: column;
 }
 
 .navbar__right {
@@ -220,7 +221,8 @@ ul li, ol li {
   border-radius: 25px;
   cursor: text;
   position: relative;
-  left: -30%;
+  left: 0;
+  align-self: start;
   font-size: smaller;
   color: #c9c9c9;
 }
@@ -231,13 +233,14 @@ ul li, ol li {
   padding: 3px 10px;
   font-size: medium;
   border-radius: 20px;
-  background-color: rgba(231, 231, 236, 0.7764705882);
+  background-color: #FFF;
   display: flex;
   flex-direction: row;
   position: relative;
-  align-self: center;
+  align-self: start;
   overflow: hidden;
   visibility: hidden;
+  border: 1px solid #D9D9D9;
 }
 
 .search_Barleft {
@@ -281,6 +284,7 @@ ul li, ol li {
   border: none;
   padding: 4px;
   border-radius: 8px;
+  font-size: 1rem;
 }
 
 .search_Barcenter input:focus {
@@ -288,14 +292,14 @@ ul li, ol li {
 }
 
 .searchResult {
-  width: 90%;
-  min-height: 100px;
-  background-color: #F9F9F9;
+  position: relative;
+  top: 0;
+  width: 100%;
   height: auto;
   margin: 2px 2.5%;
   padding-top: 10px;
-  display: none;
-  border-radius: 20px;
+  padding-bottom: 20px;
+  display: block;
   overflow-x: hidden;
 }
 
@@ -319,8 +323,10 @@ ul li, ol li {
   background-color: #FFF;
 }
 
-.showDiv {
-  display: block;
+.showSearchResult {
+  height: auto;
+  background-color: #FFF;
+  transition: all ease 0.5s;
 }
 
 .showOpacity {
@@ -332,6 +338,31 @@ ul li, ol li {
   border-radius: 50%;
   font-size: 1.5rem;
   color: #000;
+}
+
+.hidediv {
+  display: none;
+}
+
+/*Search bar category*/
+.search_category {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  align-self: flex-start;
+  margin-bottom: 10px;
+}
+.search_category ul {
+  overflow: hidden;
+}
+.search_category ul li {
+  padding: 1px 8px;
+  float: left;
+  cursor: pointer;
+  background-color: #F5F5F7;
+  border-radius: 16px;
+  margin: 4px;
 }
 
 /* ===== Card Component ===== */

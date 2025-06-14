@@ -60,6 +60,7 @@ const JupetaECnavBar = () => {
   const SearchKeyIndexes = ['Apple', 'Samsung', 'Macbook', 'Laptop'];
 
   const handelSEO = async () => {
+    setSearchActive(false);
     if (searchKey === '') return;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/search`, {
@@ -99,7 +100,8 @@ const JupetaECnavBar = () => {
   }, [products]);
 
   return (
-    <div className={searchActive ? 'navbar__container sBarColor' : 'navbar__container'}>
+    <>
+    <div className={searchActive ? 'navbar__container' : 'navbar__container'}>
       <div className="navbar__left flex">
         <Link href="/"  className='navbar__logo'>
             <Typography fontSize={'xl'} >jUPETA</Typography>
@@ -107,30 +109,38 @@ const JupetaECnavBar = () => {
         <CiLocationOff />
       </div>
 
-      <div className="navbar__center">
+      <div ref={srchRef} className={srching && searchActive ? 'navbar__center showSearchResult': 'navbar__center'}>
         {!searchActive && (
           <div className="navbar__search-button" onClick={handleSearchicon}>
             <AiOutlineSearch id="navSicon" style={{ borderRadius: '100%', padding: '8px', fontSize: '2rem', background: '#44423f', color: '#FFF' }} />
-            <span style={{ color: '#44423f' }}>Search...</span>
+            <span style={{ color: '#FFF' }}>Search...</span>
           </div>
         )}
-
-        <div className={searchActive ? 'navbar__search showOpacity' : 'navbar__search'}>
-          <div className="search_Barleft">
-            <select value={searchCatg} onChange={handleSearchCat}>
-              <option value="0">Category</option>
-              <option value="1">All Categories</option>
-              <option value="2">Consumer Electronic</option>
-            </select>
-          </div>
+        {searchActive &&
+        <div className='navbar__search showOpacity'>
           <div className="search_Barcenter">
-            <input type="text" ref={srchRef} placeholder="Search for product..." onChange={handleSearchInput} />
+            <input type="text" value={searchKey} placeholder="Search for product..." onChange={handleSearchInput} autoFocus/>
           </div>
           <div className="search_Barright">
             {searchKey === '' ? <AiOutlineClose style={{verticalAlign:"middle"}} onClick={() => setSearchActive(false)} /> : <AiOutlineSearch onClick={handelSEO} />}
           </div>
         </div>
-        <div className={srching ? 'searchResult showDiv' : 'searchResult'}>
+        }
+        <div className={searchActive && srching?'search_category':'hidediv'}>
+            <ul>
+              <li data-category="All">All</li>
+              <li data-category="Electronic">Electronic</li>
+              <li data-category="Home">Home</li>
+            </ul>
+        </div>
+        {/* <div className="search_Barleft">
+            <select value={searchCatg} onChange={handleSearchCat}>
+              <option value="0">Category</option>
+              <option value="1">All Categories</option>
+              <option value="2">Consumer Electronic</option>
+            </select>
+          </div> */}
+        <div className={searchKey !== "" && srching?"searchResult":"searchResult hidediv"}>
           <ul>
             {SearchKeyIndexes.map((keyword, index) =>
               keyword.toLowerCase().includes(searchKey.toLowerCase()) && <li key={index}>{keyword}</li>
@@ -175,7 +185,7 @@ const JupetaECnavBar = () => {
                   <AiOutlineLogout id="uMicon" /><span>Sign out</span>
                 </li>
               ) : (
-                <li onClick={() => router.push('/login')}>
+                <li onClick={() => router.push('/LoginPage')}>
                   <AiOutlineLogin id="uMicon" /><span>Sign in</span>
                 </li>
               )}
@@ -184,6 +194,8 @@ const JupetaECnavBar = () => {
         </ul>
       </div>
     </div>
+    
+      </>
   );
 };
 
