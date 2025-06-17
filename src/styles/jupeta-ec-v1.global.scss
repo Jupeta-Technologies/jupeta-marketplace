@@ -64,6 +64,7 @@
   ul li, ol li {
     margin: var(--space-sm) 0;
   }
+ 
   
   /* ===== Navigation Bar ===== */
   .navbar__container {
@@ -90,10 +91,11 @@
   }
 
   .navbar__center{
-    position: relative;
-    justify-self: center;
-    width: 500px;
+    width:60%;
+    border-radius: 20px;
     @extend .flex__base;
+    align-self: start;
+    flex-direction: column;
   }
   
   .navbar__right {
@@ -220,7 +222,8 @@
     padding:5px; border-radius:25px; 
     cursor:text; 
     position: relative;
-    left:-30%; 
+    left:0; 
+    align-self: start;
     font-size: smaller; 
     color: #c9c9c9;
   }
@@ -230,29 +233,59 @@
     padding: 3px 10px; 
     font-size: medium; 
     border-radius:20px; 
-    background-color: #e7e7ecc6; 
-    display: flex; 
+    background-color: #FFF; 
+    display:flex; 
     flex-direction: row;
     position: relative;
-    align-self: center;
+    align-self:start;
     overflow: hidden;
     visibility: hidden;
+    border: 1px solid #D9D9D9;
   }
 
 .search_Barleft{position:relative; align-self: center; & select {padding:4px; height:32px; background: transparent; width:100px;}}
 .search_Barcenter{position: relative;align-self: center; padding-left: 20px; flex: 1;}
 .search_Barright{position:relative; right:-5px; background:#44423f; color: #FFF; padding: 8px; border-radius: 50%; cursor: pointer; font-size: 1.125rem; align-items: center; display: flex;}
 .sBarright:hover{background-color: #807d78;}
-.search_Barcenter input{width: 70%; height: 32px; border: none;padding: 4px; border-radius: 8px;}
+.search_Barcenter input{width: 70%; height: 32px; border:none;padding: 4px; border-radius: 8px;font-size: 1rem;}
 .search_Barcenter input:focus{outline: none;}
-.searchResult{width:90%;min-height:100px; background-color: #F9F9F9; height: auto;margin: 2px 2.5%; padding-top: 10px; display: none;border-radius: 20px; overflow-x: hidden;}
+.searchResult{position:relative; top:0; width:100%; height: auto;margin: 2px 2.5%; padding-top: 10px;padding-bottom: 20px; display:block; overflow-x: hidden;}
 .searchResult ul{padding-left: 0;}
 .searchResult ul li{list-style: none; width: 100%; padding-left: 20px;}
 .searchResult ul li:hover{cursor: pointer; background-color: #c9c9c9; color: #000;}
 .sBarColor{background-color:#FFF;}
-.showDiv{display: block;}
+.showSearchResult{
+    height: auto;
+    background-color:#FFF;
+    transition: all ease 0.5s;
+  }
 .showOpacity{opacity: 1;visibility: visible;}
 .navbar__right .MuiIconButton-root{border-radius: 50%; font-size: 1.5rem; color: #000;}
+.hidediv{display:none;}
+
+/*Search bar category*/
+.search_category{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  align-self: flex-start;
+  margin-bottom: 10px;
+
+  ul{
+    overflow: hidden;
+
+  }
+  ul li{
+    padding: 1px 8px;
+    float: left;
+    cursor: pointer;
+    background-color: #F5F5F7;
+    border-radius: 16px;
+    margin: 4px;
+  }
+}
+
 
   /* ===== Card Component ===== */
   .card {
