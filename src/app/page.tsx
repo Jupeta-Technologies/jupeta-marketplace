@@ -8,13 +8,8 @@ import { categoryData } from '@/types/category';
 import CategoryContent from '@/components/CategoryContent';
 import HeroWithSubmenu from '@/components/HeroWithSubmenu';
 import { Product } from '@/types/api';
-import { Metadata } from 'next';
 
 import heroImage from '@/assets/images/led-speaker.jpg';
-
-
-
-
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -56,7 +51,6 @@ const HomePage = () => {
     image: cat.image,
   }));
 
-
   return (
     <>
       <HeroWithSubmenu
@@ -83,8 +77,6 @@ const HomePage = () => {
         )}
         </div>
     </>
-        
-    
   );
 };
 
