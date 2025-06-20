@@ -13,10 +13,6 @@ import ItemCardglobal from '@/components/card/ItemCard';
 
 import heroImage from '@/assets/images/led-speaker.jpg';
 
-
-
-
-
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +53,6 @@ const HomePage = () => {
     link: `/category/${cat.slug || cat.id}`,
     image: cat.image,
   }));
-
 
   return (
     <>
