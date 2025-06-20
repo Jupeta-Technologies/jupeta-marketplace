@@ -9,6 +9,7 @@ import CategoryContent from '@/components/CategoryContent';
 import HeroWithSubmenu from '@/components/HeroWithSubmenu';
 import { Product } from '@/types/api';
 import { Metadata } from 'next';
+import ItemCardglobal from '@/components/card/ItemCard';
 
 import heroImage from '@/assets/images/led-speaker.jpg';
 
@@ -34,6 +35,7 @@ const HomePage = () => {
         }
     
         setProducts(res.responseData);
+        console.log(res.responseData);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -81,7 +83,20 @@ const HomePage = () => {
             />
           </div>
         )}
+        <div className='grid grid-cols-4' style={{rowGap:'32px', justifyItems:'center'}}>
+        {
+          products.map((item,index) =>{
+            return <ItemCardglobal prodData={item} key={index} />
+          })
+        }
         </div>
+        </div>
+        
+        
+      
+        
+        
+        
     </>
         
     

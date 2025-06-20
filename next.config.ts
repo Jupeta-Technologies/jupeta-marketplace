@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  /* dev: {
+    // Add the problematic origin(s) to this array
+    allowedDevOrigins: [
+      'http://127.0.0.1:3000',
+    ],
+  } */
 };
 
-export default nextConfig;
+module.exports = nextConfig;

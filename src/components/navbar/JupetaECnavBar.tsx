@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ import {
   AiOutlineEye,
   AiOutlineLogout,
   AiOutlineLogin,
-  AiOutlineClose
+  AiOutlineClose,
 } from 'react-icons/ai';
 import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
@@ -19,183 +19,273 @@ import { Typography, Avatar, Button } from '@mui/joy';
 import { useCart } from '@/context/CartContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
+import { jupetaSearchEngine } from '@/lib/api/SearchEngine';
 
+// Dynamic import for CartListitem, assuming it might use browser-specific APIs
 const CartListitem = dynamic(() => import('@/components/cart/CartListitem'), { ssr: false });
 
-type AuthStatus = {
-  isLoggedIn: boolean;
-  token?: string;
-  user?: { name: string; email: string }; // adjust to your actual data
-};
-
+// Helper to safely get data from localStorage
 function getFromLocalStorage<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
   const item = localStorage.getItem(key);
   try {
-    return item ? JSON.parse(item) as T : fallback;
-  } catch {
+    return item ? (JSON.parse(item) as T) : fallback;
+  } catch (error) {
+    console.error(`Error parsing localStorage key "${key}":`, error);
     return fallback;
   }
 }
 
 const JupetaECnavBar = () => {
-  const [loggedin, setLoggedin] = useState(false);
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  // State for search functionality
   const [searchKey, setSearchKey] = useState('');
-  const [searchCatg, setSearchCatg] = useState('0');
-  const [searchActive, setSearchActive] = useState(false);
+  const [searchActive, setSearchActive] = useState(false); // Controls overall search UI visibility
+  // showSearchSuggestions controls the visibility of category and search results
+  // It's true if searchActive is true AND there's a searchKey, or if explicitly focused
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Other states
+  const [isAuth, setIsAuth] = useState<boolean>(false);
   const [cart, setCart] = useState<Product[]>([]);
-  const [srching, setsrching] = useState(false);
 
   const { products } = useCart();
   const router = useRouter();
-  const srchRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null); // Changed to HTMLDivElement as it's on a div
+  const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
 
-  const handleSearchicon = () => setSearchActive(true);
-
-  const handleSearchInput = (e: { target: { value: React.SetStateAction<string>; }; }) => setSearchKey(e.target.value);
-
-  const handleSearchCat = (e: { target: { value: React.SetStateAction<string>; }; }) => setSearchCatg(e.target.value);
-
+  // Static list for search suggestions (consider fetching this from an API if dynamic)
   const SearchKeyIndexes = ['Apple', 'Samsung', 'Macbook', 'Laptop'];
 
-  const handelSEO = async () => {
-    setSearchActive(false);
-    if (searchKey === '') return;
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: searchKey })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem('SearchResult', JSON.stringify(data.responseData));
+  // Handlers
+  const handleSearchIconClick = () => {
+    setSearchActive(true);
+    // Automatically focus the input when the search bar is activated
+    setTimeout(() => searchInputRef.current?.focus(), 0);
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+    // Show suggestions as soon as user types
+    setShowSearchSuggestions(true);
+  };
+
+  const handleSearchSubmit = async () => {
+    if (searchKey.trim() === '') {
+      // Optionally hide suggestions if search key is empty on submit attempt
+      setShowSearchSuggestions(false);
+      return;
+    }
+    setIsLoading(true); // Set loading true
+  // setShowSearchSuggestions(true); // If you want suggestions *and* loading indicator
+
+  router.push(`/SearchResult?keyword=${encodeURIComponent(searchKey.trim())}`);
+
+    //not needed since the search will be fetched directly on the search result page.
+    /* try {
+      // Show suggestions while waiting for API response
+      setShowSearchSuggestions(true);
+      const searchParams ={
+        keyword: searchKey,
+      }
+      const response = await jupetaSearchEngine(searchParams)
+
+      if (response.code == '0') {
+        localStorage.setItem('SearchResult', JSON.stringify(response.responseData));
         router.push('/srchResult');
+        // After navigating, you might want to reset the search state
+        //setSearchKey('');
+        setSearchActive(false);
+        setShowSearchSuggestions(false);
+      } else {
+        // Handle non-OK responses (e.g., show an error message)
+        console.error('Search API returned an error:', response);
       }
     } catch (error) {
       console.error('Search failed:', error);
-    }
+      /// Display user-friendly error message here
+    } finally {
+    setIsLoading(false); // Always set loading false
+    setShowSearchSuggestions(false); // Hide suggestions after attempt
+    } */
   };
 
+  const closeSearchBar = () => {
+    setSearchActive(false);
+    //setSearchKey(''); // Clear search input when closing
+    setShowSearchSuggestions(false); // Hide suggestions
+  };
+
+  // Effect for clicking outside the search area to close it
   useEffect(() => {
-    const handler = (e: { target: any; }) => {
-      if (srchRef.current && srchRef.current.contains(e.target)) {
-        setsrching(true);
-      } else {
-        setsrching(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        closeSearchBar();
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchRef]); // Dependency on searchRef is implicit; can remove if not changing
 
+  // Effect for initial authentication status
   useEffect(() => {
     const auth = getFromLocalStorage<boolean>('AuthStatus', false);
     setIsAuth(auth);
   }, []);
 
+  // Effect to update cart based on CartContext
   useEffect(() => {
     setCart(products ?? []);
   }, [products]);
 
   return (
     <>
-    <div className={searchActive ? 'navbar__container' : 'navbar__container'}>
-      <div className="navbar__left flex">
-        <Link href="/"  className='navbar__logo'>
-            <Typography fontSize={'xl'} >jUPETA</Typography>
-        </Link>
-        <CiLocationOff />
-      </div>
+      <div className="navbar__container"> {/* Simplified class name */}
+        <div className="navbar__left flex">
+          <Link href="/" className="navbar__logo">
+            <Typography fontSize={'xl'}>jUPETA</Typography>
+          </Link>
+          <CiLocationOff />
+        </div>
 
-      <div ref={srchRef} className={srching && searchActive ? 'navbar__center showSearchResult': 'navbar__center'}>
-        {!searchActive && (
-          <div className="navbar__search-button" onClick={handleSearchicon}>
-            <AiOutlineSearch id="navSicon" style={{ borderRadius: '100%', padding: '8px', fontSize: '2rem', background: '#44423f', color: '#FFF' }} />
-            <span style={{ color: '#FFF' }}>Search...</span>
-          </div>
-        )}
-        {searchActive &&
-        <div className='navbar__search showOpacity'>
-          <div className="search_Barcenter">
-            <input type="text" value={searchKey} placeholder="Search for product..." onChange={handleSearchInput} autoFocus/>
-          </div>
-          <div className="search_Barright">
-            {searchKey === '' ? <AiOutlineClose style={{verticalAlign:"middle"}} onClick={() => setSearchActive(false)} /> : <AiOutlineSearch onClick={handelSEO} />}
-          </div>
+        <div ref={searchRef} className={`navbar__center ${searchActive ? 'showSearchResult' : ''}`}>
+          {!searchActive && (
+            <div className="navbar__search-button" onClick={handleSearchIconClick}>
+              <AiOutlineSearch
+                id="navSicon"
+                className="nav-icon-button" // Use a class for styling
+                aria-label="Search" // Accessibility improvement
+              />
+              <span style={{ color: '#FFF' }}>Search...</span>
+            </div>
+          )}
+
+          {searchActive && (
+            <div className="navbar__search showOpacity">
+              <div className="search_Barcenter">
+                <input
+                  ref={searchInputRef} // Attach ref for autoFocus
+                  type="text"
+                  value={searchKey}
+                  placeholder="Search for product..."
+                  onChange={handleSearchInputChange}
+                  // autoFocus // Managed by ref in handleSearchIconClick for better control
+                />
+              </div>
+              <div className="search_Barright">
+                {searchKey === '' ? (
+                  <AiOutlineClose
+                    className="navSicon"
+                    onClick={closeSearchBar}
+                    aria-label="Close search bar"
+                  />
+                ) : (
+                  <AiOutlineSearch
+                    className="navSicon"
+                    onClick={handleSearchSubmit}
+                    aria-label="Submit search"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Search categories and results now depend on searchActive and showSearchSuggestions */}
+          {searchActive && showSearchSuggestions && (
+            <div className="search_category">
+              <ul>
+                <li data-category="All">All</li>
+                <li data-category="Electronic">Electronic</li>
+                <li data-category="Home">Home</li>
+              </ul>
+            </div>
+          )}
+
+          {/* Optional: commented out section - remove if not needed */}
+          {/* <div className="search_Barleft">
+              <select value={searchCatg} onChange={handleSearchCat}>
+                <option value="0">Category</option>
+                <option value="1">All Categories</option>
+                <option value="2">Consumer Electronic</option>
+              </select>
+            </div> */}
+
+          {searchActive && showSearchSuggestions && searchKey.trim() !== '' && (
+            <div className="searchResult">
+              <ul>
+                {SearchKeyIndexes.map(
+                  (keyword) =>
+                    keyword.toLowerCase().includes(searchKey.toLowerCase()) && (
+                      <li key={keyword}>{keyword}</li> // Use keyword as key, as it's unique
+                    )
+                )}
+              </ul>
+            </div>
+          )}
         </div>
-        }
-        <div className={searchActive && srching?'search_category':'hidediv'}>
-            <ul>
-              <li data-category="All">All</li>
-              <li data-category="Electronic">Electronic</li>
-              <li data-category="Home">Home</li>
-            </ul>
-        </div>
-        {/* <div className="search_Barleft">
-            <select value={searchCatg} onChange={handleSearchCat}>
-              <option value="0">Category</option>
-              <option value="1">All Categories</option>
-              <option value="2">Consumer Electronic</option>
-            </select>
-          </div> */}
-        <div className={searchKey !== "" && srching?"searchResult":"searchResult hidediv"}>
-          <ul>
-            {SearchKeyIndexes.map((keyword, index) =>
-              keyword.toLowerCase().includes(searchKey.toLowerCase()) && <li key={index}>{keyword}</li>
-            )}
+
+        <div className="navbar__right">
+          <ul className="navbar__menu">
+            <li>
+              <AiOutlineShoppingCart className="navbar__icon" />
+              <ul className="navbarCart navbar__dropdown">
+                {cart.length > 0 ? (
+                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} />) // Use unique product ID as key
+                ) : (
+                  <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
+                )}
+                {cart.length > 0 && <Button onClick={() => router.push('/cart')}>Go to cart</Button>}
+              </ul>
+            </li>
+
+            <li>
+              <AiOutlineHeart className="navbar__icon" />
+              <ul className="navbarFav navbar__dropdown">
+                <li></li> {/* Placeholder, consider adding content here */}
+              </ul>
+            </li>
+
+            <li>
+              {isAuth ? <Avatar id="userIcon">E</Avatar> : <AiOutlineUser className="navbar__icon" />}
+              <ul className="navbar__dropdown userMenu">
+                <li onClick={() => router.push('/sell')}>
+                  <MdOutlineSell id="uMicon" />
+                  <span>Sell</span>
+                </li>
+                <li>
+                  <AiOutlineEye id="uMicon" />
+                  <span>Watch List</span>
+                </li>
+                <li>
+                  <CiReceipt id="uMicon" />
+                  <span>Orders</span>
+                </li>
+                <li>
+                  <MdOutlineManageAccounts id="uMicon" />
+                  <span>My account</span>
+                </li>
+                {isAuth ? (
+                  <li
+                    onClick={() => {
+                      localStorage.setItem('AuthStatus', 'false');
+                      router.push('/login');
+                    }}
+                  >
+                    <AiOutlineLogout id="uMicon" />
+                    <span>Sign out</span>
+                  </li>
+                ) : (
+                  <li onClick={() => router.push('/LoginPage')}>
+                    <AiOutlineLogin id="uMicon" />
+                    <span>Sign in</span>
+                  </li>
+                )}
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
-
-      <div className="navbar__right">
-        <ul className="navbar__menu">
-          <li>
-            <AiOutlineShoppingCart className="navbar__icon" />
-            <ul className="navbarCart navbar__dropdown">
-              {cart.length > 0 ? (
-                cart.map((cartData, id) => <CartListitem cart={cartData} key={id} />)
-              ) : (
-                <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
-              )}
-              {cart.length > 0 && <Button onClick={() => router.push('/cart')}>Go to cart</Button>}
-            </ul>
-          </li>
-
-          <li>
-            <AiOutlineHeart className="navbar__icon" />
-            <ul className="navbarFav navbar__dropdown">
-              <li></li>
-            </ul>
-          </li>
-
-          <li>
-            {isAuth ? <Avatar id='userIcon'>E</Avatar> : <AiOutlineUser className="navbar__icon" />}
-            <ul className="navbar__dropdown userMenu">
-              <li onClick={() => router.push('/sell')}><MdOutlineSell id='uMicon' /><span>Sell</span></li>
-              <li><AiOutlineEye id='uMicon' /><span>Watch List</span></li>
-              <li><CiReceipt id='uMicon' /><span>Orders</span></li>
-              <li><MdOutlineManageAccounts id='uMicon' /><span>My account</span></li>
-              {isAuth ? (
-                <li onClick={() => {
-                  localStorage.setItem('AuthStatus', 'false');
-                  router.push('/login');
-                }}>
-                  <AiOutlineLogout id="uMicon" /><span>Sign out</span>
-                </li>
-              ) : (
-                <li onClick={() => router.push('/LoginPage')}>
-                  <AiOutlineLogin id="uMicon" /><span>Sign in</span>
-                </li>
-              )}
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-    
-      </>
+    </>
   );
 };
 

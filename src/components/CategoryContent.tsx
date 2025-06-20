@@ -10,7 +10,7 @@ interface CategoryContentProps {
 
 const CategoryContent: React.FC<CategoryContentProps> = ({ currentCategory, subCategories }) => {
   if (!currentCategory) {
-    return <div>Loading...</div>; // Or a more sophisticated loading indicator
+    return; // Or a more sophisticated loading indicator
   }
 
   if (subCategories && subCategories.length > 0) {
