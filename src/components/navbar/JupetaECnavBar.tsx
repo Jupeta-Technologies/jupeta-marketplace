@@ -242,7 +242,7 @@ const JupetaECnavBar = () => {
                     <span>Sign out</span>
                   </li>
                 ) : (
-                  <li onClick={() => router.push('/LoginPage')}>
+                  <li onClick={() => router.push('/Login')}>
                     <AiOutlineLogin id="uMicon" />
                     <span>Sign in</span>
                   </li>
