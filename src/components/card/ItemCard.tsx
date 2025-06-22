@@ -27,7 +27,7 @@ const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
 
     return ( 
         <div className='card' key={id}>
-            <Link href={`/product-detail/${id}`} className='item_link'>
+            <Link href={`/products/${id}`} className='item_link'> {/* adjust the product page url */}
                 <div className='itemConditionTag'>{condition}</div>
                 {/* <p className='auctionTime'>{date.toLocaleString()}</p> */}
                 <AiFillHeart  className='favoriteIcon'/>

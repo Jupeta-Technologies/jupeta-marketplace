@@ -29,7 +29,7 @@ export default function ProductsPage() {
   }, [])
 
   const filteredProducts = products.filter(product =>
-    product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -61,14 +61,14 @@ export default function ProductsPage() {
           <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
             <div className="aspect-w-1 aspect-h-1 w-full">
               <img
-                src={product.imageUrl || '/placeholder-product.jpg'}
-                alt={product.name}
+                src={product.imageFileUrl || '/placeholder-product.jpg'}
+                alt={product.productName}
                 className="w-full h-48 object-cover"
               />
             </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {product.name}
+                {product.productName}
               </h3>
               <p className="text-gray-600 text-sm mb-2 line-clamp-2">
                 {product.description}

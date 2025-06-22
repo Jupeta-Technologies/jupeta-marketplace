@@ -37,7 +37,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', product?.name, 'Quantity:', quantity)
+    console.log('Adding to cart:', product?.productName, 'Quantity:', quantity)
   }
 
   if (loading) {
@@ -81,14 +81,14 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
           <img
-            src={product.imageUrl || '/placeholder-product.jpg'}
-            alt={product.name}
+            src={product.imageFileUrl || '/placeholder-product.jpg'}
+            alt={product.productName}
             className="w-full h-96 object-cover rounded-lg"
           />
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.productName}</h1>
           <p className="text-gray-600 mb-6">{product.description}</p>
           
           <div className="mb-6">
