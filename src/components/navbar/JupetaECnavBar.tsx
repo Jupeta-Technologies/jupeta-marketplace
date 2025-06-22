@@ -15,11 +15,9 @@ import {
 } from 'react-icons/ai';
 import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
-import { Typography, Avatar, Button } from '@mui/joy';
 import { useCart } from '@/context/CartContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
-import { jupetaSearchEngine } from '@/lib/api/SearchEngine';
 
 // Dynamic import for CartListitem, assuming it might use browser-specific APIs
 const CartListitem = dynamic(() => import('@/components/cart/CartListitem'), { ssr: false });
@@ -43,7 +41,6 @@ const JupetaECnavBar = () => {
   // showSearchSuggestions controls the visibility of category and search results
   // It's true if searchActive is true AND there's a searchKey, or if explicitly focused
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Other states
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -76,38 +73,8 @@ const JupetaECnavBar = () => {
       setShowSearchSuggestions(false);
       return;
     }
-    setIsLoading(true); // Set loading true
-  // setShowSearchSuggestions(true); // If you want suggestions *and* loading indicator
 
   router.push(`/SearchResult?keyword=${encodeURIComponent(searchKey.trim())}`);
-
-    //not needed since the search will be fetched directly on the search result page.
-    /* try {
-      // Show suggestions while waiting for API response
-      setShowSearchSuggestions(true);
-      const searchParams ={
-        keyword: searchKey,
-      }
-      const response = await jupetaSearchEngine(searchParams)
-
-      if (response.code == '0') {
-        localStorage.setItem('SearchResult', JSON.stringify(response.responseData));
-        router.push('/srchResult');
-        // After navigating, you might want to reset the search state
-        //setSearchKey('');
-        setSearchActive(false);
-        setShowSearchSuggestions(false);
-      } else {
-        // Handle non-OK responses (e.g., show an error message)
-        console.error('Search API returned an error:', response);
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      /// Display user-friendly error message here
-    } finally {
-    setIsLoading(false); // Always set loading false
-    setShowSearchSuggestions(false); // Hide suggestions after attempt
-    } */
   };
 
   const closeSearchBar = () => {
@@ -143,7 +110,7 @@ const JupetaECnavBar = () => {
       <div className="navbar__container"> {/* Simplified class name */}
         <div className="navbar__left flex">
           <Link href="/" className="navbar__logo">
-            <Typography fontSize={'xl'}>jUPETA</Typography>
+            <h1>jUPETA</h1>
           </Link>
           <CiLocationOff />
         </div>
@@ -234,7 +201,7 @@ const JupetaECnavBar = () => {
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}
-                {cart.length > 0 && <Button onClick={() => router.push('/cart')}>Go to cart</Button>}
+                {cart.length > 0 && <button className="go-to-cart-btn" onClick={() => router.push('/cart')}>Go to cart</button>}
               </ul>
             </li>
 
@@ -246,7 +213,7 @@ const JupetaECnavBar = () => {
             </li>
 
             <li>
-              {isAuth ? <Avatar id="userIcon">E</Avatar> : <AiOutlineUser className="navbar__icon" />}
+              {isAuth ? <div className="user-avatar" id="userIcon">E</div> : <AiOutlineUser className="navbar__icon" />}
               <ul className="navbar__dropdown userMenu">
                 <li onClick={() => router.push('/sell')}>
                   <MdOutlineSell id="uMicon" />

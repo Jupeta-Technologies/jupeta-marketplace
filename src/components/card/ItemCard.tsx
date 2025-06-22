@@ -1,9 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
-import {AiFillHeart,AiOutlineShoppingCart,AiOutlineEye} from "react-icons/ai"
-import beats from './images/beats.jpg';
-//import ItemIMG from './components/cardcomponents/itemIMG';
+import React from "react";
+import {AiFillHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
-//import { Cartcontext } from "./context/context";
 import Link from "next/link";
 import { Product } from "@/types/api";
 
@@ -15,32 +12,21 @@ type ItemCardGlobalProps = {
 };
 
 const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
-    const {price,productName,imageFileUrl,sellingType,condition,id,summary,onAdd} = prodData;
-    const date = new Date();
-    const watchlist = <AiOutlineEye className='shoppingcartIcon' />;
-    //const Globalstate = useContext(Cartcontext);
-    //const dispatch = Globalstate.dispatch;
-    //console.log(Globalstate);
-
-
-  
+    const {price,productName,imageFileUrl,sellingType,condition,id} = prodData;
 
     return ( 
         <div className='card' key={id}>
-            <Link href={`/product-detail/${id}`} className='item_link'>
+            <Link href={`/products/${id}`} className='item_link'>
                 <div className='itemConditionTag'>{condition}</div>
-                {/* <p className='auctionTime'>{date.toLocaleString()}</p> */}
                 <AiFillHeart  className='favoriteIcon'/>
                 <div className="card__imagebox">
-                <img src={imageFileUrl} className="card__img"/>
+                <img src={imageFileUrl} className="card__img" alt={productName}/>
                 </div>
                 
-                    <p className='card__title' onClick={()=>{localStorage.setItem("setQuickbuy","")}}>{productName}</p>
+                <p className='card__title'>{productName}</p>
             </Link>
-                <span className='card__price'>¢{price}</span>
-                <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
-            
-
+            <span className='card__price'>¢{price}</span>
+            <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
         </div>
     );
 }
