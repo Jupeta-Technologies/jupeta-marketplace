@@ -1,29 +1,35 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { GetAllProdAPI } from '@/lib/api/GetAllProdAPI'
 import { Product } from '@/types/api'
-import { useParams } from 'next/navigation'
-import Link from 'next/link'
+import { useCart } from '@/context/CartContext'
+import { ShoppingCart, Eye, Clock, Truck, MapPin, Lock } from 'lucide-react'
+import MemberCard from '@/components/MemberCard'
 
 export default function ProductDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const productId = params.id as string
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
-  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [activeTab, setActiveTab] = useState('description')
+  const [quickBuy, setQuickBuy] = useState(false)
+  const [openBid, setOpenBid] = useState(false)
+  const [itemAdded, setItemAdded] = useState(false)
+  const { addToCart } = useCart()
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await GetAllProdAPI()
-        if (res.code !== "0") {
-          throw new Error('Failed to fetch products')
-        }
-        
-        const foundProduct = res.responseData.find(p => p.id.toString() === productId)
-        if (foundProduct) {
-          setProduct(foundProduct)
+        if (res.code === "0" && res.responseData) {
+          const foundProduct = res.responseData.find((p: Product) => p.id === productId)
+          if (foundProduct) {
+            setProduct(foundProduct)
+          }
         }
       } catch (error) {
         console.error('Error fetching product:', error)
@@ -31,105 +37,270 @@ export default function ProductDetailPage() {
         setLoading(false)
       }
     }
-    
-    fetchProduct()
+
+    if (productId) {
+      fetchProduct()
+    }
   }, [productId])
 
   const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', product?.productName, 'Quantity:', quantity)
+    if (product) {
+      addToCart({
+        ...product,
+        qty: 1
+      })
+      setItemAdded(true)
+      // Reset the added state after 2 seconds
+      setTimeout(() => setItemAdded(false), 2000)
+    }
+  }
+
+  const handleBuyNow = () => {
+    if (product) {
+      addToCart({
+        ...product,
+        qty: 1
+      })
+      router.push('/cart')
+    }
+  }
+
+  const handleBidBuy = (sellingType: string) => {
+    if (sellingType === "Auction") {
+      setOpenBid(true)
+    } else if (sellingType === "BuyNow") {
+      handleBuyNow()
+    }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="product-detail-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading product details...</p>
       </div>
     )
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
-          <Link
-            href="/products"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Back to Products
-          </Link>
-        </div>
+      <div className="product-detail-loading">
+        <p>Product not found</p>
       </div>
     )
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-4">
-        <Link
-          href="/products"
-          className="text-blue-600 hover:text-blue-800 flex items-center"
-        >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Products
-        </Link>
-      </div>
+  // Mock images for demonstration
+  const productImages = [
+    product.imageFileUrl,
+    product.imageFileUrl,
+    product.imageFileUrl,
+    product.imageFileUrl
+  ]
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div>
-          <img
-            src={product.imageFileUrl || '/placeholder-product.jpg'}
-            alt={product.productName}
-            className="w-full h-96 object-cover rounded-lg"
-          />
+  return (
+    <div className="product-detail-page">
+      <div className="mainContainer" style={{ marginTop: '86px' }}>
+        <div className="product-detail-container">
+          <div className="product-detail-grid">
+            {/* Product Images */}
+            <div className="product-detail-images">
+              <div className="details">
+                <div className="big-img">
+                  <img
+                    src={productImages[selectedImage]}
+                    alt={product.productName}
+                    className="main-image"
+                  />
+                </div>
+              </div>
+              <div className="thumbnail-grid">
+                {productImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`${product.productName} ${index + 1}`}
+                    className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  />
+                ))}
+              </div>
         </div>
 
+            {/* Product Details */}
+            <div className="product-details">
+              <div className="box">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.productName}</h1>
-          <p className="text-gray-600 mb-6">{product.description}</p>
-          
-          <div className="mb-6">
-            <span className="text-3xl font-bold text-blue-600">${product.price}</span>
+                  <div className="row">
+                    <h2 className="product-title">{product.productName}</h2>
+                    <span className="product-price">¢{product.price}</span>
+                    
+                    {product.sellingType !== "BuyNow" && (
+                      <span className="auction-info">
+                        10000 bids <Clock size={20} style={{ margin: '0 2px' }} /> 1 day 3 Hours 5 Min
+                      </span>
+                    )}
+                    
+                    <div className="product-features">
+                      <p><Truck size={20} style={{ float: 'left', paddingRight: '4px' }} /> Free Shipping</p>
+                      <p><MapPin size={20} style={{ float: 'left', paddingRight: '4px' }} /> Accra</p>
+                      <p><Lock size={20} style={{ float: 'left', paddingRight: '4px' }} /> Secure pick-up</p>
+                    </div>
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
-              Quantity
-            </label>
-            <div className="flex items-center">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-3 py-1 border border-gray-300 rounded-l-md hover:bg-gray-50"
-              >
-                -
-              </button>
-              <input
-                type="number"
-                id="quantity"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 text-center border-t border-b border-gray-300 py-1"
-              />
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="px-3 py-1 border border-gray-300 rounded-r-md hover:bg-gray-50"
-              >
-                +
-              </button>
+                  <div className="product-actions">
+                    {quickBuy && product.sellingType === "BuyNow" ? (
+                      <div className="checkout-modal">
+                        <h3>Checkout</h3>
+                        <p>Redirecting to checkout...</p>
+                        <button onClick={() => setQuickBuy(false)}>Close</button>
+                      </div>
+                    ) : (
+                      <>
+                        {openBid && product.sellingType === "Auction" ? (
+                          <div className="bid-modal">
+                            <h3>Place Your Bid</h3>
+                            <p>Current Price: ¢{product.price}</p>
+                            <div className="bid-input">
+                              <input 
+                                type="number" 
+                                placeholder="Enter your bid amount"
+                                min={product.price + 1}
+                              />
+                              <button onClick={() => setOpenBid(false)}>Place Bid</button>
+                            </div>
+                            <button onClick={() => setOpenBid(false)}>Cancel</button>
+                          </div>
+                        ) : (
+                          <div className="action-buttons">
+                            <button
+                              className="buy-bid-btn"
+                              onClick={() => handleBidBuy(product.sellingType)}
+                            >
+                              {product.sellingType !== "BuyNow" ? "BID" : "BUY NOW"}
+                            </button>
+
+                            {product.sellingType === "BuyNow" && (
+                              <button 
+                                className={`cart-btn ${itemAdded ? 'added' : ''}`} 
+                                onClick={handleAddToCart}
+                                title={itemAdded ? "Added to cart!" : "Add to cart"}
+                              >
+                                <ShoppingCart size={24} />
+                              </button>
+                            )}
+                            
+                            <button className="view-btn">
+                              <Eye size={20} />
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium"
-          >
-            Add to Cart
-          </button>
+          {/* Product Details Tabs */}
+          <div className="container-details">
+            <div className="deschead-label">
+              <div className="toggle-space">
+                <span
+                  className={activeTab === 'description' ? 'active' : ''}
+                  onClick={() => setActiveTab('description')}
+                >
+                  Description
+                </span>
+                <span
+                  className={activeTab === 'specifications' ? 'active' : ''}
+                  onClick={() => setActiveTab('specifications')}
+                >
+                  Specifications
+                </span>
+                <span
+                  className={activeTab === 'reviews' ? 'active' : ''}
+                  onClick={() => setActiveTab('reviews')}
+                >
+                  Reviews
+                </span>
+              </div>
+            </div>
+
+            <div className="desc-rev-ven-pad">
+              <div className="descSpecs-box">
+                {activeTab === 'description' && (
+                  <>
+                    <div className="itemspecs">
+                      <h4>Item Specifications</h4>
+                      <div className="specs">
+                        <ul>
+                          <li>Condition: {product.condition}</li>
+                          <li>Type: {product.sellingType}</li>
+                          <li>Category: {product.category || 'General'}</li>
+                          <li>Price: ¢{product.price}</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="itemdesc">
+                      <h4>Description</h4>
+                      <div className="desc">
+                        <p>{product.description}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'specifications' && (
+                  <>
+                    <div className="itemspecs">
+                      <h4>Technical Specifications</h4>
+                      <div className="specs">
+                        <ul>
+                          <li>Dimensions: 10&Prime; x 8&Prime; x 2&Prime;</li>
+                          <li>Weight: 2.5 lbs</li>
+                          <li>Material: Premium Quality</li>
+                          <li>Warranty: 1 Year</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="itemdesc">
+                      <h4>Detailed Specifications</h4>
+                      <div className="desc">
+                        <p>Comprehensive technical details and specifications for this product. Includes all measurements, materials, and technical requirements.</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'reviews' && (
+                  <>
+                    <div className="itemspecs">
+                      <h4>Customer Ratings</h4>
+                      <div className="specs">
+                        <div>★★★★☆ (4.0/5)</div>
+                        <p>Based on 15 reviews</p>
+                      </div>
+                    </div>
+                    <div className="itemdesc">
+                      <h4>Customer Reviews</h4>
+                      <div className="desc">
+                        <div>
+                          <p><strong>John D.</strong> - &ldquo;Great product, exactly as described!&rdquo;</p>
+                          <p><strong>Sarah M.</strong> - &ldquo;Fast shipping and excellent quality.&rdquo;</p>
+                          <p><strong>Mike R.</strong> - &ldquo;Highly recommend this product.&rdquo;</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
+        
+        <MemberCard />
       </div>
     </div>
   )

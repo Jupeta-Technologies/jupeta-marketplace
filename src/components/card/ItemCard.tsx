@@ -1,7 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import {AiFillHeart,AiOutlineShoppingCart,AiOutlineEye} from "react-icons/ai"
-import beats from './images/beats.jpg';
-//import ItemIMG from './components/cardcomponents/itemIMG';
+import React from "react";
+import {AiFillHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
 import { useFavorites } from '@/context/FavoriteContext';
 import { useWatchlist } from '@/context/WatchlistContext';
@@ -48,24 +46,28 @@ const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
 
 
   
+    const {price,productName,imageFileUrl,sellingType,condition,id} = prodData;
 
     return ( 
         <div className='card' key={id}>
-            <Link href={`/products/${id}`} className='item_link'> {/* adjust the product page url */}
+            <Link href={`/products/${id}`} className='item_link'>
                 <div className='itemConditionTag'>{condition}</div>
                 {/* <p className='auctionTime'>{date.toLocaleString()}</p> */}
                 
+                <AiFillHeart  className='favoriteIcon'/>
                 <div className="card__imagebox">
-                <img src={imageFileUrl} className="card__img"/>
+                <img src={imageFileUrl} className="card__img" alt={productName}/>
                 </div>
                 
-                    <p className='card__title' onClick={()=>{localStorage.setItem("setQuickbuy","")}}>{productName}</p>
+                <p className='card__title'>{productName}</p>
             </Link>
                 <span className='card__price'>¢{price}</span>
                 <AiFillHeart  className={isCurrentlyFavorite ? 'currentFav':'favoriteIcon'} onClick={handleToggleFavorite}/>
                 <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
             
 
+            <span className='card__price'>¢{price}</span>
+            <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
         </div>
     );
 }

@@ -1,11 +1,17 @@
 // app/layout.tsx
 import "@/styles/jupeta-ec-v1.global.css";
 import "@/styles/Loginpage.css"
+import "@/styles/ProductDetail.css"
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from '@fortawesome/fontawesome-svg-core';
 import { CartProvider } from "@/context/CartContext";
 import { FavoriteProvider } from "@/context/FavoriteContext";
 import { WatchlistProvider } from "@/context/WatchlistContext";
 import NavWrapper from "@/components/NavWrapper";
 import { Metadata } from 'next';
+
+// Prevent FontAwesome from adding its CSS since we did it manually above
+config.autoAddCss = false;
 
 export const metadata: Metadata = {
   title: {
