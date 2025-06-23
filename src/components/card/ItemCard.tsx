@@ -1,5 +1,5 @@
 import React from "react";
-import {AiFillHeart} from "react-icons/ai"
+import {AiFillHeart, AiOutlineEye} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
 import { useFavorites } from '@/context/FavoriteContext';
 import { useWatchlist } from '@/context/WatchlistContext';
@@ -46,7 +46,6 @@ const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
 
 
   
-    const {price,productName,imageFileUrl,sellingType,condition,id} = prodData;
 
     return ( 
         <div className='card' key={id}>
