@@ -2,6 +2,8 @@
 import "@/styles/jupeta-ec-v1.global.css";
 import "@/styles/Loginpage.css"
 import { CartProvider } from "@/context/CartContext";
+import { FavoriteProvider } from "@/context/FavoriteContext";
+import { WatchlistProvider } from "@/context/WatchlistContext";
 import NavWrapper from "@/components/NavWrapper";
 import { Metadata } from 'next';
 
@@ -30,7 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <CartProvider>
-          <NavWrapper>{children}</NavWrapper>
+          <FavoriteProvider>
+            <WatchlistProvider>
+              <NavWrapper>{children}</NavWrapper>
+            </WatchlistProvider>
+          </FavoriteProvider>
         </CartProvider>
       </body>
     </html>

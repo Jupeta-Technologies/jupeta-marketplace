@@ -17,6 +17,7 @@ import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
 import { Typography, Avatar, Button } from '@mui/joy';
 import { useCart } from '@/context/CartContext';
+import { useFavorites } from '@/context/FavoriteContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
 import { jupetaSearchEngine } from '@/lib/api/SearchEngine';
@@ -48,8 +49,10 @@ const JupetaECnavBar = () => {
   // Other states
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [cart, setCart] = useState<Product[]>([]);
+  const [favorite,setFavorite] = useState<Product[]>([]);
 
   const { products } = useCart();
+  const {favorites} = useFavorites();
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null); // Changed to HTMLDivElement as it's on a div
   const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
@@ -81,33 +84,6 @@ const JupetaECnavBar = () => {
 
   router.push(`/SearchResult?keyword=${encodeURIComponent(searchKey.trim())}`);
 
-    //not needed since the search will be fetched directly on the search result page.
-    /* try {
-      // Show suggestions while waiting for API response
-      setShowSearchSuggestions(true);
-      const searchParams ={
-        keyword: searchKey,
-      }
-      const response = await jupetaSearchEngine(searchParams)
-
-      if (response.code == '0') {
-        localStorage.setItem('SearchResult', JSON.stringify(response.responseData));
-        router.push('/srchResult');
-        // After navigating, you might want to reset the search state
-        //setSearchKey('');
-        setSearchActive(false);
-        setShowSearchSuggestions(false);
-      } else {
-        // Handle non-OK responses (e.g., show an error message)
-        console.error('Search API returned an error:', response);
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      /// Display user-friendly error message here
-    } finally {
-    setIsLoading(false); // Always set loading false
-    setShowSearchSuggestions(false); // Hide suggestions after attempt
-    } */
   };
 
   const closeSearchBar = () => {
@@ -137,6 +113,12 @@ const JupetaECnavBar = () => {
   useEffect(() => {
     setCart(products ?? []);
   }, [products]);
+
+  //Effect to update favorites bace on FavoriteContext
+  useEffect(()=>{
+    setFavorite(favorites ?? []);
+    console.log(favorites);
+  },[favorites])
 
   return (
     <>
@@ -241,7 +223,15 @@ const JupetaECnavBar = () => {
             <li>
               <AiOutlineHeart className="navbar__icon" />
               <ul className="navbarFav navbar__dropdown">
-                <li></li> {/* Placeholder, consider adding content here */}
+                {
+                  favorites.length > 0 ? (
+                    favorites.map((favData) => {
+                      return <li style={{width:'100%'}}>{favData.productName}</li>
+                    })
+                  ): (
+                    <p style={{ width: '100%', textAlign: 'center' }}>Favorites is empty</p>
+                  )
+                }{/* Placeholder, consider adding content here */}
               </ul>
             </li>
 
