@@ -1,8 +1,9 @@
 import React from "react";
-import {AiFillHeart} from "react-icons/ai"
+import {AiFillHeart, AiOutlineHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
 import Link from "next/link";
 import { Product } from "@/types/api";
+import { useFavorites } from "@/context/FavoritesContext";
 
 // Define the props type for ItemCardglobal
 type ItemCardGlobalProps = {
@@ -13,12 +14,35 @@ type ItemCardGlobalProps = {
 
 const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
     const {price,productName,imageFileUrl,sellingType,condition,id} = prodData;
+    const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+    
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent navigation when clicking heart
+        e.stopPropagation(); // Prevent event bubbling
+        
+        if (isFavorite(id)) {
+            removeFromFavorites(prodData);
+        } else {
+            addToFavorites(prodData);
+        }
+    };
 
     return ( 
         <div className='card' key={id}>
             <Link href={`/products/${id}`} className='item_link'>
                 <div className='itemConditionTag'>{condition}</div>
-                <AiFillHeart  className='favoriteIcon'/>
+                {isFavorite(id) ? (
+                    <AiFillHeart 
+                        className='favoriteIcon' 
+                        onClick={handleFavoriteClick}
+                        style={{ color: '#ff4757' }}
+                    />
+                ) : (
+                    <AiOutlineHeart 
+                        className='favoriteIcon' 
+                        onClick={handleFavoriteClick}
+                    />
+                )}
                 <div className="card__imagebox">
                 <img src={imageFileUrl} className="card__img" alt={productName}/>
                 </div>

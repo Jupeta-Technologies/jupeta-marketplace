@@ -53,7 +53,6 @@ const SearchResult: React.FC<SearchResultProps> = ({ onAdd }) => {
 
         if (response.code == '0' && response.responseData) {
           setApiData(response.responseData);
-          console.log(response.responseData);
           // Reset pagination to first page when new search results arrive
           setCurrentPage(1);
         } else {

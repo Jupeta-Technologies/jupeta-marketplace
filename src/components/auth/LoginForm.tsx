@@ -41,8 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const handleGoogleLogin = () => {
-    // Placeholder for Google login logic
-    console.log("Google login clicked");
+    // Handle Google login logic here
   };
 
   return (

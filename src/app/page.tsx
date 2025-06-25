@@ -8,16 +8,14 @@ import { categoryData } from '@/types/category';
 import CategoryContent from '@/components/CategoryContent';
 import HeroWithSubmenu from '@/components/HeroWithSubmenu';
 import { Product } from '@/types/api';
-import { Metadata } from 'next';
 import ItemCardglobal from '@/components/card/ItemCard';
 
 import heroImage from '@/assets/images/led-speaker.jpg';
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentCategory, setCurrentCategory] = useState<CategoryData | null>(null);
-  const [subCategories, setSubCategories] = useState<CategoryData[]>([]);
+  const [currentCategory] = useState<CategoryData | null>(null);
+  const [subCategories] = useState<CategoryData[]>([]);
 
   const recentViewed: Product[] = [];
 
@@ -31,11 +29,8 @@ const HomePage = () => {
         }
     
         setProducts(res.responseData);
-        console.log(res.responseData);
       } catch (error) {
         console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
       }
     };
     
@@ -86,15 +81,7 @@ const HomePage = () => {
         }
         </div>
         </div>
-        
-        
-      
-        
-        
-        
     </>
-        
-    
   );
 };
 

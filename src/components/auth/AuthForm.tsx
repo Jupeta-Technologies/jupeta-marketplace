@@ -6,8 +6,6 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import OtpVerification from "./OtpVerification";
 import { AiOutlineClose } from "react-icons/ai";
-import login_bg from '@/assets/images/login_bg.jpg'
-
 
 const AuthForm = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -35,7 +33,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="login-body" style={{backgroundImage:`url(${login_bg})`}}>
+    <div className="login-body" style={{backgroundImage: 'url(/login_bg.jpg)'}}>
                     <AiOutlineClose style={{padding:'4px', borderRadius:'50%', background:'#FFF',color:'#000',position:'absolute', right:'16px', top:'16px', fontSize:'2rem', cursor:'pointer'}} onClick={()=>window.history.back()}/>
       <div className="container-login" >
                     <div className="head-label">

@@ -1,6 +1,6 @@
 // components/ProductAction.tsx
 import React from 'react';
-import { CartProduct } from '@/types/cart'; // Ensure this path is correct
+import { Product } from '@/types/api'; // Use API Product type
 
 // Import the newly created separate components
 import { AddToCartIcon } from './AddToCartIcon';
@@ -9,7 +9,7 @@ import { BuyBidButton } from './BuyBidButton';
 // 1. Define Props for the main component.
 // This component now acts as a container for the action buttons/icons.
 interface ProductActionProps {
-    item_data: CartProduct; // The product data needed by child components
+    item_data: Product; // The product data from API
     buyBidTag: string; // The tag for the Buy/Bid button ("Buy" or "Bid")
     showAddToCartIcon?: boolean; // Optional prop to control visibility of icon
 }
