@@ -1,0 +1,172 @@
+{
+    "specifications": {
+      "electronics": {
+        "mobile_phones": {
+          "brand": {
+            "label": "Brand",
+            "type": "text",
+            "placeholder": "e.g., Apple, Samsung",
+            "required": true
+          },
+          "model": {
+            "label": "Model",
+            "type": "text",
+            "placeholder": "e.g., iPhone 13 Pro Max",
+            "required": true
+          },
+          "storage": {
+            "label": "Storage",
+            "type": "select",
+            "options": ["64GB", "128GB", "256GB", "512GB", "1TB"],
+            "required": true
+          },
+          "color": {
+            "label": "Color",
+            "type": "text",
+            "placeholder": "e.g., Graphite, Silver",
+            "required": true
+          },
+          "network": {
+            "label": "Network",
+            "type": "select",
+            "options": ["4G", "5G"],
+            "required": true
+          }
+        },
+        "computers_tablets": {
+          "brand": {
+            "label": "Brand",
+            "type": "text",
+            "placeholder": "e.g., Apple, Dell",
+            "required": true
+          },
+          "model": {
+            "label": "Model",
+            "type": "text",
+            "placeholder": "e.g., MacBook Pro, XPS 13",
+            "required": true
+          },
+          "processor": {
+            "label": "Processor",
+            "type": "text",
+            "placeholder": "e.g., Intel Core i7, Apple M1",
+            "required": true
+          },
+          "ram": {
+            "label": "RAM",
+            "type": "select",
+            "options": ["8GB", "16GB", "32GB", "64GB"],
+            "required": true
+          },
+          "storage": {
+            "label": "Storage",
+            "type": "select",
+            "options": ["256GB", "512GB", "1TB", "2TB"],
+            "required": true
+          }
+        }
+      },
+      "fashion": {
+        "clothing": {
+          "brand": {
+            "label": "Brand",
+            "type": "text",
+            "placeholder": "e.g., Nike, Gucci",
+            "required": true
+          },
+          "size": {
+            "label": "Size",
+            "type": "select",
+            "options": ["S", "M", "L", "XL", "XXL"],
+            "required": true
+          },
+          "color": {
+            "label": "Color",
+            "type": "text",
+            "placeholder": "e.g., Black, Red",
+            "required": true
+          },
+          "material": {
+            "label": "Material",
+            "type": "text",
+            "placeholder": "e.g., Cotton, Polyester",
+            "required": true
+          }
+        },
+        "shoes": {
+          "brand": {
+            "label": "Brand",
+            "type": "text",
+            "placeholder": "e.g., Adidas, Puma",
+            "required": true
+          },
+          "size": {
+            "label": "Size",
+            "type": "select",
+            "options": ["6", "7", "8", "9", "10", "11", "12"],
+            "required": true
+          },
+          "color": {
+            "label": "Color",
+            "type": "text",
+            "placeholder": "e.g., White, Black",
+            "required": true
+          },
+          "material": {
+            "label": "Material",
+            "type": "text",
+            "placeholder": "e.g., Leather, Synthetic",
+            "required": true
+          }
+        }
+      },
+      "home_garden": {
+        "furniture": {
+          "material": {
+            "label": "Material",
+            "type": "text",
+            "placeholder": "e.g., Wood, Metal",
+            "required": true
+          },
+          "color": {
+            "label": "Color",
+            "type": "text",
+            "placeholder": "e.g., Brown, Black",
+            "required": true
+          },
+          "dimensions": {
+            "label": "Dimensions",
+            "type": "text",
+            "placeholder": "e.g., 60x30x30 inches",
+            "required": true
+          },
+          "weight": {
+            "label": "Weight",
+            "type": "text",
+            "placeholder": "e.g., 50 lbs",
+            "required": true
+          }
+        },
+        "home_decor": {
+          "style": {
+            "label": "Style",
+            "type": "text",
+            "placeholder": "e.g., Modern, Vintage",
+            "required": true
+          },
+          "color": {
+            "label": "Color",
+            "type": "text",
+            "placeholder": "e.g., Blue, Gold",
+            "required": true
+          },
+          "material": {
+            "label": "Material",
+            "type": "text",
+            "placeholder": "e.g., Ceramic, Glass",
+            "required": true
+          }
+        }
+      }
+    }
+  }

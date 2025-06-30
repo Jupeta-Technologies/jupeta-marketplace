@@ -120,7 +120,7 @@ const JupetaECnavBar = () => {
       <div className="navbar__container"> {/* Simplified class name */}
         <div className="navbar__left flex">
           <Link href="/" className="navbar__logo">
-            <h1>jUPETA</h1>
+            <h3>jUPETA</h3>
           </Link>
           <CiLocationOff />
         </div>
@@ -211,7 +211,7 @@ const JupetaECnavBar = () => {
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}
-                {cart.length > 0 && <button className="go-to-cart-btn" onClick={() => router.push('/cart')}>Go to cart</button>}
+                {cart.length > 0 && <button onClick={() => router.push('/cart')}>Go to cart</button>}
               </ul>
             </li>
 

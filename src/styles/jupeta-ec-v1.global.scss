@@ -106,16 +106,19 @@
     @extend .flex__base;
     justify-content: space-evenly;
   }
-  .navbar__logo{
-    text-decoration: none;
-  }
-  
+
   .navbar__left {
     width: 348px;
     font-size: 1.25rem;
     font-weight: bold;
     @extend .flex__base;
+
+    .navbar__logo{
+    text-decoration: none;
+    color: #000;
   }
+  }
+  
 
   .navbar__center{
     width:60%;
@@ -261,7 +264,7 @@
 .cartQVLitem .citVDelete:hover{color: red;}
 .cartQview .cartQVLitem .cqVLImg{width:80px;height:100%;display: block;background-repeat: no-repeat; background-size:cover;}
 
-button{border-radius: 20px; font-size: small;font-weight: 300; color:#FFF; background-color: #000;height:15px; width: 100px; line-height: 12px; margin-top: 30px; margin-left: 190px; align-self:center;}
+button{border-radius: 20px; font-size: small;font-weight: 300; color:#FFF; background-color: #000;height:32px; width: 100px; line-height: 12px; margin-top: 30px; margin-left: 190px; align-self:center; cursor: pointer;}
   }
 
   
@@ -413,6 +416,7 @@ button{border-radius: 20px; font-size: small;font-weight: 300; color:#FFF; backg
     margin-bottom: var(--space-sm);
     margin-top: var(--space-md);
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -479,7 +483,7 @@ button{border-radius: 20px; font-size: small;font-weight: 300; color:#FFF; backg
 
 .favoriteIcon{position: absolute;bottom:10px;right:60px; font-size: 20px;background-color: #D9D9D9;color: #FFF; border-radius: 50%; width: 25px;height: 25px; padding:3px; cursor: pointer;}
 .favoriteIcon:hover{background-color: transparent; color: rgb(0, 128, 255);}
-.currentFav{position: absolute;bottom:10px;right:60px;background-color: transparent; color: rgb(0, 128, 255); font-size: 20px;border-radius: 50%; width: 25px;height: 25px; padding:3px; cursor: pointer;}
+.currentFav{position: absolute;bottom:10px;right:60px;background-color:var(--primary-card-color); color: rgb(0, 128, 255); font-size: 20px;border-radius: 50%; width: 25px;height: 25px; padding:3px; cursor: pointer;}
 .shoppingcartIcon{position: absolute;bottom:-5px;right:-5px; font-size: 20px;background-color: #FFF;color: #000; border-radius: 50%; width: 45px;height: 45px; padding:9px;cursor: pointer;}
 .shoppingcartIcon:hover{transform: scale(1.1); background-color: #44423f;color: #FFF;}
 
