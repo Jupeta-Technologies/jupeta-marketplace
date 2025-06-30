@@ -137,9 +137,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const checkAndCleanup = () => {
       const onCartPage = localStorage.getItem('onCartPage');
+      const onCheckoutPage = localStorage.getItem('onCheckoutPage');
       
-      if (!onCartPage) {
-        // User is not on cart page, remove buy-button products
+      if (!onCartPage && !onCheckoutPage) {
+        // User is not on cart page or checkout page, remove buy-button products
         removeBuyButtonProducts();
       }
     };

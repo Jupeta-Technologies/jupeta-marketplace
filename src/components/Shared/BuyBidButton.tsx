@@ -16,7 +16,7 @@ export const BuyBidButton: React.FC<BuyBidButtonProps> = ({ tag, item_data, clas
 
   // Event handler for the button click
   const handleBuyClick = () => {
-    addToCart(item_data);
+    addToCart(item_data, 'buy-button');
     router.push('/cart');
   };
 

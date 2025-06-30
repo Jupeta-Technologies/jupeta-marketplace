@@ -36,7 +36,10 @@ export default function CartPage() {
   // Handle navigation away from cart page
   const handleNavigation = (href: string) => {
     localStorage.removeItem('onCartPage')
-    removeBuyButtonProducts()
+    // Only remove buy-button products if NOT going to checkout
+    if (href !== '/checkout') {
+      removeBuyButtonProducts()
+    }
     router.push(href)
   }
 

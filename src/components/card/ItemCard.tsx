@@ -1,12 +1,9 @@
 import React from "react";
 import {AiFillHeart, AiOutlineHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
-import { useFavorites } from '@/context/FavoriteContext';
-import { useWatchlist } from '@/context/WatchlistContext';
-//import { Cartcontext } from "./context/context";
+import { useFavorites } from '@/context/FavoritesContext';
 import Link from "next/link";
 import { Product } from "@/types/api";
-import { useFavorites } from "@/context/FavoritesContext";
 
 // Define the props type for ItemCardglobal
 type ItemCardGlobalProps = {
@@ -53,12 +50,7 @@ const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
                 <p className='card__title'>{productName}</p>
             </Link>
                 <span className='card__price'>¢{price}</span>
-                <AiFillHeart  className={isCurrentlyFavorite ? 'currentFav':'favoriteIcon'} onClick={handleToggleFavorite}/>
                 <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
-            
-
-            <span className='card__price'>¢{price}</span>
-            <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
         </div>
     );
 }
