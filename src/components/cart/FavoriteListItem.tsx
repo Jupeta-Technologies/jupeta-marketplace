@@ -1,24 +1,32 @@
 import React from 'react';
 import { MdDelete } from 'react-icons/md';
-import { Product } from '@/types/cart';
+import { Product } from '@/types/api';
+import { useFavorites } from '@/context/FavoritesContext';
 
-type Props = {
-  favorite: Product;
-  onRemove: (product: Product) => void;
-};
+interface FavoriteListItemProps {
+  product: Product; // FavoriteListItem still needs the product prop to display
+}
 
-function FavoriteListItem({ favorite, onRemove }: Props) {
+
+const FavoriteListItem: React.FC<FavoriteListItemProps> = ({ product }) => {
+  const { removeFromFavorites } = useFavorites(); // Get the function from context
+
+  const handleRemoveFav = () => {
+    // Call removeFromFavorites with the product's ID
+    removeFromFavorites(product);
+  };
+
   
     return (
         <li className='cartQVLitem'>
-          <span className='cqVLImg' style={{backgroundImage:`url(${favorite.imageFileUrl})`}}></span>
+          <span className='cqVLImg' style={{backgroundImage:`url(${product.imageFileUrl})`}}></span>
           <span className='citVNamePrice'>
-            <p id='citN'>{favorite.productName}</p>
+            <p id='citN'>{product.productName}</p>
             <br/>
-            <p id='citP'>¢{favorite.price}</p>
+            <p id='citP'>¢{product.price}</p>
           </span>
           <span className='citVDelete'>
-            <MdDelete onClick={() => onRemove(favorite)} />
+            <MdDelete onClick={handleRemoveFav} />
           </span>
         </li>
     );

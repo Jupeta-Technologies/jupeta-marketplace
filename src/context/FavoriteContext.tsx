@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product } from "@/types/cart"; // Assuming Product type is defined here
+import { Product } from "@/types/api"; // Assuming Product type is defined here
 
 // Define the shape of the context value
 interface FavoriteContextType {
