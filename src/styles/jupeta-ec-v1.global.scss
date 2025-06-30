@@ -479,6 +479,7 @@ button{border-radius: 20px; font-size: small;font-weight: 300; color:#FFF; backg
 
 .favoriteIcon{position: absolute;bottom:10px;right:60px; font-size: 20px;background-color: #D9D9D9;color: #FFF; border-radius: 50%; width: 25px;height: 25px; padding:3px; cursor: pointer;}
 .favoriteIcon:hover{background-color: transparent; color: rgb(0, 128, 255);}
+.currentFav{position: absolute;bottom:10px;right:60px;background-color: transparent; color: rgb(0, 128, 255); font-size: 20px;border-radius: 50%; width: 25px;height: 25px; padding:3px; cursor: pointer;}
 .shoppingcartIcon{position: absolute;bottom:-5px;right:-5px; font-size: 20px;background-color: #FFF;color: #000; border-radius: 50%; width: 45px;height: 45px; padding:9px;cursor: pointer;}
 .shoppingcartIcon:hover{transform: scale(1.1); background-color: #44423f;color: #FFF;}
 

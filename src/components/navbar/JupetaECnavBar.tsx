@@ -79,6 +79,7 @@ const JupetaECnavBar = () => {
     }
 
   router.push(`/SearchResult?keyword=${encodeURIComponent(searchKey.trim())}`);
+
   };
 
   const closeSearchBar = () => {
