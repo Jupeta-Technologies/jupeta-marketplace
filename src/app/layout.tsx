@@ -2,11 +2,11 @@
 import "@/styles/jupeta-ec-v1.global.css";
 import "@/styles/Loginpage.css"
 import "@/styles/ProductDetail.css"
+import "@/styles/Checkoutpage.css"
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { CartProvider } from "@/context/CartContext";
-import { FavoriteProvider } from "@/context/FavoriteContext";
-import { WatchlistProvider } from "@/context/WatchlistContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 import NavWrapper from "@/components/NavWrapper";
 import { Metadata } from 'next';
 
@@ -38,11 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <CartProvider>
-          <FavoriteProvider>
-            <WatchlistProvider>
-              <NavWrapper>{children}</NavWrapper>
-            </WatchlistProvider>
-          </FavoriteProvider>
+          <FavoritesProvider>
+            <NavWrapper>{children}</NavWrapper>
+          </FavoritesProvider>
         </CartProvider>
       </body>
     </html>

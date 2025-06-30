@@ -25,6 +25,22 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
 
   return (
     <div className='cartCard'>
+      {item.source === 'buy-button' && (
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          backgroundColor: '#ff6b6b',
+          color: 'white',
+          padding: '2px 8px',
+          borderRadius: '12px',
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          zIndex: 1
+        }}>
+          Quick Add
+        </div>
+      )}
       <div className='cartproductimage'>
         <img 
           src={item.imageFileUrl || '/placeholder-product.jpg'} 

@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, useContext, useReducer, useEffect, useState } from "react";
+import { createContext, useContext, useReducer, useEffect, useState, useCallback } from "react";
 import cartReducer, { initCart } from "./cartreducer";
-import { Product, CartContextType } from "@/types/cart";
+import { Product, CartContextType, CartState } from "@/types/cart";
 
 const CartContext = createContext<CartContextType | null>(null);
 
@@ -33,51 +33,134 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cartItems, hydrated]);
 
-  const addToCart = (product: Product) => {
-    const exists = cartItems.products.find((x) => x.id === product.id);
-    const updateCart = [...cartItems.products]; // clone
-    let updateQty: Product[] = [];
+  const addToCart = useCallback(
+    (product: Product, source: 'buy-button' | 'cart-page' | 'checkout' = 'cart-page') => {
+      dispatch({
+        type: 'updateState',
+        payload: (prevState: CartState) => {
+          const exists = prevState.products.find((x: Product) => x.id === product.id);
+          let updated: Product[];
 
-    if (exists) {
-      updateQty = updateCart.map((x) =>
-        x.id === product.id ? { ...exists, qty: exists.qty + 1 } : x
-      );
-      cartTotal(updateQty);
-    } else {
-      updateCart.push({ ...product, qty: 1 });
-      cartTotal(updateCart);
-    }
+          if (exists) {
+            updated = prevState.products.map((x: Product) =>
+              x.id === product.id
+                ? {
+                    ...x,
+                    qty: x.qty + 1,
+                    source: x.source === 'cart-page' ? 'cart-page' : source,
+                  }
+                : x
+            );
+          } else {
+            updated = [
+              ...prevState.products,
+              { ...product, qty: 1, source },
+            ];
+          }
 
+          const total = updated.reduce((acc, p) => acc + p.price * p.qty, 0);
+          return { ...prevState, products: updated, total };
+        }
+      });
+    },
+    [dispatch]
+  );
+
+  const removeFromcart = useCallback(
+    (product: Product) => {
+      dispatch({
+        type: 'updateState',
+        payload: (prevState: CartState) => {
+          const exists = prevState.products.find((x: Product) => x.id === product.id);
+          let updated: Product[];
+
+          if (exists && exists.qty > 1) {
+            updated = prevState.products.map((x: Product) =>
+              x.id === product.id
+                ? { ...x, qty: x.qty - 1 }
+                : x
+            );
+          } else {
+            updated = prevState.products.filter((x: Product) => x.id !== product.id);
+          }
+
+          const total = updated.reduce((acc, p) => acc + p.price * p.qty, 0);
+          return { ...prevState, products: updated, total };
+        }
+      });
+    },
+    [dispatch]
+  );
+
+  const clearFromcart = useCallback(
+    (product: Product) => {
+      dispatch({
+        type: 'updateState',
+        payload: (prevState: CartState) => {
+          const updated = prevState.products.filter((x: Product) => x.id !== product.id);
+          const total = updated.reduce((acc, p) => acc + p.price * p.qty, 0);
+          return { ...prevState, products: updated, total };
+        }
+      });
+    },
+    [dispatch]
+  );
+
+  const removeBuyButtonProducts = useCallback(() => {
     dispatch({
-      type: "addItem",
-      payload: exists ? updateQty : updateCart,
+      type: 'updateState',
+      payload: (prevState: CartState) => {
+        const updated = prevState.products.filter((x: Product) => x.source !== 'buy-button');
+        
+        const total = updated.reduce((acc, p) => acc + p.price * p.qty, 0);
+        return { ...prevState, products: updated, total };
+      }
     });
-  };
+  }, [dispatch]);
 
-  const removeFromcart = (product: Product) => {
-    if (product.qty > 1) {
-      const updated = cartItems.products.map((x) =>
-        x.id === product.id ? { ...product, qty: product.qty - 1 } : x
-      );
-      cartTotal(updated);
-      dispatch({ type: "removeItem", payload: updated });
-    } else {
-      const updated = cartItems.products.filter((x) => x.id !== product.id);
-      cartTotal(updated);
-      dispatch({ type: "removeItem", payload: updated });
-    }
-  };
+  const preserveBuyButtonProducts = useCallback(() => {
+    dispatch({
+      type: 'updateState',
+      payload: (prevState: CartState) => {
+        const updated = prevState.products.map((product: Product) => ({
+          ...product,
+          source: 'cart-page' as const
+        }));
+        return { ...prevState, products: updated };
+      }
+    });
+  }, [dispatch]);
 
-  const clearFromcart = (product: Product) => {
-    const updated = cartItems.products.filter((x) => x.id !== product.id);
-    cartTotal(updated);
-    dispatch({ type: "removeItem", payload: updated });
-  };
+  // Global cleanup mechanism
+  useEffect(() => {
+    if (!hydrated) return;
 
-  const cartTotal = (products: Product[]) => {
-    const total = products.reduce((acc, p) => acc + p.price * p.qty, 0);
-    dispatch({ type: "updatePrice", payload: total });
-  };
+    const checkAndCleanup = () => {
+      const onCartPage = localStorage.getItem('onCartPage');
+      const onCheckoutPage = localStorage.getItem('onCheckoutPage');
+      
+      if (!onCartPage && !onCheckoutPage) {
+        // User is not on cart page or checkout page, remove buy-button products
+        removeBuyButtonProducts();
+      }
+    };
+
+    // Wait 2 seconds before first check to give cart page time to load
+    const timeout = setTimeout(() => {
+      checkAndCleanup();
+      
+      // Set up interval to check periodically
+      const interval = setInterval(checkAndCleanup, 3000); // Check every 3 seconds
+
+      return () => {
+        clearInterval(interval);
+      };
+    }, 2000); // Wait 2 seconds before first check
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [hydrated, removeBuyButtonProducts]);
 
   const value = {
     total: cartItems.total,
@@ -85,6 +168,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     addToCart,
     removeFromcart,
     clearFromcart,
+    removeBuyButtonProducts,
+    preserveBuyButtonProducts,
   };
 
   return (

@@ -59,7 +59,6 @@ export async function generateStaticParams() {
   };
 
   const paths = flattenCategories(initialCategoryData);
-  //console.log('Static category paths:', paths); // delete this before production build
 
   return paths;
 }

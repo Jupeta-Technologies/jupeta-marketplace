@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useCart } from '@/context/CartContext'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ShoppingBag } from 'lucide-react'
 import CartItemCard from '@/components/cart/CartItemCard'
@@ -9,7 +10,38 @@ import PaymentMethods from '@/components/cart/PaymentMethods'
 import '@/styles/Cartpage.css'
 
 export default function CartPage() {
-  const { products, total } = useCart()
+  const { products, total, removeBuyButtonProducts } = useCart()
+  const router = useRouter()
+  const cleanupTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Set up automatic cleanup after a delay
+  useEffect(() => {
+    // Set a flag in localStorage to indicate we're on cart page IMMEDIATELY
+    localStorage.setItem('onCartPage', 'true')
+    
+    // Clear any existing timeout
+    if (cleanupTimeoutRef.current) {
+      clearTimeout(cleanupTimeoutRef.current)
+    }
+
+    // Set up cleanup when component unmounts
+    return () => {
+      localStorage.removeItem('onCartPage')
+      if (cleanupTimeoutRef.current) {
+        clearTimeout(cleanupTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Handle navigation away from cart page
+  const handleNavigation = (href: string) => {
+    localStorage.removeItem('onCartPage')
+    // Only remove buy-button products if NOT going to checkout
+    if (href !== '/checkout') {
+      removeBuyButtonProducts()
+    }
+    router.push(href)
+  }
 
   if (products.length === 0) {
     return (
@@ -20,7 +52,7 @@ export default function CartPage() {
           </div>
           <h1 className="empty-cart-title">Your Cart is Empty</h1>
           <p className="empty-cart-message">Looks like you haven&apos;t added any items to your cart yet.</p>
-          <Link href="/products" className="empty-cart-button">
+          <Link href="/products" className="empty-cart-button" onClick={() => removeBuyButtonProducts()}>
             Start Shopping
           </Link>
         </div>
@@ -69,9 +101,9 @@ export default function CartPage() {
               <h5>GHS {total.toFixed(2)}</h5>
             </section>
             
-            <Link href="/checkout" className="checkout-button">
+            <button onClick={() => handleNavigation('/checkout')} className="checkout-button">
               Checkout
-            </Link>
+            </button>
             
             <section className="payment-methods-section">
               <h4>ACCEPTED PAYMENT METHODS</h4>

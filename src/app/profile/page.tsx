@@ -26,7 +26,6 @@ export default function ProfilePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Implement profile update
-    console.log('Profile updated:', profileData)
   }
 
   return (

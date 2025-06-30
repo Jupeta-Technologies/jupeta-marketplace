@@ -67,44 +67,44 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     setsUPShowCP(!showConfPass);
   }
 
-  const validateEmail = (email: string): boolean => {
-    if (!email) {
-      return false; // Or you could handle this differently, like returning false
-    }
-    return !!email.match(
-      /^([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|info|edu)\b)$/
-    );
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    setemailValid(isValid);
+    return isValid;
   };
 
   useEffect(() => {
     // This effect will run whenever the 'form.email' state changes
     if (form.email) {
       setnewemailValid(validateEmail(form.email));
-      console.log('Current email:', form.email, 'Valid:', emailValid);
     } else {
       setnewemailValid(false); // Reset validity if email is empty
     }
   }, [form.email]); // Only run this effect when 'form.email' changes
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.password !== confirmPassword) {
-      setError("Passwords do not match");
+    
+    if (!validateForm()) {
       return;
     }
-    
-    if(newemailValid){
-      setemailValid(newemailValid);
+
+    setError('');
 
     try {
-      await sendOTP(form.email);
-      setEmail(form.email);
-      setTempData({ password: form.password });
-      setShowOTP(true);
-    } catch (err) {
-      setError("Failed to send OTP. Try again later.");
+      const response = await sendOTP(form.email);
+      
+      if (response.code === "0") {
+        setEmail(form.email);
+        setTempData(form);
+        setShowOTP(true);
+      } else {
+        setError(response.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
     }
-  }
   };
 
   const handleEVeriCode = (e: { preventDefault: () => void; target: { value: any; }; }) =>{
@@ -117,7 +117,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       const handleRegistrationSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Logic to submit the final registration data
-        console.log('Handling final registration submission', form);
         setRegCompleted(true);
       };
   
@@ -126,12 +125,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     <>
               {/* {!regCompleted&&<h5>Create account</h5>} */}
             
-            <form onSubmit={!emailVerified?handleEmailSubmit:handleRegistrationSubmit}>
+            <form onSubmit={!emailVerified?handleSubmit:handleRegistrationSubmit}>
                 {
                   !emailValid?
                   (
                       <div>
-                          <span style={{fontSize:'0.9rem'}}><b>Now let’s make you a jUPETA member.</b></span>
+                          <span style={{fontSize:'0.9rem'}}><b>Now let's make you a jUPETA member.</b></span>
                           <p style={{textAlign:'left',fontSize:'0.9rem'}}>Please enter your email address to create account</p>
                           <div className="form-ctrl">
                           <input type="email" name="email" id="email" placeholder="Enter email address" required value={form.email} onChange={handleChange} style={newemailValid && form.email !== ''? {border:"1px solid green"}:(!newemailValid && form.email !==''?{border:"1px solid red",boxShadow:'inset 0px 0px 5px red'}:undefined)}/>

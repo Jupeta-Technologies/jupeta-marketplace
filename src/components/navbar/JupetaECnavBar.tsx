@@ -16,12 +16,13 @@ import {
 import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
 import { useCart } from '@/context/CartContext';
-import { useFavorites } from '@/context/FavoriteContext';
+import { useFavorites } from '@/context/FavoritesContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
 
-// Dynamic import for CartListitem, assuming it might use browser-specific APIs
+// Dynamic import for CartListitem and FavoriteListItem
 const CartListitem = dynamic(() => import('@/components/cart/CartListitem'), { ssr: false });
+const FavoriteListItem = dynamic(() => import('@/components/cart/FavoriteListItem'), { ssr: false });
 
 // Helper to safely get data from localStorage
 function getFromLocalStorage<T>(key: string, fallback: T): T {
@@ -46,10 +47,10 @@ const JupetaECnavBar = () => {
   // Other states
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [cart, setCart] = useState<Product[]>([]);
-  const [favorite,setFavorite] = useState<Product[]>([]);
+  const [favorites, setFavorites] = useState<Product[]>([]);
 
-  const { products } = useCart();
-  const {favorites} = useFavorites();
+  const { products, clearFromcart } = useCart();
+  const { products: favoriteProducts, removeFromFavorites } = useFavorites();
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null); // Changed to HTMLDivElement as it's on a div
   const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
@@ -109,11 +110,10 @@ const JupetaECnavBar = () => {
     setCart(products ?? []);
   }, [products]);
 
-  //Effect to update favorites bace on FavoriteContext
-  useEffect(()=>{
-    setFavorite(favorites ?? []);
-    console.log(favorites);
-  },[favorites])
+  // Effect to update favorites based on FavoritesContext
+  useEffect(() => {
+    setFavorites(favoriteProducts ?? []);
+  }, [favoriteProducts]);
 
   return (
     <>
@@ -207,26 +207,38 @@ const JupetaECnavBar = () => {
               <AiOutlineShoppingCart className="navbar__icon" />
               <ul className="navbarCart navbar__dropdown">
                 {cart.length > 0 ? (
-                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} />) // Use unique product ID as key
+                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} onDelete={clearFromcart} />) // Use unique product ID as key
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}
                 {cart.length > 0 && <button onClick={() => router.push('/cart')}>Go to cart</button>}
+                {cart.length > 0 && (
+                  <button className="go-to-cart-btn" onClick={() => router.push('/cart')}>
+                    Go to cart
+                  </button>
+                )}
               </ul>
             </li>
 
             <li>
               <AiOutlineHeart className="navbar__icon" />
               <ul className="navbarFav navbar__dropdown">
-                {
-                  favorites.length > 0 ? (
-                    favorites.map((favData) => {
-                      return <li style={{width:'100%'}}>{favData.productName}</li>
-                    })
-                  ): (
-                    <p style={{ width: '100%', textAlign: 'center' }}>Favorites is empty</p>
-                  )
-                }{/* Placeholder, consider adding content here */}
+                {favorites.length > 0 ? (
+                  favorites.map((favoriteData) => (
+                    <FavoriteListItem 
+                      favorite={favoriteData} 
+                      key={favoriteData.id} 
+                      onRemove={removeFromFavorites} 
+                    />
+                  ))
+                ) : (
+                  <p style={{ width: '100%', textAlign: 'center' }}>No favorites yet</p>
+                )}
+                {favorites.length > 0 && (
+                  <button className="go-to-cart-btn" onClick={() => router.push('/favorites')}>
+                    View all favorites
+                  </button>
+                )}
               </ul>
             </li>
 
@@ -260,7 +272,7 @@ const JupetaECnavBar = () => {
                     <span>Sign out</span>
                   </li>
                 ) : (
-                  <li onClick={() => router.push('/Login')}>
+                  <li onClick={() => router.push('/login')}>
                     <AiOutlineLogin id="uMicon" />
                     <span>Sign in</span>
                   </li>
