@@ -6,7 +6,7 @@ import "@/styles/Checkoutpage.css"
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { CartProvider } from "@/context/CartContext";
-import { FavoritesProvider } from "@/context/FavoritesContext";
+import { FavoriteProvider } from "@/context/FavoriteContext";
 import NavWrapper from "@/components/NavWrapper";
 import { Metadata } from 'next';
 
@@ -38,9 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <CartProvider>
-          <FavoritesProvider>
+          <FavoriteProvider>
             <NavWrapper>{children}</NavWrapper>
-          </FavoritesProvider>
+          </FavoriteProvider>
         </CartProvider>
       </body>
     </html>

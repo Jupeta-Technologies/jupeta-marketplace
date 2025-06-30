@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useFavorites } from '@/context/FavoritesContext';
+import { useFavorites } from '@/context/FavoriteContext';
 import { useCart } from '@/context/CartContext';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Product } from '@/types/api';
 
 const FavoritesPage = () => {
-  const { products: favorites, removeFromFavorites } = useFavorites();
+  const {favorites, removeFavorite } = useFavorites();
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -29,7 +29,7 @@ const FavoritesPage = () => {
   const handleRemoveFromFavorites = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
-    removeFromFavorites(product);
+    removeFavorite(product.id);
   };
 
   const handleBuyBidClick = (e: React.MouseEvent, product: Product) => {

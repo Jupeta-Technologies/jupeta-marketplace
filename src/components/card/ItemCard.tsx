@@ -1,7 +1,7 @@
 import React from "react";
 import {AiFillHeart, AiOutlineHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
-import { useFavorites } from '@/context/FavoritesContext';
+import { useFavorites } from '@/context/FavoriteContext';
 import Link from "next/link";
 import { Product } from "@/types/api";
 
@@ -14,16 +14,16 @@ type ItemCardGlobalProps = {
 
 const ItemCardglobal = ({prodData}:ItemCardGlobalProps) => {
     const {price,productName,imageFileUrl,sellingType,condition,id} = prodData;
-    const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+    const { addFavorite, removeFavorite, isFavorite } = useFavorites();
     
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent navigation when clicking heart
         e.stopPropagation(); // Prevent event bubbling
         
         if (isFavorite(id)) {
-            removeFromFavorites(prodData);
+            removeFavorite(prodData.id);
         } else {
-            addToFavorites(prodData);
+            addFavorite(prodData);
         }
     };
 

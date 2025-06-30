@@ -16,7 +16,7 @@ import {
 import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
 import { useCart } from '@/context/CartContext';
-import { useFavorites } from '@/context/FavoritesContext';
+import { useFavorites } from '@/context/FavoriteContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
 
@@ -47,10 +47,10 @@ const JupetaECnavBar = () => {
   // Other states
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [cart, setCart] = useState<Product[]>([]);
-  const [favorites, setFavorites] = useState<Product[]>([]);
+  const [favorited, setFavorited] = useState<Product[]>([]);
 
   const { products, clearFromcart } = useCart();
-  const { products: favoriteProducts, removeFromFavorites } = useFavorites();
+  const {favorites, removeFavorite } = useFavorites();
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null); // Changed to HTMLDivElement as it's on a div
   const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
@@ -112,8 +112,8 @@ const JupetaECnavBar = () => {
 
   // Effect to update favorites based on FavoritesContext
   useEffect(() => {
-    setFavorites(favoriteProducts ?? []);
-  }, [favoriteProducts]);
+    setFavorited(favorites ?? []);
+  }, [favorites]);
 
   return (
     <>
@@ -211,7 +211,6 @@ const JupetaECnavBar = () => {
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}
-                {cart.length > 0 && <button onClick={() => router.push('/cart')}>Go to cart</button>}
                 {cart.length > 0 && (
                   <button className="go-to-cart-btn" onClick={() => router.push('/cart')}>
                     Go to cart
@@ -226,9 +225,8 @@ const JupetaECnavBar = () => {
                 {favorites.length > 0 ? (
                   favorites.map((favoriteData) => (
                     <FavoriteListItem 
-                      favorite={favoriteData} 
-                      key={favoriteData.id} 
-                      onRemove={removeFromFavorites} 
+                      product={favoriteData} 
+                      key={favoriteData.id}  
                     />
                   ))
                 ) : (

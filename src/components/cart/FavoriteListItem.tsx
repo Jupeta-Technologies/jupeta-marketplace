@@ -1,7 +1,7 @@
 import React from 'react';
 import { MdDelete } from 'react-icons/md';
 import { Product } from '@/types/api';
-import { useFavorites } from '@/context/FavoritesContext';
+import { useFavorites } from '@/context/FavoriteContext';
 
 interface FavoriteListItemProps {
   product: Product; // FavoriteListItem still needs the product prop to display
@@ -9,11 +9,11 @@ interface FavoriteListItemProps {
 
 
 const FavoriteListItem: React.FC<FavoriteListItemProps> = ({ product }) => {
-  const { removeFromFavorites } = useFavorites(); // Get the function from context
+  const { removeFavorite } = useFavorites(); // Get the function from context
 
   const handleRemoveFav = () => {
     // Call removeFromFavorites with the product's ID
-    removeFromFavorites(product);
+    removeFavorite(product.id);
   };
 
   
