@@ -52,7 +52,7 @@ export default function CartPage() {
           </div>
           <h1 className="empty-cart-title">Your Cart is Empty</h1>
           <p className="empty-cart-message">Looks like you haven&apos;t added any items to your cart yet.</p>
-          <Link href="/products" className="empty-cart-button" onClick={() => removeBuyButtonProducts()}>
+          <Link href="/" className="empty-cart-button" onClick={() => removeBuyButtonProducts()}>
             Start Shopping
           </Link>
         </div>
