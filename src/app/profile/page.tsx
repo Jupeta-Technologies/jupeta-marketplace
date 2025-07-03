@@ -204,7 +204,7 @@ export default function ProfilePage() {
                 <div className="text-center py-8">
                   <p className="text-gray-500">No orders found.</p>
                   <Link
-                    href="/products"
+                    href="/"
                     className="text-blue-600 hover:text-blue-800 mt-2 inline-block"
                   >
                     Start Shopping

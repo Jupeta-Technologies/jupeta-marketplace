@@ -52,7 +52,7 @@ export default function CheckoutPage() {
         <div className="checkout-empty-content">
           <h1>Your cart is empty</h1>
           <p>Add some products to your cart to proceed with checkout</p>
-          <Link href="/products" className="checkout-empty-btn">
+          <Link href="/" className="checkout-empty-btn">
             Continue Shopping
           </Link>
         </div>
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
             </div>
           </div>
           <div className="success-actions">
-            <Link href="/products" className="continue-shopping-btn">
+            <Link href="/" className="continue-shopping-btn">
               Continue Shopping
             </Link>
             <Link href="/profile" className="view-orders-btn">
