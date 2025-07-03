@@ -463,7 +463,7 @@ const SellListing = () => {
                                         type="file"
                                         accept='image/*'
                                         name="addIMG"
-                                        style={{ opacity: 0, position: 'absolute', cursor: 'pointer', width: '100%', height: '100%' }}
+                                        style={{ opacity: 0, position: 'absolute', cursor: 'pointer', width: '48', height: '48' }}
                                         onChange={(e) => { setImg(e) }}
                                     />
                                     <IoAddCircle style={{ fontSize: '3rem', cursor: 'pointer' }} />
