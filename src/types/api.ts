@@ -20,6 +20,16 @@ export interface Product {
     onAdd: (product: Product) => void; // <--- This line is crucial
     // Add all the fields returned from your API
   }
+
+  export interface User{
+    id: string,
+    name: string,
+    cart:[]
+    email: string,
+    fullName: string,
+    phoneNumber: number,
+    dateOfBirth: string
+  }
   
   export interface APIResponse<T> {
     message: string;

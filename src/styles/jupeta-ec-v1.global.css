@@ -4,25 +4,25 @@
 @tailwind utilities;
 :root {
   /* Color Scheme */
-  --primary-card-color: #F5F5F7;
-  --primary-button: #0E3212;
+  --primary-card-color: #f5f5f7;
+  --primary-button: #0e3212;
   --primary-shadow: 0px 10px 18px -2px rgba(16, 25, 40, 0.07);
   --primary-border-radius: 20px;
   --text-color: #000;
   --text-light: #696663;
-  --background-color: #FFF;
+  --background-color: #fff;
   --hover-background: #e9e9e9;
-  --transparent-1:rgba(0,0,0,0.3);
+  --transparent-1: rgba(0, 0, 0, 0.3);
   /* Spacing */
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 2rem;
   /*== 4-point rule ==*/
-  --space-4:4px;
-  --space-8:8px;
-  --space-16:16px;
-  --space-24:24px;
-  --space-48:48px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-48: 48px;
   /* Transitions */
   --transition-speed: 0.3s;
 }
@@ -50,7 +50,7 @@ button {
 .container {
   width: 100%;
   max-width: 1440px;
-  margin: 0 auto;
+  margin: 98px auto;
   padding: 0 var(--space-lg);
   display: flex;
   flex-direction: column;
@@ -77,13 +77,15 @@ button {
 }
 
 /* ===== List Styles ===== */
-ul, ol {
+ul,
+ol {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-ul li, ol li {
+ul li,
+ol li {
   margin: var(--space-sm) 0;
 }
 
@@ -156,7 +158,7 @@ ul li, ol li {
 .navbar__menu li:hover .navbar__icon {
   cursor: pointer;
   z-index: 1000;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   border-radius: 50%;
   padding: 10px;
   font-size: 3rem;
@@ -223,23 +225,29 @@ ul li, ol li {
 }
 
 /* === Navbar Cart & Favorite View === */
-.navbarCart, .navbarFav {
+.navbarCart,
+.navbarFav {
   width: 300px;
   min-height: 100px;
+  max-height: 480px;
+  overflow-y: scroll;
 }
 
-.navbar__menu .navbarCart, .navbarFav {
+.navbar__menu .navbarCart,
+.navbarFav {
   right: -156;
   /* === Nav bar cart list === */
 }
-.navbar__menu .navbarCart .cartQVLitem, .navbarFav .cartQVLitem {
+.navbar__menu .navbarCart .cartQVLitem,
+.navbarFav .cartQVLitem {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   height: 80px;
   width: 100%;
 }
-.navbar__menu .navbarCart .cartQVLitem .cqVLImg, .navbarFav .cartQVLitem .cqVLImg {
+.navbar__menu .navbarCart .cartQVLitem .cqVLImg,
+.navbarFav .cartQVLitem .cqVLImg {
   vertical-align: middle;
   align-self: center;
   background-repeat: no-repeat;
@@ -247,7 +255,8 @@ ul li, ol li {
   height: 100%;
   width: 80px;
 }
-.navbar__menu .navbarCart .cartQVLitem .citVNamePrice, .navbarFav .cartQVLitem .citVNamePrice {
+.navbar__menu .navbarCart .cartQVLitem .citVNamePrice,
+.navbarFav .cartQVLitem .citVNamePrice {
   line-height: 12px;
   margin-top: 0;
   vertical-align: middle;
@@ -255,39 +264,46 @@ ul li, ol li {
   width: 160px;
   padding-left: 10px;
 }
-.navbar__menu .navbarCart .cartQVLitem .citVNamePrice #citN, .navbarFav .cartQVLitem .citVNamePrice #citN {
+.navbar__menu .navbarCart .cartQVLitem .citVNamePrice #citN,
+.navbarFav .cartQVLitem .citVNamePrice #citN {
   font-weight: 510;
   font-size: 0.75rem;
   margin-bottom: 0px;
 }
-.navbar__menu .navbarCart .cartQVLitem .citVDelete, .navbarFav .cartQVLitem .citVDelete {
+.navbar__menu .navbarCart .cartQVLitem .citVDelete,
+.navbarFav .cartQVLitem .citVDelete {
   vertical-align: middle;
   align-self: center;
   cursor: pointer;
   font-size: x-large;
   visibility: hidden;
 }
-.navbar__menu .navbarCart .cartQVLitem:hover, .navbarFav .cartQVLitem:hover {
+.navbar__menu .navbarCart .cartQVLitem:hover,
+.navbarFav .cartQVLitem:hover {
   border-bottom: 0.5px solid rgb(189, 188, 188);
 }
-.navbar__menu .navbarCart .cartQVLitem:hover .citVDelete, .navbarFav .cartQVLitem:hover .citVDelete {
+.navbar__menu .navbarCart .cartQVLitem:hover .citVDelete,
+.navbarFav .cartQVLitem:hover .citVDelete {
   visibility: visible;
 }
-.navbar__menu .navbarCart .cartQVLitem .citVDelete:hover, .navbarFav .cartQVLitem .citVDelete:hover {
+.navbar__menu .navbarCart .cartQVLitem .citVDelete:hover,
+.navbarFav .cartQVLitem .citVDelete:hover {
   color: red;
 }
-.navbar__menu .navbarCart .cartQview .cartQVLitem .cqVLImg, .navbarFav .cartQview .cartQVLitem .cqVLImg {
+.navbar__menu .navbarCart .cartQview .cartQVLitem .cqVLImg,
+.navbarFav .cartQview .cartQVLitem .cqVLImg {
   width: 80px;
   height: 100%;
   display: block;
   background-repeat: no-repeat;
   background-size: cover;
 }
-.navbar__menu .navbarCart button, .navbarFav button {
+.navbar__menu .navbarCart button,
+.navbarFav button {
   border-radius: 20px;
   font-size: small;
   font-weight: 300;
-  color: #FFF;
+  color: #fff;
   background-color: #000;
   height: 32px;
   width: 100px;
@@ -323,14 +339,14 @@ ul li, ol li {
   padding: 3px 10px;
   font-size: medium;
   border-radius: 20px;
-  background-color: #FFF;
+  background-color: #fff;
   display: flex;
   flex-direction: row;
   position: relative;
   align-self: start;
   overflow: hidden;
   visibility: hidden;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
 }
 
 .search_Barleft {
@@ -401,12 +417,12 @@ ul li, ol li {
 }
 
 .sBarColor {
-  background-color: #FFF;
+  background-color: #fff;
 }
 
 .showSearchResult {
   height: auto;
-  background-color: #FFF;
+  background-color: #fff;
   transition: all ease 0.5s;
 }
 
@@ -415,7 +431,7 @@ ul li, ol li {
   padding: 8px;
   font-size: 2rem;
   background: #44423f;
-  color: #FFF;
+  color: #fff;
 }
 
 .navSicon {
@@ -424,7 +440,7 @@ ul li, ol li {
   padding: 8px;
   font-size: 2rem;
   background: #44423f;
-  color: #FFF;
+  color: #fff;
   position: absolute;
   right: 4px;
 }
@@ -460,7 +476,7 @@ ul li, ol li {
   padding: 1px 8px;
   float: left;
   cursor: pointer;
-  background-color: #F5F5F7;
+  background-color: #f5f5f7;
   border-radius: 16px;
   margin: 4px;
 }
@@ -480,12 +496,35 @@ ul li, ol li {
   position: relative;
 }
 
+.card-2 {
+  width: 268px;
+  height: 398px;
+  padding: 0;
+  background-color: #f9f9f9;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  place-self: center;
+  font-size: small;
+}
+
 .card:hover {
   transform: scale(1.02);
   box-shadow: var(--primary-shadow);
 }
 .card:hover .card__button {
   opacity: 1;
+}
+
+.card-2:hover {
+  box-shadow: 0px -2px 14px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+  transition: all 0.3s;
 }
 
 .card__imagebox {
@@ -589,8 +628,8 @@ ul li, ol li {
   bottom: 10px;
   right: 60px;
   font-size: 20px;
-  background-color: #D9D9D9;
-  color: #FFF;
+  background-color: #d9d9d9;
+  color: #fff;
   border-radius: 50%;
   width: 25px;
   height: 25px;
@@ -622,7 +661,7 @@ ul li, ol li {
   bottom: -5px;
   right: -5px;
   font-size: 20px;
-  background-color: #FFF;
+  background-color: #fff;
   color: #000;
   border-radius: 50%;
   width: 45px;
@@ -634,7 +673,24 @@ ul li, ol li {
 .shoppingcartIcon:hover {
   transform: scale(1.1);
   background-color: #44423f;
-  color: #FFF;
+  color: #fff;
+}
+
+.card-2 {
+  width: 288px;
+  height: 398px;
+  padding: 0;
+  background-color: #f9f9f9;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  place-self: center;
+  font-size: small;
 }
 
 /* Product Card
@@ -760,7 +816,7 @@ ul li, ol li {
   list-style: none;
   width: 148px;
   height: 120px;
-  background: #FFF;
+  background: #fff;
   border-radius: 15px;
   text-align: center;
   cursor: pointer;
@@ -800,8 +856,8 @@ ul li, ol li {
   position: relative;
   width: 90vw;
   height: 300px;
-  background: #FFF;
-  border: 0.5px solid #D9D9D9;
+  background: #fff;
+  border: 0.5px solid #d9d9d9;
   top: 8px;
   padding: 0;
 }
@@ -813,7 +869,7 @@ ul li, ol li {
   border-radius: 0;
 }
 .GCMenu_Container ul li > ul li:hover {
-  background: #D9D9D9;
+  background: #d9d9d9;
 }
 .GCMenu_Container ul li:hover > ul {
   display: flex;
@@ -856,7 +912,7 @@ ul li, ol li {
 .pagination__search ul li {
   width: 40px;
   height: 40px;
-  background-color: #F4F4F7;
+  background-color: #f4f4f7;
   color: #000;
   text-align: center;
   line-height: 40px;
@@ -872,7 +928,7 @@ ul li, ol li {
 
 .pagination__search span {
   padding: 20px;
-  background: #F4F4F7;
+  background: #f4f4f7;
   color: #000;
   text-align: center;
   border-radius: 50%;
@@ -885,6 +941,197 @@ ul li, ol li {
 .pagination__search span.disabled {
   cursor: not-allowed;
   opacity: 0.4;
+}
+
+/*Item listing style */
+.listDetail,
+.listSpecs,
+.listDesc,
+.listPrice,
+.listPhotos {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-card-color);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  padding: 30px;
+}
+
+.listDetail .ConTyQty {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.ConTyQty .Qty > p {
+  width: 100px;
+  height: 50px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: #fff;
+}
+
+.listDesc > textarea {
+  display: block;
+  width: 100%;
+  height: 50%;
+  outline: none;
+  padding: 10px;
+}
+
+.listPrice {
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: flex-start;
+}
+
+.listPhotos {
+  height: 500px;
+  background-color: #fff;
+}
+
+.listPhotos ol {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 10px;
+  justify-content: center;
+}
+
+.listPhotos ol li {
+  display: flex;
+  background-color: rgba(231, 231, 231, 0.3490196078);
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.listPhotos ol li:nth-child(1) {
+  grid-row: 1/3;
+}
+
+/* === */
+.form__button {
+  width: auto;
+  background: var(--primary-button);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 32px;
+  margin: 0 auto;
+  border: none;
+  cursor: pointer;
+}
+
+/* For Very Weak */
+.red-500 {
+  background-color: #ef4444; /* Tailwind's default red-500 */
+}
+
+/* For Weak */
+.orange-500 {
+  background-color: #f97316; /* Tailwind's default orange-500 */
+}
+
+/* For Moderate */
+.yellow-500 {
+  background-color: #f59e0b; /* Tailwind's default yellow-500 */
+}
+
+/* For Strong */
+.green-500 {
+  background-color: #22c55e; /* Tailwind's default green-500 */
+}
+
+/* For Very Strong */
+.emerald-600 {
+  background-color: #059669; /* Tailwind's default emerald-600 */
+}
+
+/* Default/Empty State */
+.gray-300 {
+  background-color: #d1d5db; /* Tailwind's default gray-300 */
+}
+
+.hero_btn {
+  text-decoration: none;
+  color: #fff;
+  background-color: var(--primary-button);
+  padding: 4px 8px;
+  border-radius: 16px;
+  margin-top: 16px;
+}
+
+/*Featured items grid */
+.featuredItemgrid {
+  display: grid;
+  grid-template-columns: 288px 228px repeat(3, 148px);
+  gap: 14px;
+  justify-content: center;
+}
+.featuredItemgrid :hover {
+  transform: scale(1.02);
+  box-shadow: 0px 10px 18px -2px rgba(16, 25, 40, 0.07);
+}
+
+.ftgridItems {
+  width: 148px;
+  height: 188px;
+  background-color: #F5F5F7;
+  border-radius: 20px;
+  overflow: clip;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ftgridItems:nth-child(1) {
+  width: 288px;
+  height: 388px;
+  grid-row: span 2;
+}
+
+.ftgridItems:nth-child(2) {
+  width: 228px;
+  height: 388px;
+  grid-row: span 2;
+}
+
+.myacc_panel {
+  width: 15%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-card-color);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 20px;
+  min-height: 248px;
+}
+
+.myacc_panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.myacc_panel ul .active {
+  background-color: #c9f4f3;
+  color: #000;
+}
+
+.myacc_panel ul li {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color var(--transition-speed) ease;
+}
+.myacc_panel ul li :hover {
+  color: rgb(10, 127, 245);
 }
 
 /* ===== Media Queries ===== */
@@ -917,11 +1164,11 @@ ul li, ol li {
 }
 /* ===== Accessibility Improvements ===== */
 /*  button:focus,
- a:focus,
- input:focus {
-   outline: 2px solid blue;
-   outline-offset: 2px;
- } */
+  a:focus,
+  input:focus {
+    outline: 2px solid blue;
+    outline-offset: 2px;
+  } */
 /* ===== Hover Effects ===== */
 .card__button:hover {
   background-color: var(--hover-background);
@@ -1138,7 +1385,7 @@ ul li, ol li {
 
 .browse-products-btn {
   display: inline-block;
-  background: linear-gradient(135deg, #0E3212 0%, #1a4720 100%);
+  background: linear-gradient(135deg, #0e3212 0%, #1a4720 100%);
   color: white;
   padding: 12px 24px;
   border-radius: 25px;
@@ -1235,7 +1482,7 @@ ul li, ol li {
   position: absolute;
   bottom: -5px;
   right: -5px;
-  background-color: #FFF;
+  background-color: #fff;
   border: none;
   border-radius: 50%;
   width: 45px;
@@ -1254,7 +1501,7 @@ ul li, ol li {
 .add-to-cart-icon:hover {
   transform: scale(1.1);
   background-color: #44423f;
-  color: #FFF;
+  color: #fff;
 }
 
 .favorite-card-content {
@@ -1295,7 +1542,7 @@ ul li, ol li {
 
 .buy-btn {
   width: 100px;
-  background: linear-gradient(135deg, #0E3212 0%, #1a4720 100%);
+  background: linear-gradient(135deg, #0e3212 0%, #1a4720 100%);
   color: white;
   border: none;
   padding: 12px 20px;

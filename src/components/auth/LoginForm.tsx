@@ -1,9 +1,13 @@
 // components/auth/LoginForm.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaApple, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { UserLogin, GoogleLogin } from "@/lib/api/UserAuthenticationAPI";
+import { useAuth } from "@/context/AuthContext";
+
 
 interface LoginFormProps {
   setIsRegistering: (value: boolean) => void;
@@ -17,10 +21,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
   setShowOTP,
   setEmail,
 }) => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", passwordHash: "" });
   const [error, setError] = useState<string | null>(null);
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword,setInputPassword] = useState('');
+  const router = useRouter();
+  const { setUserEmail, refreshUser, setUser } = useAuth();
   
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,76 +38,54 @@ const LoginForm: React.FC<LoginFormProps> = ({
     setError(null);
 
     try {
-      setEmail(formData.email);
-      setShowOTP(true);
-      // Implement actual login and OTP verification logic here
+      const response = await UserLogin(formData);
+      if (response && (response.message === "Success" || response.code === "0") && response.responseData) {
+        setEmail(formData.email);
+        setUserEmail(formData.email);
+        setUser(response.responseData); // Set user directly from login response
+        //setShowOTP(true);
+        // Redirect to the page where login was triggered from
+        const referrer = document.referrer;
+        if (referrer && referrer.includes(window.location.origin)) {
+          const path = referrer.replace(window.location.origin, "");
+          router.push(path || "/");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setError(response?.message || "Login failed. Please try again.");
+      }
     } catch (err) {
       setError("Login failed. Please try again.");
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Handle Google login logic here
+  const handleGoogleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.location.href = "https://jupeta-project.onrender.com/api/User/ExternalLogin/Google";
+  };
+
+  const handleFacebookLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // Implement Facebook login logic here
+    window.location.href = "https://jupeta-project.onrender.com/api/User/ExternalLogin/Facebook";
   };
 
   return (
-  <>
-    {/**<form onSubmit={handleLogin} className="space-y-4">
-      <div>
-        <label className="block mb-1">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full border px-3 py-2 rounded"
-        />
-      </div>
-      <div>
-        <label className="block mb-1">Password</label>
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full border px-3 py-2 rounded"
-        />
-      </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-      >
-        Login
-      </button>
-
-      <div className="text-center text-sm text-gray-500">or</div>
-
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        className="flex items-center justify-center w-full border py-2 rounded hover:bg-gray-100"
-      >
-        <FcGoogle className="mr-2" /> Continue with Google
-      </button>
-    </form> **/}
-
-              
+  <>          
               <form id="loginForm" action="#" onSubmit={handleLogin}>
               <div className="form-ctrl">
                 <label htmlFor="email" style={formData.email !== ""?{color:'#000',transform:'translate(5px,-10px )',backgroundColor:'#FFF',lineHeight:'15px', padding:'0px 5px'}:undefined}>Email</label>
                 <input type="email" id="email" name="email" placeholder="" required value={formData.email} onChange={handleChange} autoComplete='email'/>
               </div>
               <div className="form-ctrl">
-                <label htmlFor="password" style={formData.password !== ""?{color:'#000',transform:'translate(5px,-10px )',backgroundColor:'#FFF',lineHeight:'15px', padding:'0px 5px'}:undefined}>Password</label>
+                <label htmlFor="password" style={formData.passwordHash !== ""?{color:'#000',transform:'translate(5px,-10px )',backgroundColor:'#FFF',lineHeight:'15px', padding:'0px 5px'}:undefined}>Password</label>
                 <input
                   type="password"
                   id="password"
-                  name="password"
+                  name="passwordHash"
                   placeholder=""
-                  required autoComplete='current-password' value={formData.password} onChange={handleChange} />
+                  required autoComplete='current-password' value={formData.passwordHash} onChange={handleChange} />
               </div>
               
     
@@ -123,9 +107,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 <p>OR</p>
               </div><br/>
               <div className="socialAuth">
-              <div><button type="submit" className="btns"><span><FcGoogle /></span></button><span>Google</span></div>
-              <div><button type="submit" className="btns"><span style={{color:'#3B5998'}}><FaFacebookF /></span></button><span>Facebook</span></div>
-              <div><button type="submit" className="btns"><span><FaApple /></span></button><span>Apple</span></div>
+              <div><button className="btns" onClick={handleGoogleLogin}><span><FcGoogle /></span></button><span>Google</span></div>
+              <div><button className="btns" onClick={handleFacebookLogin}><span style={{color:'#3B5998'}}><FaFacebookF /></span></button><span>Facebook</span></div>
+              <div><button className="btns"><span><FaApple /></span></button><span>Apple</span></div>
               </div>
               <p className="terms">
                 By clicking the submit button, I hereby agree to and accept the

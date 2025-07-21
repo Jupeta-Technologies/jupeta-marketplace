@@ -70,7 +70,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValid = emailRegex.test(email);
-    setemailValid(isValid);
     return isValid;
   };
 
@@ -86,10 +85,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    /* if (!validateForm()) {
       return;
-    }
-
+    } */
+    setemailValid(newemailValid);
     setError('');
 
     try {
@@ -126,34 +125,35 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               {/* {!regCompleted&&<h5>Create account</h5>} */}
             
             <form onSubmit={!emailVerified?handleSubmit:handleRegistrationSubmit}>
+                <div style={{display:'flex', flexDirection:'column',width:'100%', alignItems:'center'}}>
                 {
                   !emailValid?
                   (
-                      <div>
+                          <>
                           <span style={{fontSize:'0.9rem'}}><b>Now let's make you a jUPETA member.</b></span>
-                          <p style={{textAlign:'left',fontSize:'0.9rem'}}>Please enter your email address to create account</p>
+                          <p style={{textAlign:'left',fontSize:'0.9rem',marginBottom:'8px'}}>Please enter your email address to create account</p>
                           <div className="form-ctrl">
                           <input type="email" name="email" id="email" placeholder="Enter email address" required value={form.email} onChange={handleChange} style={newemailValid && form.email !== ''? {border:"1px solid green"}:(!newemailValid && form.email !==''?{border:"1px solid red",boxShadow:'inset 0px 0px 5px red'}:undefined)}/>
-                          {!newemailValid && form.email !==""?<span style={{display:'inline-flex', flexDirection:'row', alignItems:'center',color:'red'}}><PiWarningCircleFill /> <span style={{fontSize:'0.8rem',marginLeft:'5px'}}>Email is invalid</span></span>:""}
+                          {!newemailValid && form.email !==""?<span style={{display:'inline-flex', flexDirection:'row', alignItems:'center',color:'red'}}><PiWarningCircleFill /> <span style={{fontSize:'0.8rem',marginLeft:'4px'}}>Email is invalid</span></span>:""}
                           </div>
-                          <button  style={{display:'inline-flex', flexDirection:'row',gap:'4px', alignItems:'center', background:'#000', color:'#FFF', padding:'8px 16px', borderRadius:'32px', marginBottom:'24px', border:'none'}}  className='validEmail'>submit <span><SlArrowRight  type="submit"/></span></button>
+                          <button className='validEmail form__button'>submit</button>
                           <div className="socialAuth">
                           <div><button type="submit" className="btns"><span><FcGoogle /></span></button><span>Google</span></div>
                           <div><button type="submit" className="btns"><span style={{color:'#3B5998'}}><FaFacebookF /></span></button><span>Facebook</span></div>
                           <div><button type="submit" className="btns"><span><FaApple /></span></button><span>Apple</span></div>
                           </div>
-                      </div>
+                      </>
                 ):
                 
                 !emailVerified ? (
                   <>
                     <span>We've sent a verification code to</span>
-                    <p>
+                    <p style={{margin:'8px 0 8px 0'}}>
                       <b>{form.email}</b>
                       <span
                         style={{
                           textDecoration: 'underline',
-                          marginLeft: '5px',
+                          marginLeft: '4px',
                           fontWeight: '400',
                           cursor: 'pointer',
                         }}
@@ -177,15 +177,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         required
                       />
                     </div>
-                    <button type="submit">Verify Code</button> {/* Submit button for OTP verification */}
+                    <button className="form__button" type="submit">Verify Code</button> {/* Submit button for OTP verification */}
                   </>
                 ) : emailVerified && !regCompleted ? (
                   <>
-                    <span>Email address verified</span>
-                    <p>
-                      <b>{form.email}</b> <span style={{ color: 'green', fontSize: '30px', position: 'absolute' }}>
+                    <p style={{textAlign:'center', margin:'0px 0 8px 0'}}>Email address verified</p>
+                    <p style={{textAlign:'center', margin:'8px 0 8px 0'}}>
+                      <b>{form.email}</b> <span style={{ color: 'green', fontSize: '24px', position: 'absolute', marginLeft:'4px' }}>
                         <BsCheck2Circle />
                       </span>
+                
                     </p>
                     <div className="formcontainer">
                       <div className="form-ctrl">
@@ -197,6 +198,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         <span style={{ position: 'absolute', right: '40px', cursor: 'pointer', marginTop: '12px', fontSize: '18px' }}>
                          {!showsUPPass? <BsFillEyeSlashFill onClick={handleShowpassword} /> : <BsFillEyeFill onClick={handleShowpassword} />}
                         </span>
+                        {form.password !== "" && <PasswordStrengthMeter password={form.password} />}
                         {form.password !== "" && psdChcked !== "" ? <span style={{ display: 'inline-flex', flexDirection: 'row', alignItems: 'center', color: 'red' }}>
                           <PiWarningCircleFill /> <span style={{ fontSize: '0.7rem' }}>{psdChcked}</span>
                         </span> : ""}
@@ -211,27 +213,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               
                         <input type="date" name="birthDate" placeholder="Date of Birth" onChange={handleChange} value={form.birthDate ? form.birthDate.toISOString().split('T')[0] : ''} required />
                       </div>
-                      {/* <div>
-                        <p style={{ fontSize: '0.9rem' }}>Get a jUPETA Member Reward on your birthday</p>
-                      </div> */}
-                      <div className="checkboxitems">
+                      <div className="checkboxitems" style={{margin:'16px 0 16px 0'}}>
                         <input type="checkbox" required />
-                        <p style={{ fontSize: '0.9rem' }}>I agree to jUPETA's Privacy Policy and Terms of Use</p>
+                        <span style={{ fontSize: '0.9rem', marginLeft: '4px'}}>I agree to jUPETA's Privacy Policy and Terms of Use</span>
                       </div>
               
                     </div>
-                    <button type="submit" className="signupbtn" >Create account</button>
+                    <button type="submit" className="form__button" >Create account</button>
                   </>
                 ) : regCompleted ? (
                   <>
-                    <BsFillCheckCircleFill style={{ color: 'green', fontSize: '3rem' }} />
-                    <h5>You are all set!</h5>
-                    <p style={{ textAlign: 'center' }}>Confirmation email has been sent to <b>{form.email}</b></p>
+                    <BsFillCheckCircleFill style={{ color: 'green', fontSize: '3rem' , marginBottom:'16px'}} />
+                    <h5 style={{marginBottom:'8px'}}>You are all set!</h5>
+                    <p style={{ textAlign: 'center',marginBottom:'8px' }}>Confirmation email has been sent to <b>{form.email}</b></p>
                     <span style={{ textDecoration: 'underline', fontWeight: '400', cursor: 'pointer' }} onClick={() => { window.location.reload(); }}>Sign-in</span>
                   </>
                 ) : null
 
-              } 
+              }
+              </div>
               </form>
                   
               

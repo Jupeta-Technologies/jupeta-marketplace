@@ -6,7 +6,7 @@ import NavBar from "./navbar/JupetaECnavBar";
 
 const NavWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  const hideNav = pathname === "/login";
+  const hideNav = pathname === "/Login";
 
   return (
     <>

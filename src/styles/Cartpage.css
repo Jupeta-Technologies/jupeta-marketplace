@@ -492,11 +492,10 @@
 
 .checkout-button {
   display: block;
-  width: 100%;
-  padding: 0.9375rem;
+  padding: 8px 16px;
   margin-top: 1.25rem;
   border: 1px solid;
-  border-radius: 50px;
+  border-radius: 36px;
   background: black;
   color: white;
   text-decoration: none;

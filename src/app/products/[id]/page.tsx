@@ -7,6 +7,7 @@ import { Product } from '@/types/api'
 import { useCart } from '@/context/CartContext'
 import { ShoppingCart, Eye, Clock, Truck, MapPin, Lock } from 'lucide-react'
 import MemberCard from '@/components/MemberCard'
+import ListingRow from '@/components/Shared/ListingRow'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -100,7 +101,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="product-detail-page">
-      <div className="mainContainer" style={{ marginTop: '86px' }}>
+      <div className="container" style={{paddingTop:'96px'}}>{/* Add action component to go back to previous page then remove padding-top */}
         <div className="product-detail-container">
           <div className="product-detail-grid">
             {/* Product Images */}
@@ -174,7 +175,7 @@ export default function ProductDetailPage() {
                         ) : (
                           <div className="action-buttons">
                             <button
-                              className="buy-bid-btn"
+                              className="buy-bid-btn" //replaced buy-bid-btn with card__button will need a general button component
                               onClick={() => handleBidBuy(product.sellingType)}
                             >
                               {product.sellingType !== "BuyNow" ? "BID" : "BUY NOW"}
@@ -205,32 +206,10 @@ export default function ProductDetailPage() {
 
           {/* Product Details Tabs */}
           <div className="container-details">
-            <div className="deschead-label">
-              <div className="toggle-space">
-                <span
-                  className={activeTab === 'description' ? 'active' : ''}
-                  onClick={() => setActiveTab('description')}
-                >
-                  Description
-                </span>
-                <span
-                  className={activeTab === 'specifications' ? 'active' : ''}
-                  onClick={() => setActiveTab('specifications')}
-                >
-                  Specifications
-                </span>
-                <span
-                  className={activeTab === 'reviews' ? 'active' : ''}
-                  onClick={() => setActiveTab('reviews')}
-                >
-                  Reviews
-                </span>
-              </div>
-            </div>
+            
 
             <div className="desc-rev-ven-pad">
               <div className="descSpecs-box">
-                {activeTab === 'description' && (
                   <>
                     <div className="itemspecs">
                       <h4>Item Specifications</h4>
@@ -250,57 +229,20 @@ export default function ProductDetailPage() {
                       </div>
                     </div>
                   </>
-                )}
 
-                {activeTab === 'specifications' && (
-                  <>
-                    <div className="itemspecs">
-                      <h4>Technical Specifications</h4>
-                      <div className="specs">
-                        <ul>
-                          <li>Dimensions: 10&Prime; x 8&Prime; x 2&Prime;</li>
-                          <li>Weight: 2.5 lbs</li>
-                          <li>Material: Premium Quality</li>
-                          <li>Warranty: 1 Year</li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="itemdesc">
-                      <h4>Detailed Specifications</h4>
-                      <div className="desc">
-                        <p>Comprehensive technical details and specifications for this product. Includes all measurements, materials, and technical requirements.</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {activeTab === 'reviews' && (
-                  <>
-                    <div className="itemspecs">
-                      <h4>Customer Ratings</h4>
-                      <div className="specs">
-                        <div>★★★★☆ (4.0/5)</div>
-                        <p>Based on 15 reviews</p>
-                      </div>
-                    </div>
-                    <div className="itemdesc">
-                      <h4>Customer Reviews</h4>
-                      <div className="desc">
-                        <div>
-                          <p><strong>John D.</strong> - &ldquo;Great product, exactly as described!&rdquo;</p>
-                          <p><strong>Sarah M.</strong> - &ldquo;Fast shipping and excellent quality.&rdquo;</p>
-                          <p><strong>Mike R.</strong> - &ldquo;Highly recommend this product.&rdquo;</p>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
+                
               </div>
             </div>
           </div>
         </div>
         
         <MemberCard />
+
+        <ListingRow 
+          heading="Seller's Other Products" 
+          tag="" 
+          items={[]} // Replace with actual related products
+          viewMoreLink="/products"/>
       </div>
     </div>
   )

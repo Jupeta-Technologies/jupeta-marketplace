@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -45,7 +46,7 @@ const JupetaECnavBar = () => {
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
 
   // Other states
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const { isAuthenticated, logout, user } = useAuth();
   const [cart, setCart] = useState<Product[]>([]);
   const [favorited, setFavorited] = useState<Product[]>([]);
 
@@ -99,11 +100,7 @@ const JupetaECnavBar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [searchRef]); // Dependency on searchRef is implicit; can remove if not changing
 
-  // Effect for initial authentication status
-  useEffect(() => {
-    const auth = getFromLocalStorage<boolean>('AuthStatus', false);
-    setIsAuth(auth);
-  }, []);
+  // Remove localStorage-based auth effect
 
   // Effect to update cart based on CartContext
   useEffect(() => {
@@ -114,6 +111,8 @@ const JupetaECnavBar = () => {
   useEffect(() => {
     setFavorited(favorites ?? []);
   }, [favorites]);
+
+  console.log(isAuthenticated, user);
 
   return (
     <>
@@ -241,7 +240,13 @@ const JupetaECnavBar = () => {
             </li>
 
             <li>
-              {isAuth ? <div className="user-avatar" id="userIcon">E</div> : <AiOutlineUser className="navbar__icon" />}
+              {isAuthenticated && user ? (
+                <div className="user-avatar" id="userIcon">
+                  {user.fullName ? user.fullName.trim().charAt(0).toUpperCase() : user.name ? user.name.trim().charAt(0).toUpperCase() : "U"}
+                </div>
+              ) : (
+                <AiOutlineUser className="navbar__icon" />
+              )}
               <ul className="navbar__dropdown userMenu">
                 <li onClick={() => router.push('/sell')}>
                   <MdOutlineSell id="uMicon" />
@@ -255,22 +260,29 @@ const JupetaECnavBar = () => {
                   <CiReceipt id="uMicon" />
                   <span>Orders</span>
                 </li>
-                <li>
-                  <MdOutlineManageAccounts id="uMicon" />
-                  <span>My account</span>
-                </li>
-                {isAuth ? (
+                {isAuthenticated && user ? (
+                  <li onClick={() => router.push('/profile')}>
+                    <MdOutlineManageAccounts id="uMicon" />
+                    <span>My account</span>
+                  </li>
+                ) : (
+                  <li onClick={() => router.push('/Login')}>
+                    <MdOutlineManageAccounts id="uMicon" />
+                    <span>My account</span>
+                  </li>
+                )}
+                {isAuthenticated ? (
                   <li
-                    onClick={() => {
-                      localStorage.setItem('AuthStatus', 'false');
-                      router.push('/login');
+                    onClick={async () => {
+                      await logout();
+                      router.push('/Login');
                     }}
                   >
                     <AiOutlineLogout id="uMicon" />
                     <span>Sign out</span>
                   </li>
                 ) : (
-                  <li onClick={() => router.push('/login')}>
+                  <li onClick={() => router.push('/Login')}>
                     <AiOutlineLogin id="uMicon" />
                     <span>Sign in</span>
                   </li>

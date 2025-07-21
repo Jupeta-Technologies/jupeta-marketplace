@@ -19,11 +19,11 @@ import Pagination from '@/components/Pagination';
 
 
 // Define props for SearchResult, expecting `onAdd`
-interface SearchResultProps {
+/* interface SearchResultProps {
   onAdd: (product: Product) => void; // Assuming onAdd takes a Product
-}
+} */
 
-const SearchResult: React.FC<SearchResultProps> = ({ onAdd }) => {
+const SearchResult = () => {
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword') || ''; // Get keyword from URL query param
 

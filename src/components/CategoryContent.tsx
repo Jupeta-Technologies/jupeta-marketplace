@@ -1,3 +1,4 @@
+//CategoryContent.tsx
 import React from 'react';
 import { CategoryData } from '@/types/category'; // Import the CategoryData type
 import Link from 'next/link';

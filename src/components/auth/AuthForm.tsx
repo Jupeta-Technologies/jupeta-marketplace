@@ -16,15 +16,17 @@ const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   
     const handleLoginToggle = () => {
+     if(isRegistering){
       setIsRegistering(!isRegistering);
       setIsLogin(!isLogin);
-      setIsSignUp(!isSignUp);
+      setIsSignUp(!isSignUp);}
     };
   
     const handleSignUpToggle = () => {
-      setIsRegistering(!isRegistering);
-      setIsSignUp(true);
-      setIsLogin(false);
+      if(!isRegistering){
+        setIsRegistering(!isRegistering);
+        setIsSignUp(!isSignUp);
+        setIsLogin(!isLogin);}
     };
 
   const handleToggleForm = () => {
@@ -40,48 +42,36 @@ const AuthForm = () => {
                       <span onClick={handleLoginToggle} className={isLogin ? 'sIN-active' : 'LS-sIN'} >Sign in</span>
                       <span onClick={handleSignUpToggle} className={isSignUp ? 'sUP-active':'LS-sUP' } >Register</span>
                     </div>
-      <h2 className="text-2xl font-semibold text-center mb-6">
-        {showOTP
-          ? "Verify OTP"
-          : isRegistering
-          ? "Create an account"
-          : "Sign in to your account"}
-      </h2>
-      {!showOTP ? (
-        isRegistering ? (
-          <>
-          <RegisterForm
-            setShowOTP={setShowOTP}
-            setEmail={setEmail}
-            setTempData={setTempData}
-          />
-         {/*  <p className="text-sm text-center mt-4">
-        {isRegistering ? "Already have an account?" : "Don't have an account?"}{" "}
-        <button
-          className="text-blue-500 hover:underline font-medium"
-          onClick={handleToggleForm}
-        >
-          {isRegistering ? "Login" : "Register"}
-        </button>
-          </p> */}
-          </>
+            <h2 className="text-2xl font-semibold text-center mb-6">
+              {showOTP
+                ? "Verify OTP"
+                : isRegistering
+                ? "Create an account"
+                : "Sign in to your account"}
+            </h2>
+        {!showOTP ? (
+          isRegistering ? (
+            <RegisterForm
+              setShowOTP={setShowOTP}
+              setEmail={setEmail}
+              setTempData={setTempData}
+            />
+          ) : (
+            <LoginForm
+              setIsRegistering={setIsRegistering}
+              setShowOTP={setShowOTP}
+              setEmail={setEmail}
+            />
+          )
         ) : (
-          <LoginForm
+          <OtpVerification
+            email={email}
+            tempData={tempData}
             setIsRegistering={setIsRegistering}
             setShowOTP={setShowOTP}
-            setEmail={setEmail}
           />
-        )
-      ) : (
-        <OtpVerification
-          email={email}
-          tempData={tempData}
-          setIsRegistering={setIsRegistering}
-          setShowOTP={setShowOTP}
-        />
-      )}
-      
-    </div>
+        )}
+      </div>
     </div>
   );
 };

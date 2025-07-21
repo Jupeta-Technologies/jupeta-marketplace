@@ -18,20 +18,21 @@ const calculateStrength = (password: string) => {
 };
 
 const getStrengthLabel = (score: number) => {
+  console.log(score);
   switch (score) {
     case 0:
     case 1:
-      return { label: "Very Weak", color: "bg-red-500" };
+      return { label: "Very Weak", color: "red-500" };
     case 2:
-      return { label: "Weak", color: "bg-orange-500" };
+      return { label: "Weak", color: "orange-500" };
     case 3:
-      return { label: "Moderate", color: "bg-yellow-500" };
+      return { label: "Moderate", color: "yellow-500" };
     case 4:
-      return { label: "Strong", color: "bg-green-500" };
+      return { label: "Strong", color: "green-500" };
     case 5:
-      return { label: "Very Strong", color: "bg-emerald-600" };
+      return { label: "Very Strong", color: "emerald-600" };
     default:
-      return { label: "", color: "bg-gray-300" };
+      return { label: "", color: "gray-300" };
   }
 };
 
@@ -41,10 +42,10 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password 
 
   return (
     <div className="mt-2">
-      <div className="h-2 w-full bg-gray-200 rounded">
-        <div className={`h-full ${color}`} style={{ width: `${(score / 5) * 100}%` }}></div>
+      <div style={{backgroundColor:'rgb(229 231 235)', height:'2px', width:'100%'}}>
+        <div className={`h-full ${color}`} style={{ width: `${(score / 5) * 100}%`}}></div>
       </div>
-      <p className="text-xs mt-1 text-gray-700">Strength: {label}</p>
+      <p className="" style={{fontSize:'small'}}>Strength: {label}</p>
     </div>
   );
 };
