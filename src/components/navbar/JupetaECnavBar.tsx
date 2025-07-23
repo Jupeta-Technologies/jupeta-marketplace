@@ -16,26 +16,14 @@ import {
 } from 'react-icons/ai';
 import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
-import { useCart } from '@/context/CartContext';
 import { useFavorites } from '@/context/FavoriteContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
+import { useCart } from '@/context/CartContext';
 
 // Dynamic import for CartListitem and FavoriteListItem
 const CartListitem = dynamic(() => import('@/components/cart/CartListitem'), { ssr: false });
 const FavoriteListItem = dynamic(() => import('@/components/cart/FavoriteListItem'), { ssr: false });
-
-// Helper to safely get data from localStorage
-function getFromLocalStorage<T>(key: string, fallback: T): T {
-  if (typeof window === 'undefined') return fallback;
-  const item = localStorage.getItem(key);
-  try {
-    return item ? (JSON.parse(item) as T) : fallback;
-  } catch (error) {
-    console.error(`Error parsing localStorage key "${key}":`, error);
-    return fallback;
-  }
-}
 
 const JupetaECnavBar = () => {
   // State for search functionality
@@ -48,10 +36,8 @@ const JupetaECnavBar = () => {
   // Other states
   const { isAuthenticated, logout, user } = useAuth();
   const [cart, setCart] = useState<Product[]>([]);
-  const [favorited, setFavorited] = useState<Product[]>([]);
-
   const { products, clearFromcart } = useCart();
-  const {favorites, removeFavorite } = useFavorites();
+  const {favorites} = useFavorites();
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null); // Changed to HTMLDivElement as it's on a div
   const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
@@ -109,7 +95,7 @@ const JupetaECnavBar = () => {
 
   // Effect to update favorites based on FavoritesContext
   useEffect(() => {
-    setFavorited(favorites ?? []);
+    // setFavorited(favorites ?? []); // This line was removed as per the edit hint
   }, [favorites]);
 
   console.log(isAuthenticated, user);
@@ -203,7 +189,7 @@ const JupetaECnavBar = () => {
         <div className="navbar__right">
           <ul className="navbar__menu">
             <li style={{ position: 'relative' }}>
-              <AiOutlineShoppingCart className="navbar__icon" />
+              <AiOutlineShoppingCart className="navbar__icon" style={{ cursor: 'pointer' }} onClick={() => router.push('/cart')} />
               {cart.length > 0 && (
                 <span
                   className="cart-badge"
@@ -225,7 +211,11 @@ const JupetaECnavBar = () => {
               )}
               <ul className="navbarCart navbar__dropdown">
                 {cart.length > 0 ? (
-                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} onDelete={clearFromcart} />)
+                  cart.map((cartData) => (
+                    <div key={cartData.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/products/${cartData.id}`)}>
+                      <CartListitem cart={cartData} onDelete={clearFromcart} />
+                    </div>
+                  ))
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}
@@ -238,14 +228,13 @@ const JupetaECnavBar = () => {
             </li>
 
             <li>
-              <AiOutlineHeart className="navbar__icon" />
+              <AiOutlineHeart className="navbar__icon" style={{ cursor: 'pointer' }} onClick={() => router.push('/favorites')} />
               <ul className="navbarFav navbar__dropdown">
                 {favorites.length > 0 ? (
                   favorites.map((favoriteData) => (
-                    <FavoriteListItem 
-                      product={favoriteData} 
-                      key={favoriteData.id}  
-                    />
+                    <div key={favoriteData.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/products/${favoriteData.id}`)}>
+                      <FavoriteListItem product={favoriteData} />
+                    </div>
                   ))
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>No favorites yet</p>
