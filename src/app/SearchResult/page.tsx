@@ -4,9 +4,10 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation'; // Correct Next.js hook for URL query params
 import ItemCardglobal from '@/components/card/ItemCard';
 import { jupetaSearchEngine } from '@/lib/api/SearchEngine'; // Adjust path as needed
-import { APIResponse, Product } from '@/types/api'; // Your API response types
+import { Product } from '@/types/api'; // Your API response types
 import { AxiosError } from 'axios'; // For specific error handling
 import Pagination from '@/components/Pagination';
+import ProductFilterSidebar from '@/components/ProductFilterSidebar';
 
 // Assuming you have these components/styles defined elsewhere
 //import '@/components/Allcategories.css';
@@ -34,6 +35,42 @@ const SearchResult = () => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6; // Number of items to show per page
+
+  // Filter state for sidebar
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 10000]);
+  const [selectedCondition, setSelectedCondition] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+
+  // Get all unique categories from apiData
+  const categories = Array.from(new Set(apiData.map(p => p.category || ''))).filter(Boolean);
+  // Get min/max price for all products
+  const allPrices = apiData.map(p => p.price || 0);
+  const minPrice = allPrices.length ? Math.min(...allPrices) : 0;
+  const maxPrice = allPrices.length ? Math.max(...allPrices) : 10000;
+
+  // Filtered search results
+  const filteredResults = apiData.filter(product =>
+    (selectedCategory === '' || product.category === selectedCategory) &&
+    (product.price !== undefined && product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1]) &&
+    (selectedCondition === '' || (product.condition && product.condition.toLowerCase() === selectedCondition)) &&
+    (selectedType === '' || (product.sellingType && product.sellingType.toLowerCase() === selectedType.replace(' ', '')))
+  );
+
+  // Paginate filtered results
+  const paginatedItems = useMemo(() => {
+    const lastItemIndex = currentPage * itemsPerPage;
+    const firstItemIndex = lastItemIndex - itemsPerPage;
+    return filteredResults.slice(firstItemIndex, lastItemIndex);
+  }, [filteredResults, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredResults.length / itemsPerPage);
+  }, [filteredResults, itemsPerPage]);
+
+  const pagesArray = useMemo(() => {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }, [totalPages]);
 
   // --- Data Fetching Logic ---
   useEffect(() => {
@@ -80,60 +117,59 @@ const SearchResult = () => {
 
   // --- Pagination Calculation ---
   // Memoize pagination calculations to prevent unnecessary re-renders
-  const paginatedItems = useMemo(() => {
-    const lastItemIndex = currentPage * itemsPerPage;
-    const firstItemIndex = lastItemIndex - itemsPerPage;
-    return apiData.slice(firstItemIndex, lastItemIndex);
-  }, [apiData, currentPage, itemsPerPage]);
+  // const paginatedItems = useMemo(() => {
+  //   const lastItemIndex = currentPage * itemsPerPage;
+  //   const firstItemIndex = lastItemIndex - itemsPerPage;
+  //   return apiData.slice(firstItemIndex, lastItemIndex);
+  // }, [apiData, currentPage, itemsPerPage]);
 
-  const totalPages = useMemo(() => {
-    return Math.ceil(apiData.length / itemsPerPage);
-  }, [apiData, itemsPerPage]);
+  // const totalPages = useMemo(() => {
+  //   return Math.ceil(apiData.length / itemsPerPage);
+  // }, [apiData, itemsPerPage]);
 
-  const pagesArray = useMemo(() => {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }, [totalPages]);
-
-  // --- Filter State (if you uncomment FilterBar) ---
-  const [filters, setFilters] = useState({
-    condition: 'All', // Example filter
-  });
-
-  const handleFilterChange = (newCondition: string) => {
-    setFilters({ condition: newCondition });
-    // You might want to re-filter apiData here or refetch based on filters
-    // For now, it only updates the filter state.
-  };
+  // const pagesArray = useMemo(() => {
+  //   return Array.from({ length: totalPages }, (_, i) => i + 1);
+  // }, [totalPages]);
 
   return (
     <>
       {/* <SearchFilter /> */} {/* Uncomment if you're using this component */}
-      
-        <div className="container">
-          {/* <div>
-            <FilterBar selectedCondition={filters.condition} onFilterChange={handleFilterChange} />
-          </div> */}
-
-          <section className="product-view--sort" style={{ marginTop: '48px',width:'100%' }}>
+      <div className="products-page" style={{ display: 'flex', gap: 24, marginTop: '50px' }}>
+        <ProductFilterSidebar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          priceRange={[minPrice, maxPrice]}
+          selectedPriceRange={selectedPriceRange}
+          onPriceRangeChange={setSelectedPriceRange}
+          onReset={() => {
+            setSelectedCategory('');
+            setSelectedPriceRange([minPrice, maxPrice]);
+            setSelectedCondition('');
+            setSelectedType('');
+          }}
+          selectedCondition={selectedCondition}
+          onConditionChange={setSelectedCondition}
+          selectedType={selectedType}
+          onTypeChange={setSelectedType}
+        />
+        <div className="products-container" style={{ flex: 1 }}>
+          <section className="product-view--sort" style={{ width:'100%' }}>
             {loading && <p>Loading search results...</p>}
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             {!loading && !error && apiData.length === 0 && keyword.trim() && (
-              <p>No results found for "{keyword}".</p>
+              <p>No results found for &quot;{keyword}&quot;.</p>
             )}
-             {!loading && !error && apiData.length === 0 && !keyword.trim() && (
+            {!loading && !error && apiData.length === 0 && !keyword.trim() && (
               <p>Please enter a search term.</p>
             )}
-
-
-            
-              <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
-                {paginatedItems.map((prodData) => (
-                  <ItemCardglobal prodData={prodData} key={prodData.id} />
-                ))}
+            <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
+              {paginatedItems.map((prodData) => (
+                <ItemCardglobal prodData={prodData} key={prodData.id} />
+              ))}
             </div>
           </section>
-
-          {!loading && !error && totalPages > 1 && ( // Only show pagination if there are items and more than 1 page
+          {!loading && !error && totalPages > 1 && (
             <Pagination
               pages={pagesArray}
               setPage={setCurrentPage}
@@ -141,6 +177,7 @@ const SearchResult = () => {
             />
           )}
         </div>
+      </div>
     </>
   );
 };

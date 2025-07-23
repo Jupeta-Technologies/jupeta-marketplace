@@ -212,8 +212,15 @@ const JupetaECnavBar = () => {
               <ul className="navbarCart navbar__dropdown">
                 {cart.length > 0 ? (
                   cart.map((cartData) => (
-                    <div key={cartData.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/products/${cartData.id}`)}>
-                      <CartListitem cart={cartData} onDelete={clearFromcart} />
+                    <div key={cartData.id} style={{ cursor: 'pointer' }}
+                      onClick={() => router.push(`/products/${cartData.id}`)}>
+                      <CartListitem 
+                        cart={cartData} 
+                        onDelete={(product, e) => {
+                          e?.stopPropagation();
+                          clearFromcart(product);
+                        }}
+                      />
                     </div>
                   ))
                 ) : (
@@ -232,8 +239,12 @@ const JupetaECnavBar = () => {
               <ul className="navbarFav navbar__dropdown">
                 {favorites.length > 0 ? (
                   favorites.map((favoriteData) => (
-                    <div key={favoriteData.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/products/${favoriteData.id}`)}>
-                      <FavoriteListItem product={favoriteData} />
+                    <div key={favoriteData.id} style={{ cursor: 'pointer' }}
+                      onClick={() => router.push(`/products/${favoriteData.id}`)}>
+                      <FavoriteListItem 
+                        product={favoriteData} 
+                        onDelete={e => e.stopPropagation()}
+                      />
                     </div>
                   ))
                 ) : (
