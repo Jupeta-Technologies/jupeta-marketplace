@@ -43,12 +43,21 @@ const LoginForm: React.FC<LoginFormProps> = ({
         setEmail(formData.email);
         setUserEmail(formData.email);
         setUser(response.responseData); // Set user directly from login response
-        //setShowOTP(true);
+        // Ensure AuthContext is up-to-date before redirecting
+        if (refreshUser) {
+          await refreshUser(formData.email);
+        }
         // Redirect to the page where login was triggered from
         const referrer = document.referrer;
         if (referrer && referrer.includes(window.location.origin)) {
           const path = referrer.replace(window.location.origin, "");
-          router.push(path || "/");
+          // Prevent redirecting back to /Login or empty path
+          if (!path || path === "/Login" || path === "/login") {
+            router.push("/");
+          } else {
+            console.log("Redirecting to:", path);
+            router.push(path);
+          }
         } else {
           router.push("/");
         }
