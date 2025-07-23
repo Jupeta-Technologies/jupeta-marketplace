@@ -132,7 +132,7 @@ const JupetaECnavBar = () => {
                 className="nav-icon-button" // Use a class for styling
                 aria-label="Search" // Accessibility improvement
               />
-              <span style={{ color: '#FFF' }}>Search...</span>
+              <span style={{ color: '#000' }}>Search...</span>
             </div>
           )}
 
@@ -202,11 +202,30 @@ const JupetaECnavBar = () => {
 
         <div className="navbar__right">
           <ul className="navbar__menu">
-            <li>
+            <li style={{ position: 'relative' }}>
               <AiOutlineShoppingCart className="navbar__icon" />
+              {cart.length > 0 && (
+                <span
+                  className="cart-badge"
+                  style={{
+                    position: 'absolute',
+                    top: '2px',
+                    right: '6px',
+                    background: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 6px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    zIndex: 2,
+                  }}
+                >
+                  {cart.length}
+                </span>
+              )}
               <ul className="navbarCart navbar__dropdown">
                 {cart.length > 0 ? (
-                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} onDelete={clearFromcart} />) // Use unique product ID as key
+                  cart.map((cartData) => <CartListitem cart={cartData} key={cartData.id} onDelete={clearFromcart} />)
                 ) : (
                   <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                 )}

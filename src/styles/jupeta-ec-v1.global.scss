@@ -15,7 +15,8 @@
   --text-light: #696663;
   --background-color: #fff;
   --hover-background: #e9e9e9;
-  --transparent-1: rgba(0, 0, 0, 0.3); //50% transparency
+  --transparent-1: rgba(0, 0, 0, 0.3); //30% transparency
+  --transparent-2: rgba(0, 0, 0, 0); //100% transparency
 
   /* Spacing */
   --space-sm: 0.5rem;
@@ -331,9 +332,9 @@ ol li {
   @extend .flex__base;
   width: 120px;
   height: 40px;
-  background: linear-gradient(to right, #e7e7ecc6, var(--transparent-1));
+  background: linear-gradient(to right, #e7e7ecc6, var(--transparent-2));
   padding: 5px;
-  border-radius: 25px;
+  border-radius: 25px 0 0 25px;
   cursor: text;
   position: relative;
   left: 0;

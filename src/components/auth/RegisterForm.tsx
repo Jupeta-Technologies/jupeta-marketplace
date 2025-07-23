@@ -9,6 +9,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebookF } from "react-icons/fa";
 import { BsCheck2Circle, BsFillCheckCircleFill, BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import { SlArrowRight } from "react-icons/sl";
+import { User } from "lucide-react";
+import { UserSignUp } from "@/lib/api/UserAuthenticationAPI";
 
 interface RegisterFormProps {
   setShowOTP: (show: boolean) => void;
@@ -22,7 +24,7 @@ interface FormState {
   email: string;
   password: string;
   phoneNumber: string;
-  birthDate: Date | null;
+  dateOfBirth: string;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
@@ -31,10 +33,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   setTempData,
 }) => {
   const [form, setForm] = useState<FormState>({
-    firstName:"",
-    lastName:"",
-    birthDate:new Date(), //initialize with current date of specific default.
-    phoneNumber:"",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "", // store as string for input compatibility
+    phoneNumber: "",
     email: "",
     password: ""
   });
@@ -115,8 +117,42 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
       const handleRegistrationSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Logic to submit the final registration data
-        setRegCompleted(true);
+        // Prepare form data with correct date format for backend
+        let submitForm = { ...form };
+        if (form.dateOfBirth) {
+          // Convert yyyy-MM-dd to ISO string with time at 00:00:00Z
+          const dateObj = new Date(form.dateOfBirth);
+          submitForm = { ...form, dateOfBirth: dateObj.toISOString() };
+        }
+        try {
+          const response = await UserSignUp(submitForm);
+          if (response && response.code === "0") {
+            setRegCompleted(true);
+            setEmail(form.email); // Set email for further use
+            setTempData(form); // Store the form data in context or state
+          } else {
+            setError(response.message || 'Registration failed');
+          }
+        } catch (error) {
+          setError('An error occurred during registration. Please try again.');
+        }
+        // Optionally, you can redirect the user or show a success message
+        setShowOTP(false); // Hide OTP form after successful registration
+        //setemailVerified(false); // Reset email verification state
+        //setemailValid(false); // Reset email validity state
+        setForm({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+          dateOfBirth: "",
+        }); // Reset form state
+        setOtpSent(false); // Reset OTP sent state
+        setconfirmPassword(""); // Reset confirm password state
+        setsUPShowP(false); // Reset password visibility state
+        setsUPShowCP(false); // Reset confirm password visibility state
+        setpsdChcked(""); // Reset password check state
       };
   
 
@@ -211,7 +247,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               
                         <input type="tel" name="phoneNumber" placeholder="Phone Number" onChange={handleChange} value={form.phoneNumber} required />
               
-                        <input type="date" name="birthDate" placeholder="Date of Birth" onChange={handleChange} value={form.birthDate ? form.birthDate.toISOString().split('T')[0] : ''} required />
+                        <input
+                          type="date"
+                          name="dateOfBirth"
+                          placeholder="Date of Birth"
+                          onChange={e => setForm({ ...form, dateOfBirth: e.target.value })}
+                          value={form.dateOfBirth}
+                          required
+                        />
                       </div>
                       <div className="checkboxitems" style={{margin:'16px 0 16px 0'}}>
                         <input type="checkbox" required />
