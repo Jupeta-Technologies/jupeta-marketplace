@@ -4,15 +4,16 @@ import { Product } from '@/types/api';
 import { useFavorites } from '@/context/FavoriteContext';
 
 interface FavoriteListItemProps {
-  product: Product; // FavoriteListItem still needs the product prop to display
+  product: Product;
+  onDelete?: (e: React.MouseEvent) => void;
 }
 
 
-const FavoriteListItem: React.FC<FavoriteListItemProps> = ({ product }) => {
+const FavoriteListItem: React.FC<FavoriteListItemProps> = ({ product, onDelete }) => {
   const { removeFavorite } = useFavorites(); // Get the function from context
 
-  const handleRemoveFav = () => {
-    // Call removeFromFavorites with the product's ID
+  const handleRemoveFav = (e: React.MouseEvent) => {
+    if (onDelete) onDelete(e);
     removeFavorite(product.id);
   };
 
