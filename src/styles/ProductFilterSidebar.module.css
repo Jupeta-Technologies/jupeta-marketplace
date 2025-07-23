@@ -1,0 +1,85 @@
+.sidebar {
+  min-width: 220px;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.heading {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.sectionSpacing {
+  margin-bottom: 40px;
+}
+
+.categoryLabel, .conditionLabel, .typeLabel, .priceLabel {
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.categoryList, .conditionList, .typeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categoryItem, .conditionItem, .typeItem {
+  margin-bottom: 6px;
+}
+
+.radioLabel {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.radioInput {
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  accent-color: #888;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff;
+  border: 2px solid #888;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+.radioInput:checked {
+  background: #888;
+  border: 2px solid #444;
+}
+
+.priceInputs {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.priceInput {
+  width: 70px;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.resetBtn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  background: #eee;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  margin-top: 12px;
+  transition: background 0.2s;
+}
+.resetBtn:hover {
+  background: #e0e0e0;
+} 
