@@ -182,37 +182,6 @@ const SearchResult = () => {
   );
 };
 
-// --- Styled Components Definition ---
-/* const Wrapper = styled.section`
-  .grid-filter-column {
-    display: grid; /* Use display: grid for grid-template-columns 
-    grid-template-columns: 250px 1fr; /* Example: filter column (250px) and main content 
-    gap: 20px; /* Add some space between columns 
-    margin-top: 48px;
-    position: relative;
-  }
 
-  /* Basic pagination styling (adjust as needed for your Allcategories.css) 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
-  }
-
-  .pagination button {
-    padding: 8px 15px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-
-  .pagination button.active {
-    background-color: #0070f3;
-    color: white;
-    border-color: #0070f3;
-  }
-`; */
 
 export default SearchResult;

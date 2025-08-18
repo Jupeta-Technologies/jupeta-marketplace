@@ -9,6 +9,8 @@ import { CartProvider } from "@/context/CartContext";
 import { FavoriteProvider } from "@/context/FavoriteContext";
 import { HeroContentProvider } from "@/context/HeroContentContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { NotificationProvider } from "@/context/NotificationContext";
+import NotificationToasts from "@/components/NotificationToasts";
 import NavWrapper from "@/components/NavWrapper";
 import { Metadata } from 'next';
 
@@ -39,15 +41,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <HeroContentProvider>
-            <CartProvider>
-              <FavoriteProvider>
-                <NavWrapper>{children}</NavWrapper>
-              </FavoriteProvider>
-            </CartProvider>
-          </HeroContentProvider>
-        </AuthProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <HeroContentProvider>
+              <CartProvider>
+                <FavoriteProvider>
+                  <NotificationToasts />
+                  <NavWrapper>{children}</NavWrapper>
+                </FavoriteProvider>
+              </CartProvider>
+            </HeroContentProvider>
+          </AuthProvider>
+        </NotificationProvider>
       </body>
     </html>
   );

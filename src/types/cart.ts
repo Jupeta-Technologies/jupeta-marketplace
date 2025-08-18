@@ -15,6 +15,7 @@ export interface Product {
     clearFromcart: (product: Product) => void;
     removeBuyButtonProducts: () => void;
     preserveBuyButtonProducts: () => void;
+   clearCartAll: () => void;
   };
   
  export interface CartState {

@@ -3,7 +3,18 @@
 import React, { useEffect, useState } from "react";
 import { IoToggleSharp, IoAddCircle } from "react-icons/io5";
 import { PublishItems } from "@/lib/api/PublishItemsAPI";
+import ItemCard from "@/components/card/ItemCard";
+import TradeItemCard from "@/components/card/TradeItemCard";
+import { Product, TradeItem } from "@/types/api";
 import template from "./template/productBase-template.json"; // Make sure this path is correct
+
+// Extended interface for mock items with additional properties
+interface MockProduct extends Product {
+  seller?: string;
+  location?: string;
+  tradeValue?: string;
+  tradeLookingFor?: string;
+}
 
 // --- UPDATED INTERFACES TO REFLECT NEW TEMPLATE STRUCTURE ---
 interface ListDataState {
@@ -16,6 +27,27 @@ interface ListDataState {
   Specification: Record<string, any>;
   sellType: string;
   prevImg: string[];
+  
+  // Auction specific fields
+  auctionStartDate: string;
+  auctionStartTime: string;
+  auctionEndDate: string;
+  auctionEndTime: string;
+  auctionReservePrice: string;
+  auctionBuyNowPrice: string;
+  auctionStartOption: string; // "now" or "scheduled"
+  auctionLength: string; // Number of days as string
+  acceptOffers: boolean;
+  
+  // Trade specific fields
+  tradeDescription: string;
+  tradePreferences: string[];
+  tradeValue: string;
+  acceptCash: boolean;
+  
+  // Smart pricing
+  smartPricing: boolean;
+  floorPrice: string;
 }
 
 interface BaseField {
@@ -142,6 +174,14 @@ const SellListing = () => {
   );
 
   const [showSpecsModal, setShowSpecsModal] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [showExistingItems, setShowExistingItems] = useState(false);
+  const [existingItems, setExistingItems] = useState<MockProduct[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedExistingItem, setSelectedExistingItem] = useState<MockProduct | null>(null);
+  const [tradeItems, setTradeItems] = useState<TradeItem[]>([]);
+  const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
+  const [showTradeItems, setShowTradeItems] = useState(false);
 
   const [listData, setlistData] = useState<ListDataState>({
     Title: "",
@@ -153,10 +193,441 @@ const SellListing = () => {
     Specification: {},
     sellType: "",
     prevImg: [],
+    
+    // Auction specific fields
+    auctionStartDate: "",
+    auctionStartTime: "",
+    auctionEndDate: "",
+    auctionEndTime: "",
+    auctionReservePrice: "",
+    auctionBuyNowPrice: "",
+    auctionStartOption: "now", // Default to immediate start
+    auctionLength: "7", // Default to 7 days
+    acceptOffers: false,
+    
+    // Trade specific fields
+    tradeDescription: "",
+    tradePreferences: [],
+    tradeValue: "",
+    acceptCash: false,
+    
+    // Smart pricing
+    smartPricing: false,
+    floorPrice: "",
   });
 
   const checkForMatch = (title: string): boolean => {
     return title.trim().toLowerCase() === "hello";
+  };
+
+  // Function to search for existing items
+  const searchExistingItems = async (query: string) => {
+    if (query.trim().length < 3) {
+      setExistingItems([]);
+      setShowExistingItems(false);
+      return;
+    }
+
+    // Mock data - replace with actual API call
+    const mockItems: MockProduct[] = [
+      {
+        id: "1",
+        productName: "iPhone 14 Pro Max 256GB",
+        description: "Excellent condition iPhone 14 Pro Max with 256GB storage. No scratches, original box included.",
+        summary: "Premium iPhone in excellent condition",
+        price: 2500.00,
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Excellent",
+        sellingType: "BuyNow",
+        productImage: "iphone-14-pro-max.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+        productImages: [{
+          imageId: "img1",
+          imageUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+          imagePath: "/images/iphone-14-pro-max.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "iPhone 14 Pro Max",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        seller: "John Doe",
+        location: "Accra, Ghana"
+      },
+      {
+        id: "2",
+        productName: "iPhone 13 Pro 128GB",
+        description: "Good condition iPhone 13 Pro. Minor wear but fully functional. Comes with charger.",
+        summary: "Reliable iPhone at great price",
+        price: 1800.00,
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Good",
+        sellingType: "Auction",
+        productImage: "iphone-13-pro.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1605787020600-b9ebd5df1d07?w=400",
+        productImages: [{
+          imageId: "img2",
+          imageUrl: "https://images.unsplash.com/photo-1605787020600-b9ebd5df1d07?w=400",
+          imagePath: "/images/iphone-13-pro.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "iPhone 13 Pro",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        seller: "Jane Smith",
+        location: "Kumasi, Ghana"
+      },
+      {
+        id: "3",
+        productName: "Samsung Galaxy S23 Ultra",
+        description: "Like new Samsung Galaxy S23 Ultra. Looking to trade for iPhone or MacBook. Open to cash combinations.",
+        summary: "Premium Android phone for trade",
+        price: 0, // Trade items don't have a selling price
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Like New",
+        sellingType: "Trade",
+        productImage: "galaxy-s23-ultra.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400",
+        productImages: [{
+          imageId: "img3",
+          imageUrl: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400",
+          imagePath: "/images/galaxy-s23-ultra.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "Samsung Galaxy S23 Ultra",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        tradeValue: "2000.00",
+        tradeLookingFor: "iPhone or MacBook",
+        seller: "Mike Johnson",
+        location: "Tema, Ghana"
+      },
+      {
+        id: "4",
+        productName: "iPhone 12 Mini 64GB",
+        description: "Fair condition iPhone 12 Mini. Screen has minor scratches but fully functional.",
+        summary: "Compact iPhone at budget price",
+        price: 1200.00,
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Fair",
+        sellingType: "BuyNow",
+        productImage: "iphone-12-mini.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
+        productImages: [{
+          imageId: "img4",
+          imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
+          imagePath: "/images/iphone-12-mini.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "iPhone 12 Mini",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        seller: "Sarah Wilson",
+        location: "Takoradi, Ghana"
+      },
+      {
+        id: "5",
+        productName: "MacBook Pro M2 16-inch",
+        description: "Like new MacBook Pro with M2 chip. Perfect for developers and creators. Comes with original accessories.",
+        summary: "Powerful laptop in excellent condition",
+        price: 3500.00,
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Like New",
+        sellingType: "BuyNow",
+        productImage: "macbook-pro-m2.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+        productImages: [{
+          imageId: "img5",
+          imageUrl: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+          imagePath: "/images/macbook-pro-m2.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "MacBook Pro M2",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        seller: "David Chen",
+        location: "Accra, Ghana"
+      },
+      {
+        id: "6",
+        productName: "MacBook Air M1 13-inch",
+        description: "Excellent condition MacBook Air. Looking to trade for gaming laptop or desktop setup. Also accepting cash offers.",
+        summary: "Lightweight laptop perfect for students",
+        price: 0, // Trade item
+        isAvailable: true,
+        quantity: 1,
+        category: "Electronics",
+        condition: "Excellent",
+        sellingType: "Trade",
+        productImage: "macbook-air-m1.jpg",
+        imageFileUrl: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400",
+        productImages: [{
+          imageId: "img6",
+          imageUrl: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400",
+          imagePath: "/images/macbook-air-m1.jpg",
+          isPrimary: true,
+          displayOrder: 1,
+          altText: "MacBook Air M1",
+          uploadedAt: "2024-01-01T00:00:00Z"
+        }],
+        imageFile: null,
+        addedAt: "2024-01-01T00:00:00Z",
+        modifiedOn: "2024-01-01T00:00:00Z",
+        qty: 1,
+        onAdd: () => {},
+        tradeValue: "2800.00",
+        tradeLookingFor: "Gaming laptop or cash",
+        seller: "Lisa Brown",
+        location: "Kumasi, Ghana"
+      }
+    ];
+
+    // Filter items based on search query
+    const filtered = mockItems.filter(item => 
+      item.productName.toLowerCase().includes(query.toLowerCase())
+    );
+
+    setExistingItems(filtered);
+    setShowExistingItems(filtered.length > 0);
+  };
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.length >= 3) {
+        searchExistingItems(searchQuery);
+        searchTradeItems(searchQuery);
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchExistingItems(searchQuery);
+  };
+
+  const handleSelectExistingItem = (item: MockProduct) => {
+    // Toggle selection - if already selected, deselect; otherwise select the new item
+    if (selectedExistingItem?.id === item.id) {
+      setSelectedExistingItem(null);
+    } else {
+      setSelectedExistingItem(item);
+    }
+  };
+
+  const handleContinueWithSelected = () => {
+    if (selectedExistingItem) {
+      // Pre-fill the listing form with the selected item data
+      setlistData(prev => ({
+        ...prev,
+        Title: selectedExistingItem.productName,
+        Description: selectedExistingItem.description || '',
+        Category: selectedExistingItem.category,
+        Condition: selectedExistingItem.condition,
+        Price: selectedExistingItem.price?.toString() || '',
+        SellingType: selectedExistingItem.sellingType,
+        // Add additional fields based on selling type
+        ...(selectedExistingItem.sellingType === "Trade" && {
+          TradeValue: selectedExistingItem.price?.toString() || '',
+          TradeLookingFor: ''
+        })
+      }));
+      
+      // Navigate to listing form
+      setShowExistingItems(false);
+      setShowTradeItems(false);
+      setShowInitialSearch(false);
+      setShowFullListingForm(true);
+      setIsMatched(false);
+      setSelectedExistingItem(null);
+    }
+  };
+
+  // Group items by selling type
+  const groupedItems = existingItems.reduce((groups, item) => {
+    const type = item.sellingType;
+    if (!groups[type]) {
+      groups[type] = [];
+    }
+    groups[type].push(item);
+    return groups;
+  }, {} as Record<string, MockProduct[]>);
+
+  // Mock trade items data
+  const getMockTradeItems = (): TradeItem[] => {
+    return [
+      {
+        id: "trade1",
+        name: "iPhone 13 Pro 256GB",
+        image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400&h=400&fit=crop",
+        condition: "Excellent",
+        estimatedValue: 2200,
+        description: "iPhone 13 Pro in excellent condition, barely used for 6 months. No scratches, original box and accessories included.",
+        category: "Electronics",
+        seller: "John Doe",
+        location: "Accra, Ghana",
+        lookingFor: "MacBook Air or Cash"
+      },
+      {
+        id: "trade2",
+        name: "Samsung Galaxy S23 Ultra",
+        image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=400&fit=crop",
+        condition: "Like New",
+        estimatedValue: 2800,
+        description: "Samsung Galaxy S23 Ultra with S Pen, purchased 3 months ago. Perfect condition with screen protector applied from day one.",
+        category: "Electronics",
+        seller: "Jane Smith",
+        location: "Kumasi, Ghana",
+        lookingFor: "iPhone 14 Pro or Gaming Laptop"
+      },
+      {
+        id: "trade3",
+        name: "MacBook Air M1 13-inch",
+        image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop",
+        condition: "Good",
+        estimatedValue: 2500,
+        description: "MacBook Air M1 used for student work. Some minor wear on corners but fully functional with great battery life.",
+        category: "Electronics",
+        seller: "Mike Johnson",
+        location: "Tema, Ghana",
+        lookingFor: "Gaming Desktop or Cash + iPhone"
+      },
+      {
+        id: "trade4",
+        name: "Sony PlayStation 5",
+        image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop",
+        condition: "Excellent",
+        estimatedValue: 1800,
+        description: "PlayStation 5 with two controllers and 5 games. Excellent condition, adult owned, smoke-free home.",
+        category: "Gaming",
+        seller: "Sarah Wilson",
+        location: "Takoradi, Ghana",
+        lookingFor: "Nintendo Switch + Cash or High-end Phone"
+      },
+      {
+        id: "trade5",
+        name: "Canon EOS R6 Camera",
+        image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=400&fit=crop",
+        condition: "Like New",
+        estimatedValue: 3500,
+        description: "Canon EOS R6 mirrorless camera with 24-70mm lens. Used for 6 months, excellent condition with low shutter count.",
+        category: "Photography",
+        seller: "David Chen",
+        location: "Accra, Ghana",
+        lookingFor: "MacBook Pro + Cash or High-end Video Equipment"
+      },
+      {
+        id: "trade6",
+        name: "iPad Pro 12.9-inch M2",
+        image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
+        condition: "Excellent",
+        estimatedValue: 2800,
+        description: "iPad Pro 12.9-inch with M2 chip, Apple Pencil, and Magic Keyboard. Perfect for creative work and productivity.",
+        category: "Electronics",
+        seller: "Lisa Brown",
+        location: "Kumasi, Ghana",
+        lookingFor: "MacBook Air or iPhone 15 Pro + Cash"
+      }
+    ];
+  };
+
+  const handleCreateNewListing = () => {
+    // User wants to create a new listing instead of selecting existing
+    setShowExistingItems(false);
+    setSelectedExistingItem(null); // Reset selection
+    setShowTradeItems(false);
+    setSelectedTradeItem(null);
+    const result = checkForMatch(searchQuery);
+    setIsMatched(result);
+    setShowInitialSearch(false);
+    setShowFullListingForm(true);
+    setlistData(prev => ({ ...prev, Title: searchQuery }));
+  };
+
+  const searchTradeItems = (query: string) => {
+    if (query.trim().length < 3) {
+      setTradeItems([]);
+      setShowTradeItems(false);
+      return;
+    }
+
+    const mockTradeItems = getMockTradeItems();
+    const filtered = mockTradeItems.filter(item => 
+      item.name.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase()) ||
+      item.lookingFor.toLowerCase().includes(query.toLowerCase())
+    );
+
+    setTradeItems(filtered);
+    setShowTradeItems(filtered.length > 0);
+  };
+
+  const handleSelectTradeItem = (item: TradeItem) => {
+    if (selectedTradeItem?.id === item.id) {
+      setSelectedTradeItem(null);
+    } else {
+      setSelectedTradeItem(item);
+    }
+  };
+
+  const handleProceedWithTradeItem = () => {
+    if (selectedTradeItem) {
+      // Pre-fill the listing form with the selected trade item data
+      setlistData(prev => ({
+        ...prev,
+        Title: selectedTradeItem.name,
+        Description: selectedTradeItem.description,
+        Category: selectedTradeItem.category,
+        Condition: selectedTradeItem.condition,
+        SellingType: "Trade",
+        Price: selectedTradeItem.estimatedValue.toString(),
+        TradeValue: selectedTradeItem.estimatedValue.toString(),
+        TradeLookingFor: selectedTradeItem.lookingFor
+      }));
+      
+      // Hide search results and show listing form
+      setShowTradeItems(false);
+      setShowExistingItems(false);
+      setShowInitialSearch(false);
+      setShowFullListingForm(true);
+      setIsMatched(false);
+    }
   };
 
   const handelDataChange = (
@@ -164,7 +635,7 @@ const SellListing = () => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
 
     if (name === "Quantity" && typeof value === "string") {
       const numValue = parseInt(value, 10);
@@ -173,7 +644,60 @@ const SellListing = () => {
         return;
       }
     }
-    setlistData({ ...listData, [name]: value });
+
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setlistData(prev => ({
+        ...prev,
+        [name]: checked
+      }));
+    } else {
+      setlistData(prev => {
+        const newData = {
+          ...prev,
+          [name]: value
+        };
+        
+        // Auto-calculate auction end date and time when relevant fields change
+        if (name === 'auctionLength' || name === 'auctionStartDate' || name === 'auctionStartTime' || name === 'auctionStartOption') {
+          const updatedData = calculateAuctionEndDateTime(newData);
+          return updatedData;
+        }
+        
+        return newData;
+      });
+    }
+  };
+
+  // Function to calculate auction end date and time
+  const calculateAuctionEndDateTime = (data: ListDataState): ListDataState => {
+    const { auctionStartOption, auctionStartDate, auctionStartTime, auctionLength } = data;
+    
+    let startDateTime: Date;
+    
+    if (auctionStartOption === "now") {
+      // Use current date and time
+      startDateTime = new Date();
+    } else if (auctionStartOption === "scheduled" && auctionStartDate && auctionStartTime) {
+      // Use scheduled date and time
+      startDateTime = new Date(`${auctionStartDate}T${auctionStartTime}`);
+    } else {
+      // No valid start time, return data unchanged
+      return data;
+    }
+    
+    // Add the auction length in days
+    const endDateTime = new Date(startDateTime.getTime() + (parseInt(auctionLength) * 24 * 60 * 60 * 1000));
+    
+    // Format end date and time for inputs
+    const endDate = endDateTime.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endTime = endDateTime.toTimeString().slice(0, 5); // HH:MM
+    
+    return {
+      ...data,
+      auctionEndDate: endDate,
+      auctionEndTime: endTime
+    };
   };
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -731,6 +1255,12 @@ const SellListing = () => {
   };
 
   const handlePublish = () => {
+    // Show preview and hide the listing form
+    setShowPreview(true);
+    setShowFullListingForm(false);
+  };
+
+  const handleConfirmPublish = () => {
     const dataToSend = {
       ProductName: listData.Title,
       Description: listData.Description,
@@ -775,6 +1305,10 @@ const SellListing = () => {
     }
 
     // PublishItems(fd); // Uncomment when ready to integrate with API
+    
+    // Close preview and show success message
+    setShowPreview(false);
+    alert("Listing published successfully!"); // Replace with proper notification
   };
 
   useEffect(() => {
@@ -792,86 +1326,260 @@ const SellListing = () => {
   );
   return (
     <>
-      <div className="container" style={{ marginTop: "100px" }}>
-        <h1 style={{ textAlign: "center", marginBottom: "48px" }}>
-          Buy. Sell. Trade
-        </h1>
+      <div className="sell-page">
+        <header className="sell-page-header">
+          <h1 className="sell-page-title">Buy. Sell. Trade</h1>
+        </header>
 
         {showInitialSearch ? (
-          <>
-            <input
-              type="text"
-              placeholder="What do you want to sell or trade?"
-              value={listData.Title}
-              style={{
-                width: "90%",
-                height: "48px",
-                fontSize: "1.5rem",
-                fontWeight: "400",
-                padding: "8px 16px",
-                margin: "0 auto",
-                boxShadow: "var(--primary-shadow)",
-                borderRadius: "24px",
-                border: "none",
-              }}
-              onChange={handleSearchInputChange}
-            />
-            <div style={{ margin: "24px auto" }}>
+          <div className="initial-search-section fade-in">
+            <h1 className="search-title">What would you like to sell or trade?</h1>
+            <p className="search-subtitle">
+              Enter the name or description of your item to get started
+            </p>
+            <form className="search-form" onSubmit={handleSearchSubmit}>
+              <div className="search-input-container">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setlistData(prev => ({ ...prev, Title: e.target.value }));
+                  }}
+                  placeholder="e.g., iPhone 14, MacBook Pro, Nike shoes..."
+                  className="main-search-input"
+                  required
+                />
+                <button type="submit" className="search-btn">
+                  Search Items
+                </button>
+              </div>
+            </form>
+            
+            {/* Existing Items Display */}
+            {showExistingItems && (
+              <div className="existing-items-container">
+                <div className="existing-items-header">
+                  <h2>Found similar items</h2>
+                  <p>You can trade with existing listings or create your own listing below.</p>
+                </div>
+                
+                {/* Trade Items */}
+                {groupedItems.Trade && groupedItems.Trade.length > 0 && (
+                  <div className="item-group">
+                    <h3 className="group-title">
+                      <span className="trade-icon">🔄</span>
+                      Trade Items ({groupedItems.Trade.length})
+                    </h3>
+                    <div className="existing-items-grid-small">
+                      {groupedItems.Trade.map((item) => (
+                        <div 
+                          key={item.id}
+                          className={`item-card-wrapper ${selectedExistingItem?.id === item.id ? 'selected' : ''}`}
+                          onClick={() => handleSelectExistingItem(item)}
+                        >
+                          <ItemCard 
+                            prodData={{
+                              ...item,
+                              onAdd: () => handleSelectExistingItem(item)
+                            }}
+                          />
+                          {item.tradeValue && (
+                            <div className="trade-info-overlay">
+                              <small>Trade Value: GH₵{item.tradeValue}</small>
+                              <small>Looking for: {item.tradeLookingFor}</small>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Continue Button for Trade Items */}
+                {selectedExistingItem && groupedItems.Trade?.find(item => item.id === selectedExistingItem.id) && (
+                  <div className="continue-section">
+                    <div className="selected-item-info">
+                      <p>Selected: <strong>{selectedExistingItem.productName}</strong></p>
+                      <p>Action: Trade</p>
+                    </div>
+                    <button 
+                      className="continue-button"
+                      onClick={handleContinueWithSelected}
+                    >
+                      Continue with Selected Item
+                    </button>
+                  </div>
+                )}
+                
+                {/* Simple Matching Items Display for non-trade items */}
+                {(groupedItems.BuyNow?.length > 0 || groupedItems.Auction?.length > 0) && (
+                  <div className="item-group">
+                    <h3 className="group-title">
+                      <span>�</span>
+                      Found similar items
+                    </h3>
+                    <div className="matching-items-list">
+                      {[...(groupedItems.BuyNow || []), ...(groupedItems.Auction || [])].map((item) => (
+                        <div 
+                          key={item.id} 
+                          className={`matching-item-row ${selectedExistingItem?.id === item.id ? 'selected' : ''}`}
+                          onClick={() => handleSelectExistingItem(item)}
+                        >
+                          <div className="matching-item-image">
+                            <img 
+                              src={item.imageFileUrl || (item.productImages && item.productImages[0]?.imageUrl)} 
+                              alt={item.productName} 
+                            />
+                          </div>
+                          <div className="matching-item-details">
+                            <h4 className="matching-item-title">{item.productName}</h4>
+                            <div className="matching-item-specs">
+                              <span className="spec-item">Condition: {item.condition}</span>
+                              <span className="spec-item">Category: {item.category}</span>
+                              <span className="spec-item">Price: GH₵{item.price}</span>
+                            </div>
+                            <div className="matching-item-meta">
+                              <span className="seller-info">by {item.seller}</span>
+                              <span className="location-info">{item.location}</span>
+                            </div>
+                          </div>
+                          {selectedExistingItem?.id === item.id && (
+                            <div className="selection-checkmark">
+                              <span>✓</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Continue Button for Selected Similar Item */}
+                    {selectedExistingItem && !groupedItems.Trade?.find(item => item.id === selectedExistingItem.id) && (
+                      <div className="continue-section">
+                        <div className="selected-item-info">
+                          <p>Selected: <strong>{selectedExistingItem.productName}</strong></p>
+                          <p>Action: {selectedExistingItem.sellingType === "Auction" ? "Place Bid" : "Purchase"}</p>
+                        </div>
+                        <button 
+                          className="continue-button"
+                          onClick={handleContinueWithSelected}
+                        >
+                          Continue with Selected Item
+                        </button>
+                      </div>
+                    )}
+                    <div className="continue-without-match">
+                      <button 
+                        className="continue-without-btn"
+                        onClick={handleCreateNewListing}
+                      >
+                        Continue without match
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="create-new-section">
+                  <div className="create-new-divider">
+                    <span>OR</span>
+                  </div>
+                  <button 
+                    className="create-new-btn"
+                    onClick={handleCreateNewListing}
+                  >
+                    Create New Listing for "{searchQuery}"
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Trade Items Display */}
+            {showTradeItems && (
+              <div className="existing-items-container">
+                <div className="existing-items-header">
+                  <h2>Available Trade Items</h2>
+                  <p>Select an item you'd like to list for trade. Your listing will be pre-filled with the item's details.</p>
+                </div>
+                
+                <div className="trade-items-grid">
+                  {tradeItems.map((item) => (
+                    <TradeItemCard
+                      key={item.id}
+                      item={item}
+                      isSelected={selectedTradeItem?.id === item.id}
+                      onSelect={handleSelectTradeItem}
+                    />
+                  ))}
+                </div>
+
+                {/* Continue Button for Trade Items */}
+                {selectedTradeItem && (
+                  <div className="continue-section">
+                    <div className="selected-item-info">
+                      <p>Selected: <strong>{selectedTradeItem.name}</strong></p>
+                      <p>This will create a trade listing with pre-filled details</p>
+                    </div>
+                    <button 
+                      className="continue-button"
+                      onClick={handleProceedWithTradeItem}
+                    >
+                      Create Trade Listing
+                    </button>
+                  </div>
+                )}
+
+                <div className="create-new-section">
+                  <div className="create-new-divider">
+                    <span>OR</span>
+                  </div>
+                  <button 
+                    className="create-new-btn"
+                    onClick={handleCreateNewListing}
+                  >
+                    Create Original Listing for "{searchQuery}"
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <div className="search-action-section">
               {isMatched === false && (
-                <span style={{ color: "red", marginRight: "10px" }}>
+                <span className="match-status error">
                   No match found
                 </span>
               )}
               {isMatched === true && (
-                <span style={{ color: "green", marginRight: "10px" }}>
+                <span className="match-status success">
                   Match found!
                 </span>
               )}
-              <button
-                style={{
-                  background: "#2E6F94",
-                  color: "#FFF",
-                  width: "100px",
-                  padding: "8px",
-                  borderRadius: "24px",
-                  marginLeft: "24px",
-                }}
-                onClick={handleContinueClick}
-              >
-                Continue
-              </button>
+              {!showExistingItems && searchQuery && (
+                <button
+                  className="btn-modern btn-primary"
+                  onClick={handleCreateNewListing}
+                >
+                  Create New Listing
+                </button>
+              )}
             </div>
-          </>
+          </div>
         ) : (
-          <>
-            <div style={{ margin: "24px auto", textAlign: "left" }}>
+          <div className="fade-in">
+            <nav className="page-navigation">
               <button
-                style={{
-                  background: "#6c757d",
-                  color: "#FFF",
-                  width: "100px",
-                  padding: "8px",
-                  borderRadius: "24px",
-                }}
+                className="btn-modern btn-secondary"
                 onClick={handleBackClick}
               >
-                Back
+                ← Back
               </button>
-            </div>
+            </nav>
 
             {showFullListingForm && (
-              <div style={{ display: "block" }}>
+              <div className="form-container">
                 {/* CATEGORY & SUBCATEGORY CARD SELECTION */}
-                <section>
-                  <h5>Select a Category</h5>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "15px",
-                      justifyContent: "center",
-                    }}
-                  >
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Select a Category</h2>
+                  <div className="category-grid">
                     {typedTemplate &&
                       typedTemplate.product &&
                       typedTemplate.product.category &&
@@ -882,57 +1590,28 @@ const SellListing = () => {
                             onClick={() =>
                               handleCategoryCardClick(option.value)
                             }
-                            style={{
-                              padding: "10px",
-                              border: `2px solid ${
-                                category === option.value ? "#2E6F94" : "#ccc"
-                              }`,
-                              borderRadius: "10px",
-                              cursor: "pointer",
-                              backgroundColor:
-                                category === option.value ? "#e6f2f8" : "#fff",
-                              fontWeight:
-                                category === option.value ? "bold" : "normal",
-                              textAlign: "center",
-                              minWidth: "120px",
-                              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              transition: "all 0.2s ease-in-out",
-                            }}
+                            className={`category-card ${
+                              category === option.value ? 'selected' : ''
+                            }`}
                           >
                             {option.imageUrl && (
                               <img
                                 src={option.imageUrl}
                                 alt={option.label}
-                                style={{
-                                  width: "60px",
-                                  height: "60px",
-                                  objectFit: "contain",
-                                  marginBottom: "8px",
-                                }}
+                                className="category-image"
                               />
                             )}
-                            <span>{option.label}</span>
+                            <span className="category-label">{option.label}</span>
                           </div>
                         )
                       )}
                   </div>
                   {category && selectedCategory && (
-                    <>
-                      <h5 style={{ marginTop: "20px" }}>
+                    <div className="slide-up" style={{ marginTop: '32px' }}>
+                      <h3 className="form-section-title">
                         Select a Subcategory ({selectedCategory.label})
-                      </h5>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "15px",
-                          justifyContent: "center",
-                        }}
-                      >
+                      </h3>
+                      <div className="category-grid">
                         {typedTemplate.product.category.options
                           .find(
                             (opt: { value: string }) => opt.value === category
@@ -943,147 +1622,127 @@ const SellListing = () => {
                               onClick={() =>
                                 handleSubcategoryCardClick(sub.value)
                               }
-                              style={{
-                                padding: "10px",
-                                border: `2px solid ${
-                                  subcategory === sub.value ? "#2E6F94" : "#ccc"
-                                }`,
-                                borderRadius: "10px",
-                                cursor: "pointer",
-                                backgroundColor:
-                                  subcategory === sub.value
-                                    ? "#e6f2f8"
-                                    : "#fff",
-                                fontWeight:
-                                  subcategory === sub.value ? "bold" : "normal",
-                                textAlign: "center",
-                                minWidth: "120px",
-                                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.2s ease-in-out",
-                              }}
+                              className={`category-card ${
+                                subcategory === sub.value ? 'selected' : ''
+                              }`}
                             >
                               {sub.imageUrl && (
                                 <img
                                   src={sub.imageUrl}
                                   alt={sub.label}
-                                  style={{
-                                    width: "60px",
-                                    height: "60px",
-                                    objectFit: "contain",
-                                    marginBottom: "8px",
-                                  }}
+                                  className="category-image"
                                 />
                               )}
-                              <span>{sub.label}</span>
+                              <span className="category-label">{sub.label}</span>
                             </div>
                           ))}
                       </div>
-                    </>
+                    </div>
                   )}
                 </section>
 
                 {/* LISTING DETAILS SECTION */}
-                <section>
-                  <h5>Listing Details</h5>
-                  <div className="listDetail">
-                    <h6>Title</h6>
-                    <p
-                      style={{
-                        fontWeight: 400,
-                        fontSize: "16px",
-                        width: "100%",
-                      }}
-                    >
-                      <input
-                        type="text"
-                        value={listData.Title}
-                        name="Title"
-                        placeholder="Enter name of item"
-                        onChange={handelDataChange}
-                        style={{
-                          width: "100%",
-                          backgroundColor: "transparent",
-                          border: "none",
-                        }}
-                      />
-                    </p>
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Listing Details</h2>
+                  <div className="form-field-group">
+                    <label className="field-label">Title</label>
+                    <input
+                      type="text"
+                      value={listData.Title}
+                      name="Title"
+                      placeholder="Enter name of item"
+                      onChange={handelDataChange}
+                      className="field-input"
+                    />
+                  </div>
 
-                    <div className="ConTyQty">
-                      <div className="Con">
-                        <h6>Condition</h6>
-                        <select
-                          name="Condition"
-                          value={listData.Condition}
-                          onChange={handelDataChange}
-                        >
-                          <option value="">Select Condition</option>
-                          {typedTemplate.product.condition.options.map(
-                            (option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            )
-                          )}
-                        </select>
+                  <div className="form-fields-row">
+                    <div className="form-field-group">
+                      <label className="field-label">Condition</label>
+                      <select
+                        name="Condition"
+                        value={listData.Condition}
+                        onChange={handelDataChange}
+                        className="field-input"
+                      >
+                        <option value="">Select Condition</option>
+                        {typedTemplate.product.condition.options.map(
+                          (option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+                    
+                    <div className="form-field-group">
+                      <label className="field-label">Listing Type</label>
+                      <div className="radio-group">
+                        <label className="radio-option">
+                          <input
+                            type="radio"
+                            name="sellType"
+                            value="Buy now"
+                            checked={listData.sellType === "Buy now"}
+                            onChange={handelDataChange}
+                          />
+                          <span>Buy now</span>
+                        </label>
+                        <label className="radio-option">
+                          <input
+                            type="radio"
+                            name="sellType"
+                            value="Auction"
+                            checked={listData.sellType === "Auction"}
+                            onChange={handelDataChange}
+                          />
+                          <span>Auction</span>
+                        </label>
+                        <label className="radio-option">
+                          <input
+                            type="radio"
+                            name="sellType"
+                            value="Trade"
+                            checked={listData.sellType === "Trade"}
+                            onChange={handelDataChange}
+                          />
+                          <span>Trade</span>
+                        </label>
                       </div>
-                      <div className="Ty">
-                        <h6>Listing Type</h6>
-                        <input
-                          type="radio"
-                          name="sellType"
-                          value="Buy now"
-                          checked={listData.sellType === "Buy now"}
-                          onChange={handelDataChange}
-                        />{" "}
-                        <span>Buy now </span>
-                        <input
-                          type="radio"
-                          name="sellType"
-                          value="Auction"
-                          checked={listData.sellType === "Auction"}
-                          onChange={handelDataChange}
-                        />{" "}
-                        <span>Auction </span>
-                      </div>
-                      <div className="Qty">
-                        <h6>Quantity</h6>
-                        <input
-                          type="number"
-                          name="Quantity"
-                          value={listData.Quantity}
-                          onChange={handelDataChange}
-                          min="1"
-                          style={{ width: "60px" }}
-                        />
-                      </div>
+                    </div>
+                    
+                    <div className="form-field-group">
+                      <label className="field-label">Quantity</label>
+                      <input
+                        type="number"
+                        name="Quantity"
+                        value={listData.Quantity}
+                        onChange={handelDataChange}
+                        min="1"
+                        className="field-input quantity-input"
+                      />
                     </div>
                   </div>
                 </section>
 
                 {/* --- SPECIFICATIONS SECTION (NOW WITH MODAL TRIGGER) --- */}
-                <section>
-                  <h5>Specifications</h5>
-                  <div className="listSpecs">
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Specifications</h2>
+                  <div className="specs-summary">
                     {/* Display a summary of active specifications */}
                     {category &&
                     subcategory &&
                     Object.keys(specifications).length > 0 ? (
-                      <div>
-                        <p>
+                      <div className="current-specs">
+                        <p className="specs-label">
                           <strong>Current Specifications:</strong>
                         </p>
-                        <ul style={{ listStyleType: "none", padding: 0 }}>
+                        <ul className="specs-list">
                           {Object.entries(specifications).map(
                             ([key, value]) => (
-                              <li key={key} style={{ marginBottom: "5px" }}>
-                                <strong>{key}:</strong>{" "}
-                                {Array.isArray(value)
-                                  ? value.join(", ")
-                                  : String(value)}
+                              <li key={key} className="spec-item">
+                                <strong>{key}:</strong> {Array.isArray(value) ? value.join(", ") : String(value)}
                               </li>
                             )
                           )}
@@ -1116,250 +1775,621 @@ const SellListing = () => {
                 </section>
 
                 {/* DESCRIPTION SECTION */}
-                <section>
-                  <h5>Description</h5>
-                  <div className="listDesc">
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Description</h2>
+                  <div className="form-field-group">
+                    <label className="field-label">Item Description</label>
                     <textarea
                       name="Description"
                       value={listData.Description}
                       placeholder="Please enter a good description of your item, to help it sell better"
                       onChange={handelDataChange}
-                      style={{ borderRadius: "10px" }}
+                      className="field-input field-textarea"
+                      rows={6}
                     />
+                    <small className="field-hint">
+                      Include key features, condition details, and any important information buyers should know.
+                    </small>
                   </div>
                 </section>
 
-                {/* PRICING SECTION */}
-                <section>
-                  <h5>Pricing</h5>
-                  <div className="listPrice">
-                    <div className="setPrice">
-                      <p>Recommended</p>
-                      <p>Enter a competitive price to sell faster</p>
-                      <label htmlFor="Price">
-                        <h5>Price</h5>
-                      </label>
-                      <input
-                        type="text"
-                        value={listData.Price}
-                        name="Price"
-                        onChange={handelDataChange}
-                        style={{
-                          marginLeft: "8px",
-                          fontSize: "20px",
-                          color: "#2E6F94",
-                        }}
-                      />
+                {/* DYNAMIC PRICING SECTION BASED ON SELLING TYPE */}
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">
+                    {listData.sellType === "Buy now" && "Pricing"}
+                    {listData.sellType === "Auction" && "Auction Settings"}
+                    {listData.sellType === "Trade" && "Trade Setup"}
+                    {!listData.sellType && "Pricing"}
+                  </h2>
+                  
+                  {/* BUY NOW PRICING */}
+                  {(listData.sellType === "Buy now" || !listData.sellType) && (
+                    <div className="pricing-content">
+                      <div className="pricing-main">
+                        <div className="form-field-group">
+                          <label className="field-label">Set Your Price</label>
+                          <div className="price-input-container">
+                            <span className="currency-symbol">GH₵</span>
+                            <input
+                              type="number"
+                              value={listData.Price}
+                              name="Price"
+                              onChange={handelDataChange}
+                              className="field-input price-input"
+                              placeholder="0.00"
+                              min="0"
+                              step="0.01"
+                            />
+                          </div>
+                          <small className="field-hint">
+                            Enter a competitive price to sell faster
+                          </small>
+                        </div>
 
-                      <p>Accepting Offer</p>
-                    </div>
-                    <div className="setSmartPrice">
-                      <p>
-                        Smart Pricing{" "}
-                        <span>
-                          <IoToggleSharp
-                            style={{ color: "green", fontSize: "1.5rem" }}
-                          />
-                        </span>
-                      </p>
-                      <p style={{ width: "350px", fontSize: "small" }}>
-                        Smart Pricing automatically drops the price of your
-                        listing by 10% at the best time every week until it hits
-                        your floor price.
-                      </p>
-                      <p>
-                        Floor Price{" "}
-                        <span style={{ color: "green", fontSize: "1.5rem" }}>
-                          GHc 999.99
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </section>
-                {/* Render shipping details directly */}
-                <div style={{ marginTop: "20px" }}>
-                  <h6>Shipping Details</h6>
-                  {Object.entries(typedTemplate.product.shipping.fields).map(
-                    ([key, field]) => {
-                      const commonProps = {
-                        id: `shipping-${field.label
-                          .replace(/\s/g, "_")
-                          .toLowerCase()}`,
-                        name: field.label,
-                        placeholder: field.placeholder,
-                        required: field.required,
-                        style: {
-                          width: "100%",
-                          padding: "8px",
-                          borderRadius: "5px",
-                          border: "1px solid #ddd",
-                        },
-                      };
+                        <div className="form-field-group">
+                          <label className="checkbox-option">
+                            <input
+                              type="checkbox"
+                              name="acceptOffers"
+                              checked={listData.acceptOffers}
+                              onChange={handelDataChange}
+                            />
+                            <span>Accept offers from buyers</span>
+                          </label>
+                        </div>
+                      </div>
 
-                      switch (field.type) {
-                        case "text":
-                          return (
-                            <div key={key} style={{ marginBottom: "10px" }}>
-                              <label htmlFor={commonProps.id}>
-                                {field.label}
-                                {field.unit_hint ? ` (${field.unit_hint})` : ""}
-                                :
-                              </label>
-                              <input
-                                type="text"
-                                value={
-                                  (listData as any)[field.label] ||
-                                  field.default ||
-                                  ""
-                                } // Assuming shipping fields might be in listData
-                                onChange={handelDataChange}
-                                {...commonProps}
-                              />
-                            </div>
-                          );
-                        case "number":
-                          const numField = field as NumberField;
-                          return (
-                            <div key={key} style={{ marginBottom: "10px" }}>
-                              <label htmlFor={commonProps.id}>
-                                {field.label}
-                                {numField.unit ? ` (${numField.unit})` : ""}:
-                              </label>
+                      <div className="smart-pricing-card">
+                        <div className="smart-pricing-header">
+                          <h4>Smart Pricing</h4>
+                          <label className="toggle-switch">
+                            <input 
+                              type="checkbox" 
+                              name="smartPricing"
+                              checked={listData.smartPricing}
+                              onChange={handelDataChange}
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                        <p className="smart-pricing-description">
+                          Smart Pricing automatically drops the price of your
+                          listing by 10% at the best time every week until it hits
+                          your floor price.
+                        </p>
+                        {listData.smartPricing && (
+                          <div className="floor-price">
+                            <label className="field-label">Floor Price</label>
+                            <div className="price-input-container">
+                              <span className="currency-symbol">GH₵</span>
                               <input
                                 type="number"
-                                value={
-                                  (listData as any)[field.label] ||
-                                  numField.default ||
-                                  ""
-                                }
+                                name="floorPrice"
+                                value={listData.floorPrice}
                                 onChange={handelDataChange}
-                                min={numField.min}
-                                max={numField.max}
-                                step={numField.step}
-                                {...commonProps}
+                                placeholder="999.99"
+                                className="field-input price-input"
+                                min="0"
+                                step="0.01"
                               />
                             </div>
-                          );
-                        case "select":
-                          if (!isSelectField(field)) return null;
-                          const options = Array.isArray(field.options)
-                            ? field.options.map((opt) =>
-                                typeof opt === "object" ? opt.value : opt
-                              )
-                            : [];
-                          return (
-                            <div
-                              key={field.label}
-                              style={{ marginBottom: "15px" }}
-                            >
-                              <label htmlFor={commonProps.id}>
-                                {field.label}:
-                              </label>
-                              <select
-                                value={tempSpecifications[field.label] || ""}
-                                onChange={(e) => handelDataChange(e)}
-                                {...commonProps}
-                              >
-                                <option value="">Select an option</option>
-                                {options.map((opt, idx) => (
-                                  <option key={idx} value={opt}>
-                                    {opt}
-                                  </option>
-                                ))}
-                              </select>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* AUCTION PRICING */}
+                  {listData.sellType === "Auction" && (
+                    <div className="auction-content">
+                      <div className="auction-timing">
+                        <h4 className="subsection-title">Auction Duration</h4>
+                        
+                        {/* Start Time Options */}
+                        <div className="form-field-group">
+                          <label className="field-label">When should the auction start?</label>
+                          <div className="radio-group">
+                            <label className="radio-option">
+                              <input
+                                type="radio"
+                                name="auctionStartOption"
+                                value="now"
+                                checked={listData.auctionStartOption === "now"}
+                                onChange={handelDataChange}
+                              />
+                              <span>Start immediately</span>
+                            </label>
+                            <label className="radio-option">
+                              <input
+                                type="radio"
+                                name="auctionStartOption"
+                                value="scheduled"
+                                checked={listData.auctionStartOption === "scheduled"}
+                                onChange={handelDataChange}
+                              />
+                              <span>Schedule for later</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Auction Length Selection */}
+                        <div className="form-field-group">
+                          <label className="field-label">Auction Length</label>
+                          <select
+                            name="auctionLength"
+                            value={listData.auctionLength}
+                            onChange={handelDataChange}
+                            className="field-input field-select"
+                          >
+                            <option value="3">3 days</option>
+                            <option value="5">5 days</option>
+                            <option value="7">7 days (Recommended)</option>
+                            <option value="10">10 days</option>
+                            <option value="14">14 days</option>
+                            <option value="21">21 days</option>
+                            <option value="30">30 days</option>
+                          </select>
+                          <small className="field-hint">
+                            Longer auctions typically get more bids
+                          </small>
+                        </div>
+
+                        {/* Scheduled Start DateTime - Only show if scheduled option is selected */}
+                        {listData.auctionStartOption === "scheduled" && (
+                          <div className="datetime-grid">
+                            <div className="form-field-group">
+                              <label className="field-label">Start Date</label>
+                              <input
+                                type="date"
+                                name="auctionStartDate"
+                                value={listData.auctionStartDate}
+                                onChange={handelDataChange}
+                                className="field-input"
+                                min={new Date().toISOString().split('T')[0]}
+                              />
                             </div>
-                          );
-                        case "boolean":
-                          const boolField = field as BooleanField;
-                          return (
-                            <div
-                              key={key}
-                              style={{
-                                marginBottom: "10px",
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
-                              <label
-                                htmlFor={commonProps.id}
-                                style={{ marginRight: "10px" }}
-                              >
-                                {field.label}:
-                              </label>
+                            <div className="form-field-group">
+                              <label className="field-label">Start Time</label>
+                              <input
+                                type="time"
+                                name="auctionStartTime"
+                                value={listData.auctionStartTime}
+                                onChange={handelDataChange}
+                                className="field-input"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Auction End Info - Auto-calculated based on start + length */}
+                        <div className="auction-end-info">
+                          <div className="info-card">
+                            <h5>Auction will end:</h5>
+                            <p className="end-datetime">
+                              {listData.auctionStartOption === "now" 
+                                ? `${listData.auctionLength} days from now`
+                                : listData.auctionStartDate && listData.auctionStartTime
+                                  ? (() => {
+                                      const startDate = new Date(`${listData.auctionStartDate}T${listData.auctionStartTime}`);
+                                      const endDate = new Date(startDate.getTime() + (parseInt(listData.auctionLength) * 24 * 60 * 60 * 1000));
+                                      return endDate.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      });
+                                    })()
+                                  : "Please set start date and time"
+                              }
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Auto-calculated End Date and Time Display */}
+                        <div className="calculated-end-section">
+                          <div className="end-datetime-display">
+                            {listData.auctionEndDate && listData.auctionEndTime ? (
+                              <div className="auction-end-info">
+                                <h4 className="auction-end-title">Auction will end</h4>
+                                <div className="date-text">
+                                  {(() => {
+                                    const endDate = new Date(`${listData.auctionEndDate}T${listData.auctionEndTime}`);
+                                    return endDate.toLocaleDateString('en-US', { 
+                                      weekday: 'long',
+                                      month: 'long',
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    });
+                                  })()}
+                                </div>
+                                <div className="time-text">
+                                  {(() => {
+                                    const endDate = new Date(`${listData.auctionEndDate}T${listData.auctionEndTime}`);
+                                    return endDate.toLocaleTimeString('en-US', { 
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                      hour12: true
+                                    });
+                                  })()}
+                                </div>
+                                <div className="duration-text">
+                                  {listData.auctionLength} day{listData.auctionLength !== "1" ? "s" : ""}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="no-date-info">
+                                <h4 className="message-title">Auction end time</h4>
+                                <p className="message-text">
+                                  {listData.auctionStartOption === "scheduled" 
+                                    ? "Set start date and time first"
+                                    : "Will be calculated automatically"
+                                  }
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="auction-pricing">
+                        <h4 className="subsection-title">Price Settings</h4>
+                        <div className="pricing-grid">
+                          <div className="form-field-group">
+                            <label className="field-label">Starting Bid (Optional)</label>
+                            <div className="price-input-container">
+                              <span className="currency-symbol">GH₵</span>
+                              <input
+                                type="number"
+                                value={listData.Price}
+                                name="Price"
+                                onChange={handelDataChange}
+                                className="field-input price-input"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                              />
+                            </div>
+                            <small className="field-hint">
+                              Leave empty to start at GH₵1.00
+                            </small>
+                          </div>
+
+                          <div className="form-field-group">
+                            <label className="field-label">Reserve Price (Optional)</label>
+                            <div className="price-input-container">
+                              <span className="currency-symbol">GH₵</span>
+                              <input
+                                type="number"
+                                name="auctionReservePrice"
+                                value={listData.auctionReservePrice}
+                                onChange={handelDataChange}
+                                className="field-input price-input"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                              />
+                            </div>
+                            <small className="field-hint">
+                              Minimum price you'll accept
+                            </small>
+                          </div>
+
+                          <div className="form-field-group">
+                            <label className="field-label">Buy It Now Price (Optional)</label>
+                            <div className="price-input-container">
+                              <span className="currency-symbol">GH₵</span>
+                              <input
+                                type="number"
+                                name="auctionBuyNowPrice"
+                                value={listData.auctionBuyNowPrice}
+                                onChange={handelDataChange}
+                                className="field-input price-input"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                              />
+                            </div>
+                            <small className="field-hint">
+                              Allow buyers to purchase immediately
+                            </small>
+                          </div>
+                        </div>
+
+                        <div className="form-field-group">
+                          <label className="checkbox-option">
+                            <input
+                              type="checkbox"
+                              name="acceptOffers"
+                              checked={listData.acceptOffers}
+                              onChange={handelDataChange}
+                            />
+                            <span>Accept private offers during auction</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TRADE SETUP */}
+                  {listData.sellType === "Trade" && (
+                    <div className="trade-content">
+                      <div className="form-field-group">
+                        <label className="field-label">Estimated Value</label>
+                        <div className="price-input-container">
+                          <span className="currency-symbol">GH₵</span>
+                          <input
+                            type="number"
+                            name="tradeValue"
+                            value={listData.tradeValue}
+                            onChange={handelDataChange}
+                            className="field-input price-input"
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                        <small className="field-hint">
+                          Approximate value of your item for trade reference
+                        </small>
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="field-label">What are you looking for?</label>
+                        <textarea
+                          name="tradeDescription"
+                          value={listData.tradeDescription}
+                          onChange={handelDataChange}
+                          className="field-input field-textarea"
+                          placeholder="Describe what you'd like to trade for..."
+                          rows={4}
+                        />
+                      </div>
+
+                      <div className="trade-preferences">
+                        <label className="field-label">Trade Preferences</label>
+                        <div className="checkbox-grid">
+                          {["Electronics", "Fashion", "Home & Garden", "Automotive", "Sports", "Books", "Collectibles", "Other"].map((pref) => (
+                            <label key={pref} className="checkbox-option">
                               <input
                                 type="checkbox"
-                                checked={
-                                  !!(listData as any)[field.label] ||
-                                  !!boolField.default
-                                }
-                                onChange={(e) =>
-                                  handelDataChange({
-                                    ...e,
-                                    target: {
-                                      ...e.target,
-                                      name: field.label,
-                                      value: e.target.checked,
-                                    } as any,
-                                  })
-                                } // Cast for boolean change
-                                //style={{ width: 'auto', height: 'auto', margin: '0' }}
-                                {...commonProps}
+                                value={pref}
+                                checked={listData.tradePreferences.includes(pref)}
+                                onChange={(e) => {
+                                  const { value, checked } = e.target;
+                                  setlistData(prev => ({
+                                    ...prev,
+                                    tradePreferences: checked 
+                                      ? [...prev.tradePreferences, value]
+                                      : prev.tradePreferences.filter(p => p !== value)
+                                  }));
+                                }}
                               />
-                            </div>
-                          );
-                        default:
-                          return null;
-                      }
-                    }
+                              <span>{pref}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="checkbox-option">
+                          <input
+                            type="checkbox"
+                            name="acceptCash"
+                            checked={listData.acceptCash}
+                            onChange={handelDataChange}
+                          />
+                          <span>Accept cash + trade combinations</span>
+                        </label>
+                      </div>
+                    </div>
                   )}
-                </div>
+                </section>
+                
+                {/* SHIPPING SECTION */}
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Shipping Details</h2>
+                  <div className="shipping-grid">
+                    {Object.entries(typedTemplate.product.shipping.fields).map(
+                      ([key, field]) => {
+                        const fieldId = `shipping-${field.label
+                          .replace(/\s/g, "_")
+                          .toLowerCase()}`;
+
+                        switch (field.type) {
+                          case "text":
+                            return (
+                              <div key={key} className="form-field-group">
+                                <label className="field-label" htmlFor={fieldId}>
+                                  {field.label}
+                                  {field.unit_hint ? ` (${field.unit_hint})` : ""}
+                                  {field.required && <span className="required">*</span>}
+                                </label>
+                                <input
+                                  id={fieldId}
+                                  name={field.label}
+                                  type="text"
+                                  value={
+                                    (listData as any)[field.label] ||
+                                    field.default ||
+                                    ""
+                                  }
+                                  placeholder={field.placeholder}
+                                  required={field.required}
+                                  className="field-input"
+                                  onChange={handelDataChange}
+                                />
+                              </div>
+                            );
+                          case "number":
+                            const numField = field as NumberField;
+                            return (
+                              <div key={key} className="form-field-group">
+                                <label className="field-label" htmlFor={fieldId}>
+                                  {field.label}
+                                  {numField.unit ? ` (${numField.unit})` : ""}
+                                  {field.required && <span className="required">*</span>}
+                                </label>
+                                <input
+                                  id={fieldId}
+                                  name={field.label}
+                                  type="number"
+                                  value={
+                                    (listData as any)[field.label] ||
+                                    numField.default ||
+                                    ""
+                                  }
+                                  placeholder={field.placeholder}
+                                  required={field.required}
+                                  className="field-input"
+                                  onChange={handelDataChange}
+                                  min={numField.min}
+                                  max={numField.max}
+                                  step={numField.step}
+                                />
+                              </div>
+                            );
+                          case "select":
+                            if (!isSelectField(field)) return null;
+                            const options = Array.isArray(field.options)
+                              ? field.options.map((opt) =>
+                                  typeof opt === "object" ? opt.value : opt
+                                )
+                              : [];
+                            return (
+                              <div key={key} className="form-field-group">
+                                <label className="field-label" htmlFor={fieldId}>
+                                  {field.label}
+                                  {field.required && <span className="required">*</span>}
+                                </label>
+                                <select
+                                  id={fieldId}
+                                  name={field.label}
+                                  value={tempSpecifications[field.label] || ""}
+                                  onChange={(e) => handelDataChange(e)}
+                                  required={field.required}
+                                  className="field-input"
+                                >
+                                  <option value="">Select an option</option>
+                                  {options.map((opt, idx) => (
+                                    <option key={idx} value={opt}>
+                                      {opt}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          case "boolean":
+                            const boolField = field as BooleanField;
+                            return (
+                              <div key={key} className="form-field-group">
+                                <label className="checkbox-option">
+                                  <input
+                                    id={fieldId}
+                                    name={field.label}
+                                    type="checkbox"
+                                    defaultChecked={boolField.default as boolean}
+                                    onChange={handelDataChange}
+                                  />
+                                  <span>{field.label}</span>
+                                </label>
+                              </div>
+                            );
+                          default:
+                            return null;
+                        }
+                      }
+                    )}
+                  </div>
+                </section>
 
                 {/* PHOTOS SECTION */}
-                <section>
-                  <h5>Photos</h5>
-                  <div className="listPhotos">
-                    <ol className="lphotogrid">
-                      <li className="pmain">
-                        {defaultImg && <img src={defaultImg} alt="main" />}
-                      </li>
+                <section className="form-section slide-up">
+                  <h2 className="form-section-title">Photos</h2>
+                  <div className="photo-upload-container">
+                    <div className="photo-grid">
+                      <div className="main-photo-slot">
+                        {defaultImg ? (
+                          <div className="photo-preview main">
+                            <img src={defaultImg} alt="main" className="preview-image" />
+                            <button 
+                              className="photo-remove-btn"
+                              onClick={() => setdefaultImg("")}
+                              type="button"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="photo-placeholder main">
+                            <IoAddCircle className="add-icon" />
+                            <span>Main Photo</span>
+                          </div>
+                        )}
+                      </div>
+                      
                       {listData.prevImg.map((src, index) => {
                         if (src === defaultImg) return null;
                         return (
-                          <li key={index}>
-                            <img src={src} alt={`preview ${index}`} />
-                          </li>
+                          <div key={index} className="photo-preview">
+                            <img src={src} alt={`preview ${index}`} className="preview-image" />
+                            <button 
+                              className="photo-remove-btn"
+                              onClick={() => {
+                                const newPrevImg = listData.prevImg.filter((_, i) => i !== index);
+                                setlistData(prev => ({ ...prev, prevImg: newPrevImg }));
+                              }}
+                              type="button"
+                            >
+                              ×
+                            </button>
+                          </div>
                         );
                       })}
-                      <li className="pone"></li>
-                      <li className="ptwo"></li>
-                      <li className="padd">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          name="addIMG"
-                          style={{
-                            opacity: 0,
-                            position: "absolute",
-                            cursor: "pointer",
-                            width: "48",
-                            height: "48",
-                          }}
-                          onChange={setImg}
-                        />
-                        <IoAddCircle
-                          style={{ fontSize: "3rem", cursor: "pointer" }}
-                        />
-                      </li>
-                    </ol>
+                      
+                      {/* Additional photo slots */}
+                      {Array.from({ length: Math.max(0, 5 - listData.prevImg.length) }).map((_, index) => (
+                        <div key={`empty-${index}`} className="photo-placeholder">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            name="addIMG"
+                            className="photo-input"
+                            onChange={setImg}
+                          />
+                          <IoAddCircle className="add-icon" />
+                          <span>Add Photo</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="photo-upload-info">
+                      <p className="upload-hint">
+                        <strong>Tips for great photos:</strong>
+                      </p>
+                      <ul className="upload-tips">
+                        <li>Use natural lighting</li>
+                        <li>Show all angles of your item</li>
+                        <li>Include any defects or wear</li>
+                        <li>First photo will be your main listing image</li>
+                      </ul>
+                    </div>
                   </div>
                 </section>
 
-                <button type="button" onClick={handlePublish}>
-                  Publish
-                </button>
+                {/* PUBLISH SECTION */}
+                <section className="publish-section">
+                  <button 
+                    type="button" 
+                    onClick={handlePublish}
+                    className="btn-modern btn-primary publish-btn"
+                  >
+                    Publish Listing
+                  </button>
+                </section>
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* --- SPECIFICATIONS MODAL --- */}
@@ -1645,6 +2675,174 @@ const SellListing = () => {
                   Save Specifications
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- LISTING PREVIEW SECTION --- */}
+        {showPreview && (
+          <div className="preview-section">
+            <div className="preview-header">
+              <h2>Preview Your Listing</h2>
+              <button 
+                className="back-btn"
+                onClick={() => {
+                  setShowPreview(false);
+                  setShowFullListingForm(true);
+                }}
+              >
+                ← Back to Edit
+              </button>
+            </div>
+            
+            <div className="preview-content">
+              <div className="preview-listing">
+                {/* Listing Image */}
+                <div className="preview-image-section">
+                  {defaultImg ? (
+                    <img 
+                      src={defaultImg} 
+                      alt={listData.Title}
+                      className="preview-image"
+                    />
+                  ) : (
+                    <div className="preview-no-image">
+                      <span>No image uploaded</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Listing Details */}
+                <div className="preview-details">
+                  <div className="preview-header">
+                    <h3 className="preview-title">{listData.Title || "No title"}</h3>
+                    <div className="preview-price">
+                      {listData.sellType === "Buy now" && (
+                        <span className="price-tag">GH₵{listData.Price || "0.00"}</span>
+                      )}
+                      {listData.sellType === "Auction" && (
+                        <div className="auction-info">
+                          <span className="auction-badge">AUCTION</span>
+                          {listData.Price && (
+                            <span className="starting-bid">Starting: GH₵{listData.Price}</span>
+                          )}
+                        </div>
+                      )}
+                      {listData.sellType === "Trade" && (
+                        <div className="trade-info">
+                          <span className="trade-badge">TRADE</span>
+                          {listData.tradeValue && (
+                            <span className="trade-value">Value: GH₵{listData.tradeValue}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="preview-meta">
+                    <span className="preview-condition">Condition: {listData.Condition || "Not specified"}</span>
+                    <span className="preview-category">Category: {category || "Not selected"}</span>
+                    <span className="preview-quantity">Quantity: {listData.Quantity}</span>
+                  </div>
+
+                  {listData.Summary && (
+                    <div className="preview-summary">
+                      <h4>Summary</h4>
+                      <p>{listData.Summary}</p>
+                    </div>
+                  )}
+
+                  {listData.Description && (
+                    <div className="preview-description">
+                      <h4>Description</h4>
+                      <p>{listData.Description}</p>
+                    </div>
+                  )}
+
+                  {/* Auction specific details */}
+                  {listData.sellType === "Auction" && listData.auctionEndDate && (
+                    <div className="preview-auction-details">
+                      <h4>Auction Details</h4>
+                      <div className="auction-end-info">
+                        <span className="auction-end-title">AUCTION WILL END</span>
+                        <div className="date-text">
+                          {(() => {
+                            const endDate = new Date(`${listData.auctionEndDate}T${listData.auctionEndTime}`);
+                            return endDate.toLocaleDateString('en-US', { 
+                              weekday: 'long',
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric'
+                            });
+                          })()}
+                        </div>
+                        <div className="time-text">
+                          {(() => {
+                            const endDate = new Date(`${listData.auctionEndDate}T${listData.auctionEndTime}`);
+                            return endDate.toLocaleTimeString('en-US', { 
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true
+                            });
+                          })()}
+                        </div>
+                        <div className="duration-text">
+                          {listData.auctionLength} day{listData.auctionLength !== "1" ? "s" : ""}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Trade specific details */}
+                  {listData.sellType === "Trade" && (
+                    <div className="preview-trade-details">
+                      <h4>Trade Details</h4>
+                      {listData.tradeDescription && (
+                        <p><strong>Looking for:</strong> {listData.tradeDescription}</p>
+                      )}
+                      {listData.tradeValue && (
+                        <p><strong>Estimated Value:</strong> GH₵{listData.tradeValue}</p>
+                      )}
+                      {listData.acceptCash && (
+                        <p className="cash-accepted">✓ Cash + trade combinations accepted</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Specifications */}
+                  {Object.keys(specifications).length > 0 && (
+                    <div className="preview-specifications">
+                      <h4>Specifications</h4>
+                      <div className="spec-grid">
+                        {Object.entries(specifications).map(([key, value]) => (
+                          <div key={key} className="spec-item">
+                            <span className="spec-label">{key}:</span>
+                            <span className="spec-value">{String(value)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="preview-actions">
+              <button 
+                className="btn-secondary"
+                onClick={() => {
+                  setShowPreview(false);
+                  setShowFullListingForm(true);
+                }}
+              >
+                Edit Listing
+              </button>
+              <button 
+                className="btn-primary"
+                onClick={handleConfirmPublish}
+              >
+                Confirm & Publish
+              </button>
             </div>
           </div>
         )}

@@ -30,7 +30,7 @@ const getStrengthLabel = (score: number) => {
     case 4:
       return { label: "Strong", color: "green-500" };
     case 5:
-      return { label: "Very Strong", color: "emerald-600" };
+  return { label: "Very Strong", color: "indigo-600" };
     default:
       return { label: "", color: "gray-300" };
   }

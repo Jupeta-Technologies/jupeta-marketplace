@@ -11,10 +11,11 @@ import CategoryContent from "@/components/CategoryContent";
 import HeroWithSubmenu from "@/components/HeroWithSubmenu";
 import CategoryHeroRenderer from "@/components/CategoryHeroRenderer"; // Import the renderer!
 import { Product } from "@/types/api";
-import ItemCardglobal from "@/components/card/ItemCard";
+import ItemCard from "@/components/card/ItemCard";
 import ListingRow from "@/components/Shared/ListingRow";
 import FeaturedSeller from "@/components/Shared/FeaturedSeller";
 import AdComponent from "@/components/Shared/AdComponent";
+import ItemCardExamples from "@/components/examples/ItemCardExamples";
 
 // You no longer need to import heroImage here specifically for the hero section
 // import heroImage from '@/assets/images/led-speaker.jpg';
@@ -95,13 +96,82 @@ const HomePage = () => {
         )}
 
         <div style={{ margin: "32px 0" }}>
-          <AdComponent
+          {/* <AdComponent
             image="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
             link="/ad-details"
             tag="Ad"
             alt="Homepage Advertisement"
             style={{ maxWidth: "100%",maxHeight:'500px',overflow:'hidden', margin: "0 auto" }}
+          /> */}
+
+          {/* Example auction cards with different ending states */}
+          <div className="grid-auto-fit-300 mb-8">
+            {/* Auction ending very soon (30 minutes) */}
+            <ItemCard
+              prodData={{
+                ...products[0],
+                sellingType: 'Auction'
+              }}
+              variant="minimal"
+              auctionEndDate={new Date(Date.now() + 30 * 60 * 1000).toISOString()}
+            />
+            
+            {/* Auction ending soon (2 hours) */}
+            <ItemCard
+              prodData={{
+                ...products[1],
+                sellingType: 'Auction'
+              }}
+              variant="minimal"
+              auctionEndDate={new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()}
+            />
+            
+            {/* Regular auction (not ending soon) */}
+            <ItemCard
+              prodData={{
+                ...products[2],
+                sellingType: 'Auction'
+              }}
+              variant="minimal"
+              auctionEndDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()}
+            />
+            
+            {/* Buy now item (no auction indicator) */}
+            <ItemCard
+              prodData={{
+                ...products[3],
+                sellingType: 'BuyNow'
+              }}
+              variant="minimal"
+            />
+          </div>
+
+          
+        </div>
+        <div>
+          <ItemCard
+            prodData={{
+              ...products[4],
+              sellingType: 'BuyNow'
+            }}
+            variant="custom"
+            width={348}
+            height={448}
           />
+        </div>
+        <div className="grid-auto-fit-300 mb-8">
+          {products.slice(0, 4).map((product) => (
+            <ItemCard
+              key={product.id}
+              prodData={{
+                ...product,
+                sellingType: 'BuyNow'
+              }}
+              variant="custom"
+              width={300}
+              height={448}
+            />
+          ))}
         </div>
 
         <div className="featured-listing">

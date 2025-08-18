@@ -20,6 +20,7 @@ import { useFavorites } from '@/context/FavoriteContext';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types/cart';
 import { useCart } from '@/context/CartContext';
+import NotificationToast from '../Shared/Notification-Toast';
 
 // Dynamic import for CartListitem and FavoriteListItem
 const CartListitem = dynamic(() => import('@/components/cart/CartListitem'), { ssr: false });

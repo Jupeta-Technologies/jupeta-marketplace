@@ -36,6 +36,7 @@ const HeroUpdaterComponents: { [key: string]: React.ComponentType<any> } = {
   HomepageInteractiveHero: React.lazy(() => import('@/components/hero-updaters/HomepageInteractiveHero')),
   AutoPromotionHero: React.lazy(() => import('@/components/hero-updaters/AutoPromotionHero')),
   PersonalizedHomepageHero: React.lazy(() => import('@/components/hero-updaters/PersonalizedHomepageHero')),
+  CarouselHero: React.lazy(() => import('@/components/hero-updaters/CarouselHero')),
   // Add other dynamic hero components here
 };
 

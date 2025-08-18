@@ -26,7 +26,8 @@ interface ComponentHeroData {
     | "HomepageInteractiveHero"
     | "ElectronicsDynamicHero"
     | "AutoPromotionHero"
-    | "PersonalizedHomepageHero"; // Add more as needed
+    | "PersonalizedHomepageHero"
+    | "CarouselHero"; // Add more as needed
   props?: Record<string, any>; // Optional props to pass to the dynamic component
 }
 
@@ -250,7 +251,7 @@ export const categoryData: CategoryData[] = [
     name: "Home",
     slug: "",
     hero: {
-      componentName: "PersonalizedHomepageHero", // Now points to the personalized component
+      componentName: "CarouselHero", // Now points to the carousel component
       props: {}, // No specific props needed if logic is internal
     },
   },

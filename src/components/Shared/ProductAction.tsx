@@ -1,3 +1,4 @@
+"use client";
 // components/ProductAction.tsx
 import React from 'react';
 import { Product } from '@/types/api'; // Use API Product type

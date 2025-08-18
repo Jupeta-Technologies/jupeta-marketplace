@@ -131,6 +131,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, [dispatch]);
 
+  const clearCartAll = useCallback(() => {
+    dispatch({
+      type: 'updateState',
+      payload: (_prev: CartState) => ({ products: [], total: 0 })
+    });
+  }, [dispatch]);
+
   // Global cleanup mechanism
   useEffect(() => {
     if (!hydrated) return;
@@ -170,6 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     clearFromcart,
     removeBuyButtonProducts,
     preserveBuyButtonProducts,
+  clearCartAll,
   };
 
   return (

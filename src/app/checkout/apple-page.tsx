@@ -1,21 +1,15 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useCart } from '@/context/CartContext'
 import Link from 'next/link'
 import { ArrowLeft, Check, Truck, CreditCard, Smartphone, Wallet, Package } from 'lucide-react'
-import '../../styles/AppleCheckout.css'
 
-export default function CheckoutPage() {
+export default function AppleCheckoutPage() {
   const { products, preserveBuyButtonProducts, clearCartAll } = useCart()
   const [step, setStep] = useState(1)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
   const [deliveryMethod, setDeliveryMethod] = useState('delivery')
-  const [deliveryCompleted, setDeliveryCompleted] = useState(false)
-  const [paymentCompleted, setPaymentCompleted] = useState(false)
-  const [showReview, setShowReview] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
-  const [isValidating, setIsValidating] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -38,10 +32,6 @@ export default function CheckoutPage() {
   const [orderedItems, setOrderedItems] = useState(products)
   const [orderedTotal, setOrderedTotal] = useState(0)
 
-  // Refs for smooth scrolling
-  const deliverySectionRef = useRef<HTMLDivElement>(null)
-  const paymentSectionRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     preserveBuyButtonProducts()
     localStorage.setItem('onCheckoutPage', 'true')
@@ -51,128 +41,12 @@ export default function CheckoutPage() {
     }
   }, [preserveBuyButtonProducts])
 
-  // Scroll to section when step changes
-  useEffect(() => {
-    if (step === 1 && deliverySectionRef.current) {
-      deliverySectionRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
-      })
-    } else if (step === 2 && paymentSectionRef.current) {
-      paymentSectionRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
-      })
-    }
-  }, [step])
-
-  // Monitor payment completion
-  useEffect(() => {
-    if (selectedPaymentMethod && deliveryCompleted) {
-      const paymentComplete = isPaymentCompleted()
-      setPaymentCompleted(paymentComplete)
-      
-      if (paymentComplete && deliveryCompleted) {
-        setShowReview(true)
-      }
-    }
-  }, [selectedPaymentMethod, formData, deliveryCompleted])
-
   // Helper functions
   const digitsOnly = (v: string) => v.replace(/\D+/g, '')
-  
-  // Validation functions
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const validatePhone = (phone: string) => {
-    return phone.length >= 10
-  }
-
-  const validateField = (fieldName: string, value: string) => {
-    let error = ''
-    
-    switch (fieldName) {
-      case 'email':
-        if (value && !validateEmail(value)) {
-          error = 'Please enter a valid email address'
-        }
-        break
-      case 'phone':
-        if (value && !validatePhone(value)) {
-          error = 'Phone number must be at least 10 digits'
-        }
-        break
-      case 'firstName':
-      case 'lastName':
-        if (value && value.length < 2) {
-          error = 'Name must be at least 2 characters'
-        }
-        break
-      case 'cardNumber':
-        if (value && value.replace(/\s/g, '').length < 13) {
-          error = 'Please enter a valid card number'
-        }
-        break
-      case 'cvv':
-        if (value && (value.length < 3 || value.length > 4)) {
-          error = 'CVV must be 3 or 4 digits'
-        }
-        break
-    }
-    
-    setFieldErrors(prev => ({
-      ...prev,
-      [fieldName]: error
-    }))
-    
-    return !error
-  }
   
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = digitsOnly(e.target.value).slice(0, 15)
     setFormData(prev => ({ ...prev, phone: raw }))
-    
-    // Check if delivery is completed after phone update
-    const updatedFormData = { ...formData, phone: raw }
-    const deliveryComplete = deliveryMethod === 'delivery' 
-      ? [updatedFormData.firstName, updatedFormData.lastName, updatedFormData.email, raw, 
-         updatedFormData.address, updatedFormData.city, updatedFormData.state, updatedFormData.zipCode].every(Boolean)
-      : [updatedFormData.firstName, updatedFormData.lastName, updatedFormData.email, raw].every(Boolean)
-    
-    setDeliveryCompleted(deliveryComplete)
-    
-    // Auto-advance to payment when phone number is entered and form is complete
-    if (raw.length >= 10 && step === 1 && deliveryComplete) {
-      setTimeout(() => setStep(2), 300); // Small delay for better UX
-    }
-  }
-  
-  // General handler for pickup form fields
-  const handlePickupFieldChange = (field: string, value: string) => {
-    const updatedFormData = { ...formData, [field]: value }
-    setFormData(updatedFormData)
-    
-    // Check if pickup form is completed
-    if (deliveryMethod === 'pickup') {
-      const pickupComplete = [
-        updatedFormData.firstName,
-        updatedFormData.lastName,
-        updatedFormData.email,
-        updatedFormData.phone
-      ].every(Boolean)
-      
-      setDeliveryCompleted(pickupComplete)
-      
-      // Auto-advance to payment if all fields are filled and phone is valid
-      if (pickupComplete && updatedFormData.phone.length >= 10 && step === 1) {
-        setTimeout(() => setStep(2), 300)
-      }
-    }
   }
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,30 +81,6 @@ export default function CheckoutPage() {
 
   const shippingCost = 0
   const finalTotal = calculateSubtotal() + shippingCost
-
-  // Helper functions to check completion status
-  const isDeliveryCompleted = () => {
-    return deliveryMethod === 'delivery' 
-      ? deliveryRequired.every(Boolean)
-      : pickupRequired.every(Boolean)
-  }
-
-  const isPaymentCompleted = () => {
-    if (!selectedPaymentMethod) return false
-    
-    switch (selectedPaymentMethod) {
-      case 'credit-card':
-        return !!(formData.cardNumber && formData.expiryDate && formData.cvv && formData.cardholderName)
-      case 'mobile-money':
-        return !!formData.mobileMoneyNumber
-      case 'jupeta-money':
-        return !!formData.jupetaMoneyPin
-      case 'apple-pay':
-        return true // Apple Pay doesn't need additional fields
-      default:
-        return false
-    }
-  }
 
   // Form validation
   const deliveryRequired = [
@@ -307,91 +157,39 @@ export default function CheckoutPage() {
 
         {/* Apple Layout */}
         <div className="apple-checkout-layout">
-          {/* Left Column - Order Summary */}
-          <aside className="apple-summary-section" aria-labelledby="order-summary-heading">
-            <div className="apple-order-summary">
-              <h3 id="order-summary-heading" className="apple-summary-title">Your Order</h3>
-              
-              <div className="apple-items-list" role="list" aria-label="Items in your order">
-                {products.map((item) => (
-                  <div key={item.id} className="apple-item" role="listitem">
-                    <div className="apple-item-image">
-                      <img src={item.imageFileUrl} alt={item.productName} />
-                    </div>
-                    <div className="apple-item-details">
-                      <h4>{item.productName}</h4>
-                      <p className="apple-item-quantity">Qty: {item.qty}</p>
-                    </div>
-                    <div className="apple-item-price">
-                      <span>GH₵ {(item.price * item.qty).toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="apple-summary-totals" aria-labelledby="order-totals-heading">
-                <h4 id="order-totals-heading" className="sr-only">Order totals</h4>
-                <div className="apple-summary-row">
-                  <span>Subtotal</span>
-                  <span>GH₵ {calculateSubtotal().toFixed(2)}</span>
-                </div>
-                <div className="apple-summary-row">
-                  <span>Shipping</span>
-                  <span>Free</span>
-                </div>
-                <div className="apple-summary-row apple-total">
-                  <span>Total</span>
-                  <span>GH₵ {finalTotal.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Right Column - Checkout Process */}
-          <section className="apple-form-section" aria-labelledby="checkout-heading">
-            <header className="apple-checkout-header">
-              <h2 id="checkout-heading" className="apple-checkout-title">Complete Your Purchase</h2>
-              <p className="apple-checkout-subtitle">Review your order and provide shipping details</p>
-            </header>
-
-            {/* Progress Indicator */}
-            <div className="apple-progress" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={2} aria-label={`Checkout step ${step} of 2`}>
+          {/* Left Column - Form */}
+          <section className="apple-form-section">
+            {/* Progress Steps */}
+            <div className="apple-progress">
               <div className="apple-progress-track">
                 <div 
                   className="apple-progress-fill" 
                   style={{width: step >= 2 ? '100%' : '50%'}}
                 />
               </div>
-              <ol className="apple-steps" aria-label="Checkout steps">
-                <li className={`apple-step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
-                  <div className="apple-step-circle" aria-hidden="true">
+              <div className="apple-steps">
+                <div className={`apple-step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
+                  <div className="apple-step-circle">
                     {step > 1 ? <Check size={14} /> : '1'}
                   </div>
                   <span className="apple-step-label">Delivery</span>
-                </li>
-                <li className={`apple-step ${step >= 2 ? 'active' : ''}`}>
-                  <div className="apple-step-circle" aria-hidden="true">2</div>
+                </div>
+                <div className={`apple-step ${step >= 2 ? 'active' : ''}`}>
+                  <div className="apple-step-circle">2</div>
                   <span className="apple-step-label">Payment</span>
-                </li>
-              </ol>
+                </div>
+              </div>
             </div>
 
-            {/* Checkout Steps */}
-            <div className="apple-checkout-steps" role="main" aria-labelledby="checkout-heading">
             {/* Step 1: Delivery */}
-            <section ref={deliverySectionRef} className={`apple-delivery-section ${
-              showReview ? 'collapsed' : (step > 1 ? 'completed' : '')
-            }`} aria-labelledby="delivery-heading">
-                <header className="apple-section-header">
-                  <h3 id="delivery-heading" className="apple-section-title">
-                    {step > 1 && <Check size={20} className="completed-icon" />}
-                    Where should we send your order?
-                  </h3>
-                </header>
+            {step === 1 && (
+              <div className="apple-delivery-section">
+                <div className="apple-section-header">
+                  <h2 className="apple-section-title">Where should we send your order?</h2>
+                </div>
                 
                 {/* Delivery Method Selection */}
-                <fieldset className="apple-delivery-methods" aria-labelledby="delivery-method-legend">
-                  <legend id="delivery-method-legend" className="sr-only">Choose delivery method</legend>
+                <div className="apple-delivery-methods">
                   <label className={`apple-delivery-option ${deliveryMethod === 'delivery' ? 'selected' : ''}`}>
                     <input
                       type="radio"
@@ -431,7 +229,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </label>
-                </fieldset>
+                </div>
 
                 {/* Form Fields */}
                 {deliveryMethod === 'delivery' && (
@@ -542,7 +340,7 @@ export default function CheckoutPage() {
                             className="apple-input"
                             placeholder="First name"
                             value={formData.firstName}
-                            onChange={(e) => handlePickupFieldChange('firstName', e.target.value)}
+                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                             required
                           />
                         </div>
@@ -552,7 +350,7 @@ export default function CheckoutPage() {
                             className="apple-input"
                             placeholder="Last name"
                             value={formData.lastName}
-                            onChange={(e) => handlePickupFieldChange('lastName', e.target.value)}
+                            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                             required
                           />
                         </div>
@@ -565,7 +363,7 @@ export default function CheckoutPage() {
                             className="apple-input"
                             placeholder="Email"
                             value={formData.email}
-                            onChange={(e) => handlePickupFieldChange('email', e.target.value)}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
                             required
                           />
                         </div>
@@ -588,31 +386,43 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 )}
-              </section>
+
+                {/* Continue Button */}
+                <div className="apple-button-container">
+                  <button
+                    type="button"
+                    className={`apple-button apple-button-primary ${
+                      (deliveryMethod === 'delivery' && !deliveryRequired.every(Boolean)) ||
+                      (deliveryMethod === 'pickup' && !pickupRequired.every(Boolean))
+                        ? 'disabled' : ''
+                    }`}
+                    onClick={() => {
+                      if (deliveryMethod === 'delivery' && deliveryRequired.every(Boolean)) {
+                        setStep(2)
+                      } else if (deliveryMethod === 'pickup' && pickupRequired.every(Boolean)) {
+                        setStep(2)
+                      }
+                    }}
+                    disabled={
+                      (deliveryMethod === 'delivery' && !deliveryRequired.every(Boolean)) ||
+                      (deliveryMethod === 'pickup' && !pickupRequired.every(Boolean))
+                    }
+                  >
+                    Continue to Payment
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Step 2: Payment */}
-            <section ref={paymentSectionRef} className={`apple-payment-section ${
-              showReview ? 'collapsed' : (!deliveryCompleted ? 'disabled' : '')
-            }`} aria-labelledby="payment-heading">
-                <header className="apple-section-header">
-                  <h3 id="payment-heading" className="apple-section-title">How would you like to pay?</h3>
-                  {deliveryCompleted && (
-                    <button 
-                      type="button" 
-                      className="apple-back-to-delivery"
-                      onClick={() => setStep(1)}
-                    >
-                      <ArrowLeft size={16} />
-                      Back to Delivery
-                    </button>
-                  )}
-                </header>
+            {step === 2 && (
+              <div className="apple-payment-section">
+                <div className="apple-section-header">
+                  <h2 className="apple-section-title">How would you like to pay?</h2>
+                </div>
                 
-                {deliveryCompleted ? (
-                  <>
                 {/* Payment Methods */}
-                <fieldset className="apple-payment-methods" aria-labelledby="payment-method-legend">
-                  <legend id="payment-method-legend" className="sr-only">Choose payment method</legend>
+                <div className="apple-payment-methods">
                   <label className={`apple-payment-option ${selectedPaymentMethod === 'apple-pay' ? 'selected' : ''}`}>
                     <input
                       type="radio"
@@ -672,7 +482,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </label>
-                </fieldset>
+                </div>
 
                 {/* Payment Form */}
                 {selectedPaymentMethod === 'credit-card' && (
@@ -749,73 +559,59 @@ export default function CheckoutPage() {
                   >
                     Back to Delivery
                   </button>
+                  <button
+                    type="button"
+                    className={`apple-button apple-button-primary ${!selectedPaymentMethod ? 'disabled' : ''}`}
+                    onClick={handlePlaceOrder}
+                    disabled={!selectedPaymentMethod || isProcessing}
+                  >
+                    {isProcessing ? 'Processing...' : 'Place Order'}
+                  </button>
                 </div>
-                  </>
-                ) : (
-                  <div className="apple-payment-placeholder">
-                    <p>Complete the delivery information above to continue with payment.</p>
-                  </div>
-                )}
-              </section>
-
-            {/* Step 3: Review (when both sections are completed) */}
-            {showReview && deliveryCompleted && paymentCompleted && (
-              <section className="apple-review-section" aria-labelledby="review-heading">
-                <header className="apple-section-header">
-                  <h3 id="review-heading" className="apple-section-title">
-                    <Check size={20} className="completed-icon" />
-                    Review Your Order
-                  </h3>
-                </header>
-
-                <div className="apple-review-content">
-                  <div className="apple-review-item">
-                    <h4>Delivery Information</h4>
-                    <p><strong>Method:</strong> {deliveryMethod === 'delivery' ? 'Ship to you' : 'Pick up'}</p>
-                    <p><strong>Name:</strong> {formData.firstName} {formData.lastName}</p>
-                    <p><strong>Email:</strong> {formData.email}</p>
-                    <p><strong>Phone:</strong> {formData.phone}</p>
-                    {deliveryMethod === 'delivery' ? (
-                      <p><strong>Address:</strong> {formData.address}, {formData.city}, {formData.state} {formData.zipCode}</p>
-                    ) : (
-                      <p><strong>Pickup Location:</strong> Jupeta Store - Main Branch</p>
-                    )}
-                  </div>
-
-                  <div className="apple-review-item">
-                    <h4>Payment Method</h4>
-                    <p><strong>Method:</strong> {
-                      selectedPaymentMethod === 'apple-pay' ? 'Apple Pay' :
-                      selectedPaymentMethod === 'credit-card' ? 'Credit Card' :
-                      selectedPaymentMethod === 'mobile-money' ? 'Mobile Money' :
-                      selectedPaymentMethod === 'jupeta-money' ? 'Jupeta Money' : 
-                      selectedPaymentMethod
-                    }</p>
-                  </div>
-
-                  <div className="apple-review-success">
-                    <Check size={24} className="success-icon" />
-                    <p>Ready to place your order!</p>
-                  </div>
-
-                  {/* Place Order Button */}
-                  <div className="apple-review-actions">
-                    <button
-                      type="button"
-                      className="apple-button apple-button-primary apple-place-order-btn"
-                      onClick={handlePlaceOrder}
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? 'Processing...' : 'Place Order'}
-                    </button>
-                  </div>
-                </div>
-              </section>
+              </div>
             )}
+          </section>
+
+          {/* Right Column - Order Summary */}
+          <aside className="apple-summary-section">
+            <div className="apple-order-summary">
+              <h3 className="apple-summary-title">Order Summary</h3>
+              
+              <div className="apple-items-list">
+                {products.map((item) => (
+                  <div key={item.id} className="apple-item">
+                    <div className="apple-item-image">
+                      <img src={item.imageFileUrl} alt={item.productName} />
+                    </div>
+                    <div className="apple-item-details">
+                      <h4>{item.productName}</h4>
+                      <p>Qty: {item.qty}</p>
+                    </div>
+                    <div className="apple-item-price">
+                      <span>GH₵ {(item.price * item.qty).toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="apple-summary-totals">
+                <div className="apple-summary-row">
+                  <span>Subtotal</span>
+                  <span>GH₵ {calculateSubtotal().toFixed(2)}</span>
+                </div>
+                <div className="apple-summary-row">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="apple-summary-row apple-total">
+                  <span>Total</span>
+                  <span>GH₵ {finalTotal.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
-        </section>
+          </aside>
+        </div>
       </div>
-    </div>
     </main>
   )
 }

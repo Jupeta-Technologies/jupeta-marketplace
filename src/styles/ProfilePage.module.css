@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* Profile Page Module Styles */
 /* ===== Global Styles ===== */
 @tailwind base;
 @tailwind components;
@@ -7192,4 +7193,420 @@ input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-c
   .carousel-dot.active {
     transform: none !important;
   }
-}/*# sourceMappingURL=jupeta-ec-v1.global.css.map */
+}
+.profilePage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-24) var(--space-16);
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.profileHeader {
+  text-align: center;
+  margin-bottom: var(--space-48);
+}
+.profileHeader .profileTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: var(--space-8);
+  background: linear-gradient(135deg, var(--primary-button), #2563eb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.profileHeader .profileSubtitle {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.profileLayout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-48);
+  align-items: start;
+}
+
+.profileSidebar {
+  position: sticky;
+  top: var(--space-24);
+}
+
+.sidebarCard {
+  background: var(--primary-card-color);
+  border-radius: var(--primary-border-radius);
+  padding: var(--space-24);
+  box-shadow: var(--primary-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.userAvatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-24);
+  padding-bottom: var(--space-24);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.userAvatarSection .avatarPlaceholder {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-button), #2563eb);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: var(--space-16);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.userAvatarSection .userInfo .userName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: var(--space-4);
+}
+.userAvatarSection .userInfo .userEmail {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.sidebarNav .navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebarNav .navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  margin-bottom: var(--space-8);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  color: var(--text-light);
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.sidebarNav .navItem:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: var(--primary-button);
+  transform: translateX(4px);
+}
+.sidebarNav .navItem:global(.active) {
+  background: linear-gradient(135deg, var(--primary-button), #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 50, 18, 0.3);
+  border-color: var(--primary-button);
+}
+.sidebarNav .navItem:global(.active):hover {
+  transform: translateX(0);
+  background: linear-gradient(135deg, #0a2b0e, #1d4ed8);
+}
+
+.profileContent {
+  min-height: 600px;
+}
+
+.contentCard {
+  background: white;
+  border-radius: var(--primary-border-radius);
+  padding: var(--space-48);
+  box-shadow: var(--primary-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tabHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-48);
+  padding-bottom: var(--space-24);
+  border-bottom: 2px solid var(--primary-card-color);
+}
+.tabHeader .tabTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: var(--space-8);
+}
+.tabHeader .tabSubtitle {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.editToggleBtn {
+  padding: var(--space-8) var(--space-24);
+  border: 2px solid var(--primary-button);
+  background: transparent;
+  color: var(--primary-button);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+.editToggleBtn:hover {
+  background: var(--primary-button);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 50, 18, 0.3);
+}
+.editToggleBtn:global(.editing) {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+.editToggleBtn:global(.editing):hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.profileDisplay .infoSection .infoGroup {
+  display: grid;
+  gap: var(--space-24);
+}
+.profileDisplay .infoSection .infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  background: var(--primary-card-color);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-button);
+}
+.profileDisplay .infoSection .infoItem svg {
+  color: var(--primary-button);
+  margin-top: 2px;
+}
+.profileDisplay .infoSection .infoItem .infoContent {
+  flex: 1;
+}
+.profileDisplay .infoSection .infoItem .infoContent label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.profileDisplay .infoSection .infoItem .infoContent span {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.profileForm .formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-24);
+  margin-bottom: var(--space-48);
+}
+.profileForm .formGrid .formGroup {
+  display: flex;
+  flex-direction: column;
+}
+.profileForm .formGrid .formGroup:global(.full-width) {
+  grid-column: 1/-1;
+}
+.profileForm .formLabel {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: var(--space-8);
+  font-size: 0.95rem;
+}
+.profileForm .formInput {
+  padding: var(--space-16);
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all var(--transition-speed) ease;
+  background: white;
+}
+.profileForm .formInput:focus {
+  outline: none;
+  border-color: var(--primary-button);
+  box-shadow: 0 0 0 3px rgba(14, 50, 18, 0.1);
+}
+.profileForm .formInput:global(.error) {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+.profileForm .formInput::-moz-placeholder {
+  color: #9ca3af;
+}
+.profileForm .formInput::placeholder {
+  color: #9ca3af;
+}
+.profileForm .errorMessage {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: var(--space-4);
+  font-weight: 500;
+}
+
+.formActions {
+  display: flex;
+  gap: var(--space-16);
+  padding-top: var(--space-24);
+  border-top: 1px solid #e5e7eb;
+}
+.formActions .saveBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-16) var(--space-24);
+  background: linear-gradient(135deg, var(--primary-button), #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+.formActions .saveBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(14, 50, 18, 0.3);
+}
+.formActions .cancelBtn {
+  padding: var(--space-16) var(--space-24);
+  background: transparent;
+  color: var(--text-light);
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+.formActions .cancelBtn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: var(--text-color);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-48);
+}
+.emptyState .emptyIcon {
+  color: var(--text-light);
+  margin-bottom: var(--space-24);
+}
+.emptyState .emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: var(--space-16);
+}
+.emptyState .emptyDescription {
+  color: var(--text-light);
+  margin-bottom: var(--space-24);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+.emptyState .browseBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-16) var(--space-24);
+  background: linear-gradient(135deg, var(--primary-button), #2563eb);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all var(--transition-speed) ease;
+}
+.emptyState .browseBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(14, 50, 18, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .profileLayout {
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-24);
+  }
+  .contentCard {
+    padding: var(--space-24);
+  }
+}
+@media (max-width: 768px) {
+  .profilePage {
+    padding: var(--space-16);
+  }
+  .profileLayout {
+    grid-template-columns: 1fr;
+    gap: var(--space-24);
+  }
+  .profileSidebar {
+    position: static;
+  }
+  .sidebarCard {
+    padding: var(--space-16);
+  }
+  .userAvatarSection {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+  }
+  .userAvatarSection .avatarPlaceholder {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0;
+    margin-right: var(--space-16);
+  }
+  .sidebarNav .navList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+  }
+  .sidebarNav .navItem {
+    text-align: center;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-8);
+  }
+  .sidebarNav .navItem span {
+    font-size: 0.85rem;
+  }
+  .profileForm .formGrid {
+    grid-template-columns: 1fr;
+    gap: var(--space-16);
+  }
+  .tabHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-16);
+  }
+  .formActions {
+    flex-direction: column;
+  }
+  .formActions .saveBtn,
+  .formActions .cancelBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  .profileHeader .profileTitle {
+    font-size: 2rem;
+  }
+  .sidebarNav .navList {
+    grid-template-columns: 1fr;
+  }
+  .sidebarNav .navItem {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .contentCard {
+    padding: var(--space-16);
+  }
+}/*# sourceMappingURL=ProfilePage.module.css.map */
