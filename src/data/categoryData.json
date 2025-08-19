@@ -1,0 +1,305 @@
+[
+  {
+    "id": 1,
+    "slug": "home-kitchen",
+    "name": "Home & Kitchen",
+    "image": {
+      "src": "/assets/images/home_2.png",
+      "height": 300,
+      "width": 400
+    },
+    "hero": {
+      "title": "Home & Kitchen!",
+      "subtitle": "Your adventure begins here.",
+      "image": {
+        "src": "/assets/images/home.jpg",
+        "height": 400,
+        "width": 600
+      }
+    },
+    "children": [
+      {
+        "id": 201,
+        "slug": "furniture",
+        "name": "Furniture",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        }
+      },
+      {
+        "id": 202,
+        "slug": "appliances",
+        "name": "Appliances",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Electronics",
+    "slug": "electronics",
+    "image": {
+      "src": "/assets/images/electronics.png",
+      "width": 60,
+      "height": 60
+    },
+    "hero": {
+      "title": "Cutting-Edge Electronics",
+      "subtitle": "Explore the latest in tech innovations.",
+      "image": {
+        "src": "/assets/images/electroic_hero.jpg",
+        "width": 0,
+        "height": 0
+      }
+    },
+    "children": [
+      {
+        "id": 101,
+        "slug": "laptops",
+        "name": "Laptops",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": 1001,
+            "slug": "gaming-laptops",
+            "name": "Gaming Laptops",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": 1002,
+            "slug": "ultrabooks",
+            "name": "Ultrabooks",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "slug": "smartphones",
+        "name": "Smartphones",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": 1003,
+            "slug": "android-phones",
+            "name": "Android Phones",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": 1004,
+            "slug": "iphones",
+            "name": "iPhones",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Automotive",
+    "slug": "automotive",
+    "image": {
+      "src": "/assets/images/auto_1.png",
+      "width": 60,
+      "height": 60
+    },
+    "hero": {
+      "componentName": "AutoPromotionHero",
+      "props": {
+        "promoCode": "DRIVEFAST",
+        "campaignId": "summer-2025"
+      }
+    },
+    "children": [
+      {
+        "id": "101",
+        "slug": "care",
+        "name": "Care",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": "1001",
+            "slug": "interior",
+            "name": "Interior",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": "1002",
+            "slug": "exterior",
+            "name": "Exterior",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "102",
+        "slug": "parts",
+        "name": "Parts",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": "1003",
+            "slug": "lighting",
+            "name": "Lighting",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": "1004",
+            "slug": "filter",
+            "name": "Filter",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Fashion",
+    "slug": "fashion",
+    "image": {
+      "src": "/assets/images/fashion_1.png",
+      "width": 60,
+      "height": 60
+    },
+    "hero": {
+      "title": "Style That Speaks",
+      "subtitle": "Dress to impress with our curated collections.",
+      "image": {
+        "src": "/assets/images/fashion_hero.png",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "children": [
+      {
+        "id": 101,
+        "slug": "men",
+        "name": "Men",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": 1001,
+            "slug": "shoes",
+            "name": "Shoes",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": 1002,
+            "slug": "pants",
+            "name": "Pants",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "slug": "women",
+        "name": "Women",
+        "image": {
+          "src": "",
+          "height": 0,
+          "width": 0
+        },
+        "children": [
+          {
+            "id": 1003,
+            "slug": "shoes",
+            "name": "Shoes",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          },
+          {
+            "id": 1006,
+            "slug": "dresses",
+            "name": "Dresses",
+            "image": {
+              "src": "",
+              "height": 0,
+              "width": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "home",
+    "name": "Home",
+    "slug": "",
+    "hero": {
+      "componentName": "CarouselHero",
+      "props": {}
+    }
+  }
+]

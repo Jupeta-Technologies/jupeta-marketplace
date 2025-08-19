@@ -14,7 +14,7 @@ import {
   AiOutlineLogin,
   AiOutlineClose,
 } from 'react-icons/ai';
-import { MdOutlineSell, MdOutlineManageAccounts } from 'react-icons/md';
+import { MdOutlineSell, MdOutlineManageAccounts, MdAdminPanelSettings } from 'react-icons/md';
 import { CiLocationOff, CiReceipt } from 'react-icons/ci';
 import { useFavorites } from '@/context/FavoriteContext';
 import dynamic from 'next/dynamic';
@@ -289,6 +289,13 @@ const JupetaECnavBar = () => {
                   <li onClick={() => router.push('/Login')}>
                     <MdOutlineManageAccounts id="uMicon" />
                     <span>My account</span>
+                  </li>
+                )}
+                {/* Admin Panel Access - show for authenticated users (you can add role-based logic here) */}
+                {isAuthenticated && user && (
+                  <li onClick={() => router.push('/admin')}>
+                    <MdAdminPanelSettings id="uMicon" />
+                    <span>Admin Panel</span>
                   </li>
                 )}
                 {isAuthenticated ? (

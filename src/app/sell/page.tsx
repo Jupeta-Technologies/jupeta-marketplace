@@ -183,6 +183,11 @@ const SellListing = () => {
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
   const [showTradeItems, setShowTradeItems] = useState(false);
 
+  // Add loading and error states for publishing
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+  const [publishSuccess, setPublishSuccess] = useState(false);
+
   const [listData, setlistData] = useState<ListDataState>({
     Title: "",
     Condition: "",
@@ -1260,55 +1265,123 @@ const SellListing = () => {
     setShowFullListingForm(false);
   };
 
-  const handleConfirmPublish = () => {
-    const dataToSend = {
-      ProductName: listData.Title,
-      Description: listData.Description,
-      Summary: listData.Summary,
-      Price: listData.Price,
-      IsAvailable: true,
-      Quantity: listData.Quantity,
-      Category: category, // Use dynamic category
-      SellingType: listData.sellType, // Use dynamic sellType
-      Condition: listData.Condition, // Use dynamic condition
-      Specification: JSON.stringify(listData.Specification),
-    };
+  const handleConfirmPublish = async () => {
+    // Reset states
+    setPublishError(null);
+    setPublishSuccess(false);
+    setIsPublishing(true);
 
-    const fd = new FormData();
-    for (const [key, value] of Object.entries(dataToSend)) {
-      console.log(`${key}:`, value);
-      fd.append(key, String(value));
-    }
+    try {
+      // Map selling type to CategoryId as required by API
+      const getCategoryId = (sellingType: string): number => {
+        switch (sellingType.toLowerCase()) {
+          case 'buynow':
+          case 'buy now':
+            return 1;
+          case 'auction':
+            return 2;
+          case 'trade':
+            return 3;
+          default:
+            return 1; // Default to buy now
+        }
+      };
 
-    if (imgF) {
-      fd.append("ImageFile", imgF, imgF.name);
-    }
+      // Generate a random VendorId (you can replace this with actual user ID)
+      const generateVendorId = (): string => {
+        return `vendor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      };
 
-    console.log("FormData Contents:");
-    for (const pair of fd.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
+      const dataToSend = {
+        ProductName: listData.Title,
+        Description: listData.Description,
+        Summary: listData.Summary,
+        Price: listData.Price,
+        IsAvailable: true,
+        Quantity: listData.Quantity,
+        Category: category, // Use dynamic category
+        SellingType: listData.sellType, // Use dynamic sellType
+        Condition: listData.Condition, // Use dynamic condition
+        Specification: JSON.stringify(listData.Specification),
+        VendorId: generateVendorId(), // Required field
+        CategoryId: getCategoryId(listData.sellType), // Required field: 1=BuyNow, 2=Auction, 3=Trade
+      };
 
-    // Example for shipping details from the product section
-    // You'd need to extract these from listData similarly to specifications
-    const shippingDetails = typedTemplate.product.shipping.fields;
-    for (const key in shippingDetails) {
-      const field = shippingDetails[key as keyof typeof shippingDetails];
-      // Assuming shipping details are stored directly in listData or another state
-      // For now, I'll just append dummy values or leave it to your implementation
-      if (field.label === "Shipping Cost") {
-        fd.append("ShippingCost", String(listData.Price)); // Placeholder
+      const fd = new FormData();
+      for (const [key, value] of Object.entries(dataToSend)) {
+        console.log(`${key}:`, value);
+        fd.append(key, String(value));
       }
-      if (field.label === "Shipping Method") {
-        fd.append("ShippingMethod", "Standard"); // Placeholder
-      }
-    }
 
-    // PublishItems(fd); // Uncomment when ready to integrate with API
-    
-    // Close preview and show success message
-    setShowPreview(false);
-    alert("Listing published successfully!"); // Replace with proper notification
+      if (imgF) {
+        fd.append("ImageFile", imgF, imgF.name);
+      }
+
+      console.log("FormData Contents:");
+      for (const pair of fd.entries()) {
+        console.log(`${pair[0]}:`, pair[1]);
+      }
+
+      // Example for shipping details from the product section
+      // You'd need to extract these from listData similarly to specifications
+      const shippingDetails = typedTemplate.product.shipping.fields;
+      for (const key in shippingDetails) {
+        const field = shippingDetails[key as keyof typeof shippingDetails];
+        // Assuming shipping details are stored directly in listData or another state
+        // For now, I'll just append dummy values or leave it to your implementation
+        if (field.label === "Shipping Cost") {
+          fd.append("ShippingCost", String(listData.Price)); // Placeholder
+        }
+        if (field.label === "Shipping Method") {
+          fd.append("ShippingMethod", "Standard"); // Placeholder
+        }
+      }
+
+      // Integrate with the API
+      const response = await PublishItems(fd);
+      
+      // Handle successful response
+      // Check if response exists and has successful status
+      if (response && response.status >= 200 && response.status < 300) {
+        setPublishSuccess(true);
+        setShowPreview(false);
+        
+        // Reset form or redirect as needed
+        setTimeout(() => {
+          // You can add navigation logic here if needed
+          setPublishSuccess(false);
+        }, 3000);
+      } else {
+        // Handle error response
+        const errorMessage = response?.data?.message || 
+                           response?.statusText || 
+                           'Failed to publish listing';
+        throw new Error(errorMessage);
+      }
+      
+    } catch (error: any) {
+      console.error('Error publishing listing:', error);
+      
+      // Handle different types of errors
+      let errorMessage = 'An unexpected error occurred while publishing your listing';
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        errorMessage = error.response.data?.message || 
+                      `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = 'Network error: Unable to connect to the server';
+      } else if (error.message) {
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = error.message;
+      }
+      
+      setPublishError(errorMessage);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   useEffect(() => {
@@ -2828,20 +2901,51 @@ const SellListing = () => {
             </div>
             
             <div className="preview-actions">
+              {/* Error notification */}
+              {publishError && (
+                <div className="publish-notification error">
+                  <span className="error-icon">⚠️</span>
+                  <span>{publishError}</span>
+                  <button 
+                    className="close-btn"
+                    onClick={() => setPublishError(null)}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {/* Success notification */}
+              {publishSuccess && (
+                <div className="publish-notification success">
+                  <span className="success-icon">✅</span>
+                  <span>Listing published successfully!</span>
+                </div>
+              )}
+
               <button 
                 className="btn-secondary"
                 onClick={() => {
                   setShowPreview(false);
                   setShowFullListingForm(true);
                 }}
+                disabled={isPublishing}
               >
                 Edit Listing
               </button>
               <button 
-                className="btn-primary"
+                className={`btn-primary ${isPublishing ? 'loading' : ''}`}
                 onClick={handleConfirmPublish}
+                disabled={isPublishing}
               >
-                Confirm & Publish
+                {isPublishing ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Publishing...
+                  </>
+                ) : (
+                  'Confirm & Publish'
+                )}
               </button>
             </div>
           </div>
