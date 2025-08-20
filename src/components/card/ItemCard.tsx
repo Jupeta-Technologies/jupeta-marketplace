@@ -74,7 +74,7 @@ const ItemCard = ({
                 return primaryImage.imageUrl;
             }
             // If no primary image, use the first one
-            return productImages[0].imageUrl;
+            return ProductImages[0].imageUrl;
         }
         // Fallback to old imageFileUrl for backward compatibility
         return ImageFileUrl;
@@ -82,13 +82,13 @@ const ItemCard = ({
     
     // Get alt text from primary image or use productName as fallback
     const getAltText = () => {
-        if (ProductImages && productImages.length > 0) {
+        if (ProductImages && ProductImages.length > 0) {
             const primaryImage = ProductImages.find(img => img.isPrimary);
             if (primaryImage && primaryImage.altText) {
                 return primaryImage.altText;
             }
-            if (productImages[0].altText) {
-                return productImages[0].altText;
+            if (ProductImages[0].altText) {
+                return ProductImages[0].altText;
             }
         }
         return ProductName;
@@ -183,7 +183,7 @@ const ItemCard = ({
         price: showPrice ? <span className='card__price'>¢{Price}</span> : null,
         condition: showCondition ? <div className='itemConditionTag'>{Condition}</div> : null,
         favorite: showFavorite ? (
-            isFavorite(id) ? (
+            isFavorite(Id) ? (
                 <AiFillHeart 
                     className='favoriteIcon' 
                     onClick={handleFavoriteClick}
@@ -248,7 +248,7 @@ const ItemCard = ({
                 onClick={handleCardClick}
             >
                 {defaultElements.endingSoon}
-                <Link href={`/products/${id}`} className='item_link'>
+                <Link href={`/products/${Id}`} className='item_link'>
                     {defaultElements.condition}
                     {defaultElements.favorite}
                     {defaultElements.image}
@@ -274,7 +274,7 @@ const ItemCard = ({
                 {defaultElements.image}
                 {defaultElements.title}
                 {showDescription && description && (
-                    <p className='card__description'>{Description}</p>
+                    <p className='card__description'>{description}</p>
                 )}
             </Link>
             {defaultElements.price}
