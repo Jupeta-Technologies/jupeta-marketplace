@@ -38,7 +38,7 @@ const HomePage = () => {
         if (res.Code !== "0") {
           throw new Error("Failed to fetch products");
         }
-        setProducts(res.responseData);
+        setProducts(res.ResponseData);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -110,7 +110,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[0],
-                sellingType: 'Auction'
+                SellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 30 * 60 * 1000).toISOString()}
@@ -120,7 +120,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[1],
-                sellingType: 'Auction'
+                SellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()}
@@ -130,7 +130,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[2],
-                sellingType: 'Auction'
+                SellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()}
@@ -140,7 +140,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[3],
-                sellingType: 'BuyNow'
+                SellingType: 'BuyNow'
               }}
               variant="minimal"
             />
@@ -152,7 +152,7 @@ const HomePage = () => {
           <ItemCard
             prodData={{
               ...products[4],
-              sellingType: 'BuyNow'
+              SellingType: 'BuyNow'
             }}
             variant="custom"
             width={348}
@@ -162,10 +162,10 @@ const HomePage = () => {
         <div className="grid-auto-fit-300 mb-8">
           {products.slice(0, 4).map((product) => (
             <ItemCard
-              key={product.id}
+              key={product.Id}
               prodData={{
                 ...product,
-                sellingType: 'BuyNow'
+                SellingType: 'BuyNow'
               }}
               variant="custom"
               width={300}
