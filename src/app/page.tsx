@@ -38,7 +38,7 @@ const HomePage = () => {
         if (res.Code !== "0") {
           throw new Error("Failed to fetch products");
         }
-        setProducts(res.responseData);
+        setProducts(res.ResponseData);
       } catch (error) {
         console.error("Error fetching products:", error);
       }

@@ -20,13 +20,13 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       try {
         const res = await GetAllProdAPI();
-        if (res.code !== "0") {
+        if (res.Code !== "0") {
           throw new Error('Failed to fetch products');
         }
-        setProducts(res.responseData);
+        setProducts(res.ResponseData);
         // Set initial price range
-        if (res.responseData.length > 0) {
-          const prices = res.responseData.map((p: Product) => p.price || 0);
+        if (res.ResponseData.length > 0) {
+          const prices = res.ResponseData.map((p: Product) => p.price || 0);
           const min = Math.min(...prices);
           const max = Math.max(...prices);
           setSelectedPriceRange([min, max]);
