@@ -17,7 +17,7 @@ export interface Product {
     Summary: string;
     Price: number; // 199.99
     IsAvailable: boolean; // true
-    quantity: number; // 1
+    Quantity: number; // 1
     Category: string; // "Electronics"
     Condition: string; // "New"
     SellingType: string; // "BuyNow
@@ -43,11 +43,11 @@ export interface Product {
   }
   
   export interface APIResponse<T> {
-    message: string;
-    statusCode: number;
-    success:boolean;
-    code: string;
-    responseData: T;
+    Message: string;
+    StatusCode: number;
+    Success:boolean;
+    Code: string;
+    ResponseData: T;
   }
 
   export interface MockProduct extends Product {

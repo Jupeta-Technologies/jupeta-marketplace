@@ -35,7 +35,7 @@ const HomePage = () => {
     const fetchProducts = async () => {
       try {
         const res = await GetAllProdAPI();
-        if (res.code !== "0") {
+        if (res.Code !== "0") {
           throw new Error("Failed to fetch products");
         }
         setProducts(res.responseData);

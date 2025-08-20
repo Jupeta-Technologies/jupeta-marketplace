@@ -62,7 +62,7 @@ const ItemCard = ({
     }
 
     const {Price, ProductName, ImageFileUrl, ProductImages, SellingType, Condition, Id} = prodData;
-    const description = prodData.description || '';
+    const description = prodData.Description || '';
     const { addFavorite, removeFavorite, isFavorite } = useFavorites();
     
     // Get the primary image or first image from productImages array, fallback to imageFileUrl
