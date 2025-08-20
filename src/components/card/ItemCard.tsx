@@ -61,42 +61,42 @@ const ItemCard = ({
         );
     }
 
-    const {Price, ProductName, ImageFileUrl, ProductImages, SellingType, Condition, Id} = prodData;
-    const description = prodData.Description || '';
+    const {price, productName, imageFileUrl, productImages, sellingType, condition, id} = prodData;
+    const description = prodData.description || '';
     const { addFavorite, removeFavorite, isFavorite } = useFavorites();
     
     // Get the primary image or first image from productImages array, fallback to imageFileUrl
     const getImageUrl = () => {
-        if (ProductImages && ProductImages.length > 0) {
+        if (productImages && productImages.length > 0) {
             // Try to find primary image first
-            const primaryImage = ProductImages.find(img => img.isPrimary);
+            const primaryImage = productImages.find(img => img.isPrimary);
             if (primaryImage) {
                 return primaryImage.imageUrl;
             }
             // If no primary image, use the first one
-            return ProductImages[0].imageUrl;
+            return productImages[0].imageUrl;
         }
         // Fallback to old imageFileUrl for backward compatibility
-        return ImageFileUrl;
+        return imageFileUrl;
     };
     
     // Get alt text from primary image or use productName as fallback
     const getAltText = () => {
-        if (ProductImages && ProductImages.length > 0) {
-            const primaryImage = ProductImages.find(img => img.isPrimary);
+        if (productImages && productImages.length > 0) {
+            const primaryImage = productImages.find(img => img.isPrimary);
             if (primaryImage && primaryImage.altText) {
                 return primaryImage.altText;
             }
-            if (ProductImages[0].altText) {
-                return ProductImages[0].altText;
+            if (productImages[0].altText) {
+                return productImages[0].altText;
             }
         }
-        return ProductName;
+        return productName;
     };
     
     // Check if auction is ending soon
     const isAuctionEndingSoon = () => {
-        if (SellingType !== 'Auction' || !auctionEndDate) return false;
+        if (sellingType !== 'Auction' || !auctionEndDate) return false;
         
         const now = new Date();
         const endDate = new Date(auctionEndDate);
@@ -107,7 +107,7 @@ const ItemCard = ({
     
     // Get time remaining for auction
     const getTimeRemaining = () => {
-        if (SellingType !== 'Auction' || !auctionEndDate) return null;
+        if (sellingType !== 'Auction' || !auctionEndDate) return null;
         
         const now = new Date();
         const endDate = new Date(auctionEndDate);
@@ -129,8 +129,8 @@ const ItemCard = ({
         e.preventDefault(); // Prevent navigation when clicking heart
         e.stopPropagation(); // Prevent event bubbling
         
-        if (isFavorite(Id)) {
-            removeFavorite(prodData.Id);
+        if (isFavorite(id)) {
+            removeFavorite(prodData.id);
         } else {
             addFavorite(prodData);
         }
@@ -179,11 +179,11 @@ const ItemCard = ({
                 <img src={getImageUrl()} className="card__img" alt={getAltText()}/>
             </div>
         ),
-        title: <p className='card__title'>{ProductName}</p>,
-        price: showPrice ? <span className='card__price'>¢{Price}</span> : null,
-        condition: showCondition ? <div className='itemConditionTag'>{Condition}</div> : null,
+        title: <p className='card__title'>{productName}</p>,
+        price: showPrice ? <span className='card__price'>¢{price}</span> : null,
+        condition: showCondition ? <div className='itemConditionTag'>{condition}</div> : null,
         favorite: showFavorite ? (
-            isFavorite(Id) ? (
+            isFavorite(id) ? (
                 <AiFillHeart 
                     className='favoriteIcon' 
                     onClick={handleFavoriteClick}
@@ -197,9 +197,9 @@ const ItemCard = ({
             )
         ) : null,
         actions: showActions ? (
-            <ProductAction buyBidTag={SellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
+            <ProductAction buyBidTag={sellingType === 'BuyNow'?'Buy': 'Bid'} item_data={prodData} />
         ) : null,
-        endingSoon: (SellingType === 'Auction' && isAuctionEndingSoon()) ? (
+        endingSoon: (sellingType === 'Auction' && isAuctionEndingSoon()) ? (
             <div className='auctionEndingSoon'>
                 <span className='endingSoonText'>Ending Soon</span>
                 {getTimeRemaining() && (
@@ -231,7 +231,7 @@ const ItemCard = ({
                 onClick={handleCardClick}
             >
                 {defaultElements.endingSoon}
-                <Link href={`/products/${Id}`} className='item_link'>
+                <Link href={`/products/${id}`} className='item_link'>
                     {defaultElements.image}
                     {defaultElements.title}
                 </Link>
@@ -248,7 +248,7 @@ const ItemCard = ({
                 onClick={handleCardClick}
             >
                 {defaultElements.endingSoon}
-                <Link href={`/products/${Id}`} className='item_link'>
+                <Link href={`/products/${id}`} className='item_link'>
                     {defaultElements.condition}
                     {defaultElements.favorite}
                     {defaultElements.image}
@@ -265,10 +265,10 @@ const ItemCard = ({
             className={getCardClassName()} 
             style={getCardStyles()}
             onClick={handleCardClick}
-            key={Id}
+            key={id}
         >
             {defaultElements.endingSoon}
-            <Link href={`/products/${Id}`} className='item_link'>
+            <Link href={`/products/${id}`} className='item_link'>
                 {defaultElements.condition}
                 {defaultElements.favorite}
                 {defaultElements.image}

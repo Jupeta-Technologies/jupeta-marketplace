@@ -110,7 +110,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[0],
-                SellingType: 'Auction'
+                sellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 30 * 60 * 1000).toISOString()}
@@ -120,7 +120,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[1],
-                SellingType: 'Auction'
+                sellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()}
@@ -130,7 +130,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[2],
-                SellingType: 'Auction'
+                sellingType: 'Auction'
               }}
               variant="minimal"
               auctionEndDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()}
@@ -140,7 +140,7 @@ const HomePage = () => {
             <ItemCard
               prodData={{
                 ...products[3],
-                SellingType: 'BuyNow'
+                sellingType: 'BuyNow'
               }}
               variant="minimal"
             />
@@ -152,7 +152,7 @@ const HomePage = () => {
           <ItemCard
             prodData={{
               ...products[4],
-              SellingType: 'BuyNow'
+              sellingType: 'BuyNow'
             }}
             variant="custom"
             width={348}
@@ -162,10 +162,10 @@ const HomePage = () => {
         <div className="grid-auto-fit-300 mb-8">
           {products.slice(0, 4).map((product) => (
             <ItemCard
-              key={product.Id}
+              key={product.id}
               prodData={{
                 ...product,
-                SellingType: 'BuyNow'
+                sellingType: 'BuyNow'
               }}
               variant="custom"
               width={300}
