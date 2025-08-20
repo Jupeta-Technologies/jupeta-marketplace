@@ -26,8 +26,8 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         const res = await GetAllProdAPI()
-        if (res.code === "0" && res.responseData) {
-          const foundProduct = res.responseData.find((p: Product) => p.id === productId)
+        if (res.Code === "0" && res.ResponseData) {
+          const foundProduct = res.ResponseData.find((p: Product) => p.Id === productId)
           if (foundProduct) {
             setProduct(foundProduct)
           }
@@ -47,7 +47,10 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (product) {
       addToCart({
-        ...product,
+        id: product.Id,
+        productName: product.ProductName,
+        price: product.Price,
+        imageFileUrl: product.ImageFileUrl,
         qty: 1
       })
       setItemAdded(true)
@@ -59,7 +62,10 @@ export default function ProductDetailPage() {
   const handleBuyNow = () => {
     if (product) {
       addToCart({
-        ...product,
+        id: product.Id,
+        productName: product.ProductName,
+        price: product.Price,
+        imageFileUrl: product.ImageFileUrl,
         qty: 1
       })
       router.push('/cart')
@@ -93,10 +99,10 @@ export default function ProductDetailPage() {
 
   // Mock images for demonstration
   const productImages = [
-    product.imageFileUrl,
-    product.imageFileUrl,
-    product.imageFileUrl,
-    product.imageFileUrl
+    product.ImageFileUrl,
+    product.ImageFileUrl,
+    product.ImageFileUrl,
+    product.ImageFileUrl
   ]
 
   return (
@@ -110,7 +116,7 @@ export default function ProductDetailPage() {
                 <div className="big-img">
                   <img
                     src={productImages[selectedImage]}
-                    alt={product.productName}
+                    alt={product.ProductName}
                     className="main-image"
                   />
                 </div>
@@ -120,7 +126,7 @@ export default function ProductDetailPage() {
                   <img
                     key={index}
                     src={image}
-                    alt={`${product.productName} ${index + 1}`}
+                    alt={`${product.ProductName} ${index + 1}`}
                     className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
                     onClick={() => setSelectedImage(index)}
                   />
@@ -133,10 +139,10 @@ export default function ProductDetailPage() {
               <div className="box">
         <div>
                   <div className="row">
-                    <h2 className="product-title">{product.productName}</h2>
-                    <span className="product-price">¢{product.price}</span>
+                    <h2 className="product-title">{product.ProductName}</h2>
+                    <span className="product-price">¢{product.Price}</span>
                     
-                    {product.sellingType !== "BuyNow" && (
+                    {product.SellingType !== "BuyNow" && (
                       <span className="auction-info">
                         10000 bids <Clock size={20} style={{ margin: '0 2px' }} /> 1 day 3 Hours 5 Min
                       </span>
@@ -150,7 +156,7 @@ export default function ProductDetailPage() {
           </div>
 
                   <div className="product-actions">
-                    {quickBuy && product.sellingType === "BuyNow" ? (
+                    {quickBuy && product.SellingType === "BuyNow" ? (
                       <div className="checkout-modal">
                         <h3>Checkout</h3>
                         <p>Redirecting to checkout...</p>
@@ -158,15 +164,15 @@ export default function ProductDetailPage() {
                       </div>
                     ) : (
                       <>
-                        {openBid && product.sellingType === "Auction" ? (
+                        {openBid && product.SellingType === "Auction" ? (
                           <div className="bid-modal">
                             <h3>Place Your Bid</h3>
-                            <p>Current Price: ¢{product.price}</p>
+                            <p>Current Price: ¢{product.Price}</p>
                             <div className="bid-input">
                               <input 
                                 type="number" 
                                 placeholder="Enter your bid amount"
-                                min={product.price + 1}
+                                min={product.Price + 1}
                               />
                               <button onClick={() => setOpenBid(false)}>Place Bid</button>
                             </div>
@@ -176,12 +182,12 @@ export default function ProductDetailPage() {
                           <div className="action-buttons">
                             <button
                               className="buy-bid-btn" //replaced buy-bid-btn with card__button will need a general button component
-                              onClick={() => handleBidBuy(product.sellingType)}
+                              onClick={() => handleBidBuy(product.SellingType)}
                             >
-                              {product.sellingType !== "BuyNow" ? "BID" : "BUY NOW"}
+                              {product.SellingType !== "BuyNow" ? "BID" : "BUY NOW"}
                             </button>
 
-                            {product.sellingType === "BuyNow" && (
+                            {product.SellingType === "BuyNow" && (
                               <button 
                                 className={`cart-btn ${itemAdded ? 'added' : ''}`} 
                                 onClick={handleAddToCart}
@@ -215,17 +221,17 @@ export default function ProductDetailPage() {
                       <h4>Item Specifications</h4>
                       <div className="specs">
                         <ul>
-                          <li>Condition: {product.condition}</li>
-                          <li>Type: {product.sellingType}</li>
-                          <li>Category: {product.category || 'General'}</li>
-                          <li>Price: ¢{product.price}</li>
+                          <li>Condition: {product.Condition}</li>
+                          <li>Type: {product.SellingType}</li>
+                          <li>Category: {product.Category || 'General'}</li>
+                          <li>Price: ¢{product.Price}</li>
                         </ul>
                       </div>
                     </div>
                     <div className="itemdesc">
                       <h4>Description</h4>
                       <div className="desc">
-                        <p>{product.description}</p>
+                        <p>{product.Description}</p>
                       </div>
                     </div>
                   </>

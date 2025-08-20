@@ -43,18 +43,18 @@ const SearchResult = () => {
   const [selectedType, setSelectedType] = useState('');
 
   // Get all unique categories from apiData
-  const categories = Array.from(new Set(apiData.map(p => p.category || ''))).filter(Boolean);
+  const categories = Array.from(new Set(apiData.map(p => p.Category || ''))).filter(Boolean);
   // Get min/max price for all products
-  const allPrices = apiData.map(p => p.price || 0);
+  const allPrices = apiData.map(p => p.Price || 0);
   const minPrice = allPrices.length ? Math.min(...allPrices) : 0;
   const maxPrice = allPrices.length ? Math.max(...allPrices) : 10000;
 
   // Filtered search results
   const filteredResults = apiData.filter(product =>
-    (selectedCategory === '' || product.category === selectedCategory) &&
-    (product.price !== undefined && product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1]) &&
-    (selectedCondition === '' || (product.condition && product.condition.toLowerCase() === selectedCondition)) &&
-    (selectedType === '' || (product.sellingType && product.sellingType.toLowerCase() === selectedType.replace(' ', '')))
+    (selectedCategory === '' || product.Category === selectedCategory) &&
+    (product.Price !== undefined && product.Price >= selectedPriceRange[0] && product.Price <= selectedPriceRange[1]) &&
+    (selectedCondition === '' || (product.Condition && product.Condition.toLowerCase() === selectedCondition)) &&
+    (selectedType === '' || (product.SellingType && product.SellingType.toLowerCase() === selectedType.replace(' ', '')))
   );
 
   // Paginate filtered results
@@ -88,13 +88,13 @@ const SearchResult = () => {
       try {
         const response = await jupetaSearchEngine({ keyword });
 
-        if (response.code == '0' && response.responseData) {
-          setApiData(response.responseData);
+        if (response.Code == '0' && response.ResponseData) {
+          setApiData(response.ResponseData);
           // Reset pagination to first page when new search results arrive
           setCurrentPage(1);
         } else {
           // If API call succeeded but 'success' is false
-          setError(response.message || 'Failed to load search results.');
+          setError(response.Message || 'Failed to load search results.');
           setApiData([]); // Clear data on error
         }
       } catch (err: unknown) {
@@ -165,7 +165,7 @@ const SearchResult = () => {
             )}
             <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
               {paginatedItems.map((prodData) => (
-                <ItemCardglobal prodData={prodData} key={prodData.id} />
+                <ItemCardglobal prodData={prodData} key={prodData.Id} />
               ))}
             </div>
           </section>
