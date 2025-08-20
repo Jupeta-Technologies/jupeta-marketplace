@@ -11,20 +11,20 @@ export interface ProductImage {
 }
 
 export interface Product {
-    Id: string; // "67509f052178adce9ef9be11"
-    ProductName: string; // "Beats Studio Pro Bluetooth Wireless Headphones"
-    Description: string;
-    Summary: string;
-    Price: number; // 199.99
-    IsAvailable: boolean; // true
-    Quantity: number; // 1
-    Category: string; // "Electronics"
-    Condition: string; // "New"
-    SellingType: string; // "BuyNow
-    ProductImage: string; // "Beats Studio Pro Bluetooth Wireless Headphones-20241204182716.jpg" (just filename)
-    ImageFileUrl: string; // "https://storage.googleapis.com/..." (full URL) - keeping for backward compatibility
-    ProductImages: ProductImage[]; // New array structure
-    ImageFile: null; // Or `File | null` if it can be a File object before upload
+    id: string; // "67509f052178adce9ef9be11"
+    productName: string; // "Beats Studio Pro Bluetooth Wireless Headphones"
+    description: string;
+    summary: string;
+    price: number; // 199.99
+    isAvailable: boolean; // true
+    quantity: number; // 1
+    category: string; // "Electronics"
+    condition: string; // "New"
+    sellingType: string; // "BuyNow
+    productImage: string; // "Beats Studio Pro Bluetooth Wireless Headphones-20241204182716.jpg" (just filename)
+    imageFileUrl: string; // "https://storage.googleapis.com/..." (full URL) - keeping for backward compatibility
+    productImages: ProductImage[]; // New array structure
+    imageFile: null; // Or `File | null` if it can be a File object before upload
     addedAt: string; // "2024-12-04T18:27:17.285Z" (ISO date string)
     modifiedOn: string;
     qty: number;

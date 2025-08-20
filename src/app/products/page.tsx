@@ -26,7 +26,7 @@ export default function ProductsPage() {
         setProducts(res.ResponseData);
         // Set initial price range
         if (res.ResponseData.length > 0) {
-          const prices = res.ResponseData.map((p: Product) => p.Price || 0);
+          const prices = res.ResponseData.map((p: Product) => p.price || 0);
           const min = Math.min(...prices);
           const max = Math.max(...prices);
           setSelectedPriceRange([min, max]);
@@ -41,19 +41,19 @@ export default function ProductsPage() {
   }, []);
 
   // Get all unique categories from products
-  const categories = Array.from(new Set(products.map(p => p.Category || ''))).filter(Boolean);
+  const categories = Array.from(new Set(products.map(p => p.category || ''))).filter(Boolean);
   // Get min/max price for all products
-  const allPrices = products.map(p => p.Price || 0);
+  const allPrices = products.map(p => p.price || 0);
   const minPrice = allPrices.length ? Math.min(...allPrices) : 0;
   const maxPrice = allPrices.length ? Math.max(...allPrices) : 10000;
 
   const filteredProducts = products.filter(product =>
-    (product.ProductName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.Description?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === '' || product.Category === selectedCategory) &&
-    (product.Price !== undefined && product.Price >= selectedPriceRange[0] && product.Price <= selectedPriceRange[1]) &&
-    (selectedCondition === '' || (product.Condition && product.Condition.toLowerCase() === selectedCondition)) &&
-    (selectedType === '' || (product.SellingType && product.SellingType.toLowerCase() === selectedType.replace(' ', '')))
+    (product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (selectedCategory === '' || product.category === selectedCategory) &&
+    (product.price !== undefined && product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1]) &&
+    (selectedCondition === '' || (product.condition && product.condition.toLowerCase() === selectedCondition)) &&
+    (selectedType === '' || (product.sellingType && product.sellingType.toLowerCase() === selectedType.replace(' ', '')))
   );
 
   if (loading) {
@@ -100,7 +100,7 @@ export default function ProductsPage() {
         </div>
         <div className="products-grid">
           {filteredProducts.map((product) => (
-            <ItemCardglobal key={product.Id} prodData={product} />
+            <ItemCardglobal key={product.id} prodData={product} />
           ))}
         </div>
         {filteredProducts.length === 0 && (

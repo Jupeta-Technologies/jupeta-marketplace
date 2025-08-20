@@ -18,10 +18,10 @@ const FavoritesPage = () => {
     e.preventDefault();
     e.stopPropagation();
     addToCart({
-      id: product.Id,
-      productName: product.ProductName,
-      price: product.Price,
-      imageFileUrl: product.ImageFileUrl,
+      id: product.id,
+      productName: product.productName,
+      price: product.price,
+      imageFileUrl: product.imageFileUrl,
       qty: 1
     });
   };
@@ -29,26 +29,26 @@ const FavoritesPage = () => {
   const handleRemoveFromFavorites = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
-    removeFavorite(product.Id);
+    removeFavorite(product.id);
   };
 
   const handleBuyBidClick = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (product.SellingType?.toLowerCase() === 'buynow') {
+    if (product.sellingType?.toLowerCase() === 'buynow') {
       // Add product to cart and navigate to cart page
       addToCart({
-        id: product.Id,
-        productName: product.ProductName,
-        price: product.Price,
-        imageFileUrl: product.ImageFileUrl,
+        id: product.id,
+        productName: product.productName,
+        price: product.price,
+        imageFileUrl: product.imageFileUrl,
         qty: 1
       }, 'buy-button');
       router.push('/cart');
     } else {
       // Navigate to the product detail page for bidding
-      router.push(`/products/${product.Id}`);
+      router.push(`/products/${product.id}`);
     }
   };
 
@@ -82,10 +82,10 @@ const FavoritesPage = () => {
         
         <div className="favorites-grid">
           {favorites.map((product) => (
-            <Link href={`/products/${product.Id}`} key={product.Id} className="favorite-card-link">
+            <Link href={`/products/${product.id}`} key={product.id} className="favorite-card-link">
               <div className="favorite-card">
                 <div className="favorite-card-image">
-                  <img src={product.ImageFileUrl} alt={product.ProductName} />
+                  <img src={product.imageFileUrl} alt={product.productName} />
                   <button 
                     className="remove-favorite-btn"
                     onClick={(e) => handleRemoveFromFavorites(e, product)}
@@ -103,15 +103,15 @@ const FavoritesPage = () => {
                 </div>
                 
                 <div className="favorite-card-content">
-                  <h3 className="favorite-card-title">{product.ProductName}</h3>
-                  <p className="favorite-card-price">¢{product.Price}</p>
+                  <h3 className="favorite-card-title">{product.productName}</h3>
+                  <p className="favorite-card-price">¢{product.price}</p>
                   
                   <div className="favorite-card-actions">
                     <button 
                       className="buy-btn"
                       onClick={(e) => handleBuyBidClick(e, product)}
                     >
-                      {product.SellingType?.toLowerCase() === 'buynow' ? 'Buy' : 'Bid'}
+                      {product.sellingType?.toLowerCase() === 'buynow' ? 'Buy' : 'Bid'}
                     </button>
                   </div>
                 </div>
