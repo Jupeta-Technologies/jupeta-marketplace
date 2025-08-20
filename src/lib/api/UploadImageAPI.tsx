@@ -18,6 +18,60 @@ export interface UploadImageResponse {
   error?: string;
 }
 
+export interface LocalImageStorageOptions {
+  storeLocally?: boolean; // Whether to store in local assets/images folder
+  generateStaticPath?: boolean; // Whether to generate static path for Next.js
+}
+
+/**
+ * Process image for local storage (client-side simulation)
+ * In a real application, this would be handled by the server
+ * @param file - The image file
+ * @param options - Storage options
+ * @returns Promise<string> - Returns the static path for the image
+ */
+export const processImageForLocalStorage = async (
+  file: File,
+  options: LocalImageStorageOptions = { storeLocally: true, generateStaticPath: true }
+): Promise<string> => {
+  try {
+    // Generate a safe filename
+    const safeFileName = generateSafeFilename(file.name);
+    const timestamp = Date.now();
+    const finalFileName = `${timestamp}_${safeFileName}`;
+    
+    // For client-side, we'll create a static path
+    // In a real implementation, the server would handle the actual file storage
+    const staticPath = `/assets/images/${finalFileName}`;
+    
+    console.log(`📁 Image would be stored locally as: ${staticPath}`);
+    console.log(`💡 To implement actual local storage, handle this on your server/build process`);
+    
+    // Return the static path that would be used
+    return staticPath;
+  } catch (error) {
+    console.error('Error processing image for local storage:', error);
+    throw new Error('Failed to process image for local storage');
+  }
+};
+
+export interface UploadImageRequest {
+  file: File;
+  folder?: string; // Optional folder path like 'categories' or 'heroes'
+}
+
+export interface UploadImageResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    imageUrl: string;
+    fileName: string;
+    fileSize: number;
+    uploadPath: string;
+  };
+  error?: string;
+}
+
 /**
  * Upload an image file to the server
  * @param request - The upload request containing the file and optional folder

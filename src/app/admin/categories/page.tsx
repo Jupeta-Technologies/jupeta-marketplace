@@ -3,16 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { CreateCategory, validateCategoryData } from '@/lib/api/CreateCategoryAPI';
 import { UpdateCategoryAPI, UpdateCategoryRequest, validateUpdateCategoryData } from '@/lib/api/UpdateCategoryAPI';
 import { GetAllCategories, organizeCategoriesHierarchy, flattenCategories, getRootCategories } from '@/lib/api/GetAllCategoriesAPI';
-import { UploadImage, validateImageFile, generateSafeFilename } from '@/lib/api/UploadImageAPI';
+import { UploadImage, validateImageFile, generateSafeFilename, processImageForLocalStorage } from '@/lib/api/UploadImageAPI';
 import { CategoryResponse } from '@/types/category';
 import { convertApiCategoriesToLegacy, downloadCategoryDataJson, downloadReplacementCategoryDataJson, createCategoryDataTypeScriptFile } from '@/utils/categoryDataConverter';
 
 interface CategoryFormData {
   name: string;
   slug: string;
-  description: string;
-  metaTitle: string;
-  metaDescription: string;
+  description: string; // Optional in form, empty string by default
+  metaTitle: string; // Optional in form, empty string by default  
+  metaDescription: string; // Optional in form, empty string by default
   imageUrl: string;
   imageType: 'url' | 'upload' | 'static';
   imageFile: File | null;
@@ -20,9 +20,9 @@ interface CategoryFormData {
   categoryType: 'main' | 'sub';
   parentId: string;
   heroType: 'static' | 'component';
-  heroTitle: string;
-  heroSubtitle: string;
-  heroImage: string;
+  heroTitle: string; // Optional in form, empty string by default
+  heroSubtitle: string; // Optional in form, empty string by default
+  heroImage: string; // Optional in form, empty string by default
   heroImageType: 'url' | 'upload' | 'static';
   heroImageFile: File | null;
   heroStaticImagePath: string;
@@ -262,28 +262,83 @@ const CategoryManagement: React.FC = () => {
     }
   };
 
-  // Handle file upload for category image
-  const handleImageUpload = async (file: File) => {
+  // Handle file upload for hero image
+  const handleHeroImageUpload = async (file: File, storeLocally: boolean = false) => {
     try {
       const validation = validateImageFile(file);
       if (!validation.isValid) {
         throw new Error(validation.error);
       }
 
-      const uploadResponse = await UploadImage({ file, folder: 'categories' });
-      
-      if (uploadResponse.success && uploadResponse.data) {
-        setFormData(prev => ({
-          ...prev,
-          imageUrl: uploadResponse.data!.imageUrl,
-          imageFile: file,
-          imageType: 'upload'
-        }));
+      let heroImageUrl: string;
+
+      if (storeLocally) {
+        // Use local storage processing
+        heroImageUrl = await processImageForLocalStorage(file, { 
+          storeLocally: true, 
+          generateStaticPath: true 
+        });
       } else {
-        throw new Error(uploadResponse.error || 'Failed to upload image');
+        // Use server upload
+        const uploadResponse = await UploadImage({ file, folder: 'heroes' });
+        
+        if (uploadResponse.success && uploadResponse.data) {
+          heroImageUrl = uploadResponse.data.imageUrl;
+        } else {
+          throw new Error(uploadResponse.error || 'Failed to upload hero image');
+        }
       }
+
+      setFormData(prev => ({
+        ...prev,
+        heroImage: heroImageUrl,
+        heroImageFile: file,
+        heroImageType: storeLocally ? 'static' : 'upload'
+      }));
+      
     } catch (error: any) {
-      setFormErrors(prev => ({ ...prev, image: error.message }));
+      console.error('Hero image upload error:', error);
+      setFormErrors(prev => ({ ...prev, heroImage: error.message }));
+    }
+  };
+
+  // Handle file upload for category image
+  const handleImageUpload = async (file: File, storeLocally: boolean = false) => {
+    try {
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        throw new Error(validation.error);
+      }
+
+      let imageUrl: string;
+
+      if (storeLocally) {
+        // Use local storage processing
+        imageUrl = await processImageForLocalStorage(file, { 
+          storeLocally: true, 
+          generateStaticPath: true 
+        });
+      } else {
+        // Use server upload
+        const uploadResponse = await UploadImage({ file, folder: 'categories' });
+        
+        if (uploadResponse.success && uploadResponse.data) {
+          imageUrl = uploadResponse.data.imageUrl;
+        } else {
+          throw new Error(uploadResponse.error || 'Failed to upload image');
+        }
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: imageUrl,
+        imageFile: file,
+        imageType: storeLocally ? 'static' : 'upload'
+      }));
+      
+    } catch (error: any) {
+      console.error('Image upload error:', error);
+      setFormErrors(prev => ({ ...prev, imageUrl: error.message }));
     }
   };
 
@@ -299,16 +354,26 @@ const CategoryManagement: React.FC = () => {
     let heroForValidation = null;
     if (formData.categoryType === 'main') {
       if (formData.heroType === 'static') {
-        heroForValidation = {
-          title: formData.heroTitle,
-          subtitle: formData.heroSubtitle,
-          image: formData.heroImage,
-        };
+        // Only create hero object if there's actual content
+        const hasStaticContent = formData.heroTitle.trim() || 
+                                formData.heroSubtitle.trim() || 
+                                formData.heroImage.trim();
+        
+        if (hasStaticContent) {
+          heroForValidation = {
+            title: formData.heroTitle.trim(),
+            subtitle: formData.heroSubtitle.trim(),
+            image: formData.heroImage.trim(),
+          };
+        }
       } else if (formData.heroType === 'component') {
-        heroForValidation = {
-          componentName: formData.heroComponentName,
-          props: formData.heroComponentProps || '{}',
-        };
+        // Only create hero object if component name is provided
+        if (formData.heroComponentName.trim()) {
+          heroForValidation = {
+            componentName: formData.heroComponentName.trim(),
+            props: formData.heroComponentProps || '{}',
+          };
+        }
       }
     }
 
@@ -387,16 +452,26 @@ const CategoryManagement: React.FC = () => {
       let heroObject = null;
       if (formData.categoryType === 'main') {
         if (formData.heroType === 'static') {
-          heroObject = {
-            title: formData.heroTitle,
-            subtitle: formData.heroSubtitle,
-            image: formData.heroImage,
-          };
+          // Only create hero object if there's actual content
+          const hasStaticContent = formData.heroTitle.trim() || 
+                                  formData.heroSubtitle.trim() || 
+                                  formData.heroImage.trim();
+          
+          if (hasStaticContent) {
+            heroObject = {
+              title: formData.heroTitle.trim(),
+              subtitle: formData.heroSubtitle.trim(),
+              image: formData.heroImage.trim(),
+            };
+          }
         } else if (formData.heroType === 'component') {
-          heroObject = {
-            componentName: formData.heroComponentName,
-            props: formData.heroComponentProps || '{}',
-          };
+          // Only create hero object if component name is provided
+          if (formData.heroComponentName.trim()) {
+            heroObject = {
+              componentName: formData.heroComponentName.trim(),
+              props: formData.heroComponentProps || '{}',
+            };
+          }
         }
       }
 
@@ -410,9 +485,9 @@ const CategoryManagement: React.FC = () => {
         DisplayOrder: formData.displayOrder,
         ImageUrl: formData.imageUrl,
         IsActive: formData.isActive,
-        // Hero object (only for main categories)
-        ...(formData.categoryType === 'main' && heroObject && {
-          Hero: heroObject,
+        // For main categories, include hero (if any) and meta fields
+        ...(formData.categoryType === 'main' && {
+          ...(heroObject && { Hero: heroObject }),
           MetaTitle: formData.metaTitle,
           MetaDescription: formData.metaDescription,
         }),
@@ -560,11 +635,11 @@ const CategoryManagement: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label>Description:</label>
+            <label>Description (Optional):</label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              required
+              placeholder="Enter category description (optional)"
             />
             {formErrors.description && <span className="error">{formErrors.description}</span>}
           </div>
@@ -684,35 +759,116 @@ const CategoryManagement: React.FC = () => {
               {formData.heroType === 'static' && (
                 <>
                   <div className="form-group">
-                    <label>Hero Title:</label>
+                    <label>Hero Title (Optional):</label>
                     <input
                       type="text"
                       value={formData.heroTitle}
                       onChange={(e) => handleInputChange('heroTitle', e.target.value)}
-                      required
+                      placeholder="Enter hero title (optional)"
                     />
                     {formErrors.heroTitle && <span className="error">{formErrors.heroTitle}</span>}
                   </div>
 
                   <div className="form-group">
-                    <label>Hero Subtitle:</label>
+                    <label>Hero Subtitle (Optional):</label>
                     <input
                       type="text"
                       value={formData.heroSubtitle}
                       onChange={(e) => handleInputChange('heroSubtitle', e.target.value)}
-                      required
+                      placeholder="Enter hero subtitle (optional)"
                     />
                     {formErrors.heroSubtitle && <span className="error">{formErrors.heroSubtitle}</span>}
                   </div>
 
                   <div className="form-group">
-                    <label>Hero Image URL:</label>
-                    <input
-                      type="url"
-                      value={formData.heroImage}
-                      onChange={(e) => handleInputChange('heroImage', e.target.value)}
-                      required
-                    />
+                    <label>Hero Image (Optional):</label>
+                    
+                    {/* Hero Image Type Selection */}
+                    <div className="image-type-selector">
+                      <label>
+                        <input
+                          type="radio"
+                          name="heroImageType"
+                          value="url"
+                          checked={formData.heroImageType === 'url'}
+                          onChange={(e) => handleInputChange('heroImageType', e.target.value)}
+                        />
+                        URL
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="heroImageType"
+                          value="upload"
+                          checked={formData.heroImageType === 'upload'}
+                          onChange={(e) => handleInputChange('heroImageType', e.target.value)}
+                        />
+                        Upload to Server
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="heroImageType"
+                          value="static"
+                          checked={formData.heroImageType === 'static'}
+                          onChange={(e) => handleInputChange('heroImageType', e.target.value)}
+                        />
+                        Local Assets
+                      </label>
+                    </div>
+
+                    {/* Hero Image Input Fields */}
+                    {formData.heroImageType === 'url' && (
+                      <input
+                        type="url"
+                        value={formData.heroImage}
+                        onChange={(e) => handleInputChange('heroImage', e.target.value)}
+                        placeholder="https://example.com/hero-image.jpg"
+                      />
+                    )}
+
+                    {formData.heroImageType === 'upload' && (
+                      <div className="upload-options">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleHeroImageUpload(file, false);
+                          }}
+                        />
+                        <small>Upload to server</small>
+                      </div>
+                    )}
+
+                    {formData.heroImageType === 'static' && (
+                      <div className="static-options">
+                        <input
+                          type="text"
+                          value={formData.heroStaticImagePath}
+                          onChange={(e) => handleInputChange('heroStaticImagePath', e.target.value)}
+                          placeholder="/assets/images/hero-image.jpg"
+                        />
+                        <div className="upload-to-assets">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleHeroImageUpload(file, true);
+                            }}
+                          />
+                          <small>Upload and store locally in assets/images</small>
+                        </div>
+                      </div>
+                    )}
+
+                    {formData.heroImage && (
+                      <div className="image-preview">
+                        <img src={formData.heroImage} alt="Hero preview" style={{maxWidth: '200px', maxHeight: '100px'}} />
+                      </div>
+                    )}
+                    
                     {formErrors.heroImage && <span className="error">{formErrors.heroImage}</span>}
                   </div>
                 </>
@@ -753,22 +909,22 @@ const CategoryManagement: React.FC = () => {
               <h3>SEO Metadata</h3>
               
               <div className="form-group">
-                <label>Meta Title:</label>
+                <label>Meta Title (Optional):</label>
                 <input
                   type="text"
                   value={formData.metaTitle}
                   onChange={(e) => handleInputChange('metaTitle', e.target.value)}
-                  required
+                  placeholder="Enter meta title for SEO (optional)"
                 />
                 {formErrors.metaTitle && <span className="error">{formErrors.metaTitle}</span>}
               </div>
 
               <div className="form-group">
-                <label>Meta Description:</label>
+                <label>Meta Description (Optional):</label>
                 <textarea
                   value={formData.metaDescription}
                   onChange={(e) => handleInputChange('metaDescription', e.target.value)}
-                  required
+                  placeholder="Enter meta description for SEO (optional)"
                 />
                 {formErrors.metaDescription && <span className="error">{formErrors.metaDescription}</span>}
               </div>

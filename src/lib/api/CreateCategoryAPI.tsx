@@ -4,21 +4,21 @@ import APIManager from './APIManager';
 // Request interface matching your API structure
 interface CreateCategoryRequest {
   Name: string;
-  Description: string;
+  Description?: string; // Made optional
   Slug: string;
   ParentId?: string | null; // Optional for subcategories
   DisplayOrder: number;
   ImageUrl: string;
   // Hero object (only for main categories, not subcategories)
   Hero?: {
-    title?: string;
-    subtitle?: string;
-    image?: string;
+    title?: string; // Already optional
+    subtitle?: string; // Already optional
+    image?: string; // Made optional
     [key: string]: any; // Allow flexible hero properties
   } | null;
   // SEO fields (optional for subcategories)
-  MetaTitle?: string;
-  MetaDescription?: string;
+  MetaTitle?: string; // Already optional
+  MetaDescription?: string; // Already optional
 }
 
 // API Response interface
@@ -56,25 +56,25 @@ export async function CreateCategory(categoryData: CreateCategoryRequest): Promi
 /**
  * Helper function to create main category with hero content
  * @param name - Category name
- * @param description - Category description
+ * @param description - Category description (optional)
  * @param imageUrl - Category image URL
- * @param heroData - Hero section data
- * @param metaData - SEO metadata
+ * @param heroData - Hero section data (optional fields)
+ * @param metaData - SEO metadata (optional)
  * @returns Promise<CreateCategoryResponse>
  */
 export async function CreateMainCategory(
   name: string,
-  description: string,
+  description: string = '',
   imageUrl: string,
   heroData: {
-    title: string;
-    subtitle: string;
-    image: string;
-  },
+    title?: string;
+    subtitle?: string;
+    image?: string;
+  } = {},
   metaData: {
-    metaTitle: string;
-    metaDescription: string;
-  },
+    metaTitle?: string;
+    metaDescription?: string;
+  } = {},
   displayOrder: number = 0
 ): Promise<CreateCategoryResponse> {
   const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -85,27 +85,27 @@ export async function CreateMainCategory(
     Slug: slug,
     DisplayOrder: displayOrder,
     ImageUrl: imageUrl,
-    Hero: {
-      title: heroData.title,
-      subtitle: heroData.subtitle,
-      image: heroData.image,
-    },
-    MetaTitle: metaData.metaTitle,
-    MetaDescription: metaData.metaDescription,
+    Hero: Object.keys(heroData).length > 0 ? {
+      title: heroData.title || '',
+      subtitle: heroData.subtitle || '',
+      image: heroData.image || '',
+    } : null,
+    MetaTitle: metaData.metaTitle || '',
+    MetaDescription: metaData.metaDescription || '',
   });
 }
 
 /**
  * Helper function to create subcategory (no hero content)
  * @param name - Category name
- * @param description - Category description
+ * @param description - Category description (optional)
  * @param parentId - Parent category ID
  * @param imageUrl - Category image URL
  * @returns Promise<CreateCategoryResponse>
  */
 export async function CreateSubcategory(
   name: string,
-  description: string,
+  description: string = '',
   parentId: string,
   imageUrl: string,
   displayOrder: number = 0
@@ -127,23 +127,23 @@ export async function CreateSubcategory(
 /**
  * Helper function to create component hero category
  * @param name - Category name
- * @param description - Category description
+ * @param description - Category description (optional)
  * @param imageUrl - Category image URL
  * @param componentName - Hero component name
  * @param componentProps - Component props (optional)
- * @param metaData - SEO metadata
+ * @param metaData - SEO metadata (optional)
  * @returns Promise<CreateCategoryResponse>
  */
 export async function CreateComponentHeroCategory(
   name: string,
-  description: string,
+  description: string = '',
   imageUrl: string,
   componentName: string,
   componentProps: Record<string, any> = {},
   metaData: {
-    metaTitle: string;
-    metaDescription: string;
-  },
+    metaTitle?: string;
+    metaDescription?: string;
+  } = {},
   displayOrder: number = 0
 ): Promise<CreateCategoryResponse> {
   const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -158,8 +158,8 @@ export async function CreateComponentHeroCategory(
       componentName: componentName,
       props: JSON.stringify(componentProps),
     },
-    MetaTitle: metaData.metaTitle,
-    MetaDescription: metaData.metaDescription,
+    MetaTitle: metaData.metaTitle || '',
+    MetaDescription: metaData.metaDescription || '',
   });
 }
 
@@ -182,9 +182,7 @@ export function validateCategoryData(
     errors.push('Category name is required');
   }
 
-  if (!data.Description || data.Description.trim().length === 0) {
-    errors.push('Category description is required');
-  }
+  // Description is now optional - no validation needed
 
   // Image is required for main categories, optional for subcategories
   if (isMainCategory && (!data.ImageUrl || data.ImageUrl.trim().length === 0)) {
@@ -193,25 +191,14 @@ export function validateCategoryData(
 
   // For main categories, validate hero content and SEO
   if (isMainCategory) {
-    if (!data.Hero) {
-      errors.push('Hero content is required for main categories');
-    } else {
+    // Hero is optional now - only validate if provided
+    if (data.Hero) {
       // Check if it's a static hero or component hero
       const isStaticHero = data.Hero.title || data.Hero.subtitle || data.Hero.image;
       const isComponentHero = data.Hero.componentName;
       
-      if (isStaticHero) {
-        // Validate static hero
-        if (!data.Hero.title || data.Hero.title.trim().length === 0) {
-          errors.push('Hero title is required for static hero');
-        }
-        if (!data.Hero.subtitle || data.Hero.subtitle.trim().length === 0) {
-          errors.push('Hero subtitle is required for static hero');
-        }
-        if (!data.Hero.image || data.Hero.image.trim().length === 0) {
-          errors.push('Hero image is required for static hero');
-        }
-      } else if (isComponentHero) {
+      // Only validate if it's actually a component hero (not static)
+      if (isComponentHero) {
         // Validate component hero
         if (!data.Hero.componentName || data.Hero.componentName.trim().length === 0) {
           errors.push('Component name is required for component hero');
@@ -224,17 +211,23 @@ export function validateCategoryData(
             errors.push('Component props must be valid JSON');
           }
         }
-      } else {
-        errors.push('Hero must be either static (title/subtitle/image) or component (componentName)');
+      } else if (!isStaticHero) {
+        // If it's neither static nor component, it might be an empty hero
+        // This is allowed now - no error needed for empty heroes
+        // Only throw error if hero object exists but has invalid structure
+        const hasAnyHeroContent = Object.keys(data.Hero).some(key => 
+          data.Hero![key] && data.Hero![key].toString().trim().length > 0
+        );
+        
+        if (hasAnyHeroContent) {
+          // Hero has some content but doesn't match static or component pattern
+          errors.push('Hero must be either static (title/subtitle/image) or component (componentName)');
+        }
       }
     }
     
-    if (!data.MetaTitle || data.MetaTitle.trim().length === 0) {
-      errors.push('Meta title is required for main categories');
-    }
-    if (!data.MetaDescription || data.MetaDescription.trim().length === 0) {
-      errors.push('Meta description is required for main categories');
-    }
+    // MetaTitle and MetaDescription are now optional for main categories
+    // No validation required - they can be empty
   } else {
     // For subcategories, validate parent ID
     if (!data.ParentId || data.ParentId.trim().length === 0) {
