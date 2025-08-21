@@ -9,11 +9,11 @@ import { CategoryAPIResponse, CategoryResponse } from '@/types/category';
 export async function GetAllCategories(): Promise<CategoryResponse[]> {
   try {
     const response = await APIManager.get<CategoryAPIResponse>('User/GetAllCategories');
-    
-    if (response.data.Code === "0" && response.data.Message === "Success") {
-      return organizeCategoriesHierarchy(response.data.ResponseData);
+
+    if (response.data.code === "0" && response.data.message === "Success") {
+      return organizeCategoriesHierarchy(response.data.responseData);
     } else {
-      throw new Error(response.data.Message || 'Failed to fetch categories');
+      throw new Error(response.data.message || 'Failed to fetch categories');
     }
   } catch (error) {
     console.error('GetAllCategories API Error:', error);

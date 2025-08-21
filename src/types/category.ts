@@ -13,9 +13,9 @@ import { getCategoryData, getCategoryDataSync } from '@/lib/categoryDataProvider
 
 // API Response Types - Matching actual GetAllCategories endpoint
 export interface CategoryAPIResponse {
-  Code: string;
-  Message: string;
-  ResponseData: CategoryResponse[];
+  code: string;
+  message: string;
+  responseData: CategoryResponse[];
 }
 
 export interface CategoryResponse {

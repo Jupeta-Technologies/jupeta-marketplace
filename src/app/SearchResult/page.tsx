@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation'; // Correct Next.js hook for URL query params
 import ItemCardglobal from '@/components/card/ItemCard';
+import ItemCardSkeleton from '@/components/card/ItemCardSkeleton';
 import { jupetaSearchEngine } from '@/lib/api/SearchEngine'; // Adjust path as needed
 import { Product } from '@/types/api'; // Your API response types
 import { AxiosError } from 'axios'; // For specific error handling
@@ -155,7 +156,19 @@ const SearchResult = () => {
         />
         <div className="products-container" style={{ flex: 1 }}>
           <section className="product-view--sort" style={{ width:'100%' }}>
-            {loading && <p>Loading search results...</p>}
+            {loading && (
+              <div>
+                <div className="skeleton mb-4">
+                  <div className="sk-title w-40 mb-2"></div>
+                  <div className="sk-line w-60"></div>
+                </div>
+                <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <ItemCardSkeleton key={index} variant="default" />
+                  ))}
+                </div>
+              </div>
+            )}
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             {!loading && !error && apiData.length === 0 && keyword.trim() && (
               <p>No results found for &quot;{keyword}&quot;.</p>
@@ -163,11 +176,13 @@ const SearchResult = () => {
             {!loading && !error && apiData.length === 0 && !keyword.trim() && (
               <p>Please enter a search term.</p>
             )}
-            <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
-              {paginatedItems.map((prodData) => (
-                <ItemCardglobal prodData={prodData} key={prodData.id} />
-              ))}
-            </div>
+            {!loading && !error && paginatedItems.length > 0 && (
+              <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
+                {paginatedItems.map((prodData) => (
+                  <ItemCardglobal prodData={prodData} key={prodData.id} />
+                ))}
+              </div>
+            )}
           </section>
           {!loading && !error && totalPages > 1 && (
             <Pagination

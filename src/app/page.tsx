@@ -12,8 +12,11 @@ import HeroWithSubmenu from "@/components/HeroWithSubmenu";
 import CategoryHeroRenderer from "@/components/CategoryHeroRenderer"; // Import the renderer!
 import { Product } from "@/types/api";
 import ItemCard from "@/components/card/ItemCard";
+import ItemCardSkeleton from "@/components/card/ItemCardSkeleton";
 import ListingRow from "@/components/Shared/ListingRow";
+import ListingRowSkeleton from "@/components/Shared/ListingRowSkeleton";
 import FeaturedSeller from "@/components/Shared/FeaturedSeller";
+import FeaturedSellerSkeleton from "@/components/Shared/FeaturedSellerSkeleton";
 import AdComponent from "@/components/Shared/AdComponent";
 import ItemCardExamples from "@/components/examples/ItemCardExamples";
 
@@ -95,8 +98,35 @@ const HomePage = () => {
       <div className="container">
         {/* Products Loading/Error States */}
         {productsLoading && (
-          <div className="text-center py-8">
-            <p>Loading products...</p>
+          <div className="space-y-8">
+            {/* Hero product skeletons */}
+            <div className="grid-auto-fit-300 mb-8">
+              <ItemCardSkeleton variant="minimal" />
+              <ItemCardSkeleton variant="minimal" />
+              <ItemCardSkeleton variant="minimal" />
+              <ItemCardSkeleton variant="minimal" />
+            </div>
+            
+            {/* Featured custom card skeleton */}
+            <ItemCardSkeleton variant="custom" width={348} height={448} />
+            
+            {/* Main products grid skeleton */}
+            <div className="grid-auto-fit-300 mb-8">
+              <ItemCardSkeleton variant="custom" width={300} height={448} />
+              <ItemCardSkeleton variant="custom" width={300} height={448} />
+              <ItemCardSkeleton variant="custom" width={300} height={448} />
+              <ItemCardSkeleton variant="custom" width={300} height={448} />
+            </div>
+            
+            {/* Listing rows skeletons */}
+            <ListingRowSkeleton itemCount={6} />
+            
+            {/* Featured seller skeleton */}
+            <FeaturedSellerSkeleton itemCount={4} />
+            
+            {/* Additional listing rows */}
+            <ListingRowSkeleton itemCount={6} />
+            <ListingRowSkeleton itemCount={6} />
           </div>
         )}
         

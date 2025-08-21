@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext'
 import { ShoppingCart, Eye, Clock, Truck, MapPin, Lock } from 'lucide-react'
 import MemberCard from '@/components/MemberCard'
 import ListingRow from '@/components/Shared/ListingRow'
+import ProductDetailSkeleton from '@/components/Shared/ProductDetailSkeleton'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -75,12 +76,7 @@ export default function ProductDetailPage() {
   }
 
   if (loading) {
-    return (
-      <div className="product-detail-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading product details...</p>
-      </div>
-    )
+    return <ProductDetailSkeleton />
   }
 
   if (!product) {
