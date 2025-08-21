@@ -20,7 +20,7 @@ export interface Product {
     quantity: number; // 1
     category: string; // "Electronics"
     condition: string; // "New"
-    sellingType: string; // "BuyNow"
+    sellingType: string; // "BuyNow
     productImage: string; // "Beats Studio Pro Bluetooth Wireless Headphones-20241204182716.jpg" (just filename)
     imageFileUrl: string; // "https://storage.googleapis.com/..." (full URL) - keeping for backward compatibility
     productImages: ProductImage[]; // New array structure
@@ -43,11 +43,11 @@ export interface Product {
   }
   
   export interface APIResponse<T> {
-    Message: string;      // Changed from message to Message
-    StatusCode: number;   // Changed from statusCode to StatusCode
-    Success: boolean;     // Changed from success to Success
-    Code: string;         // Changed from code to Code
-    ResponseData: T;      // Changed from responseData to ResponseData
+    message: string;
+    statusCode: number;
+    success:boolean;
+    code: string;
+    responseData: T;
   }
 
   export interface MockProduct extends Product {
