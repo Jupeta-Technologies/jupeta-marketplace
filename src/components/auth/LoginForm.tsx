@@ -39,10 +39,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
     try {
       const response = await UserLogin(formData);
-      if (response && (response.Message === "Success" || response.Code === "0") && response.ResponseData) {
+      if (response && (response.message === "Success" || response.code === "0") && response.responseData) {
         setEmail(formData.email);
         setUserEmail(formData.email);
-        setUser(response.ResponseData); // Set user directly from login response
+        setUser(response.responseData); // Set user directly from login response
         // Ensure AuthContext is up-to-date before redirecting
         if (refreshUser) {
           await refreshUser(formData.email);
@@ -62,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           router.push("/");
         }
       } else {
-        setError(response?.Message || "Login failed. Please try again.");
+        setError(response?.message || "Login failed. Please try again.");
       }
     } catch (err) {
       setError("Login failed. Please try again.");

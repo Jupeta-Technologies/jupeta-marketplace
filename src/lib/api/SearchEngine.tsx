@@ -55,49 +55,49 @@ export const jupetaSearchEngine = async (
                 // Return server-provided error data if available and fits APIResponse structure
                 // Otherwise, construct a generic error message using status and data
                 return {
-                    Code: "1",
-                    Success: false,
-                    Message: error.response.data?.message || `API Error: ${error.response.status} ${error.response.statusText}`,
-                    StatusCode: error.response.status,
-                    ResponseData: [], // Return empty array on error
+                    code: "1",
+                    success: false,
+                    message: error.response.data?.message || `API Error: ${error.response.status} ${error.response.statusText}`,
+                    statusCode: error.response.status,
+                    responseData: [], // Return empty array on error
                 };
             } else if (error.request) {
                 // The request was made but no response was received (e.g., network error, timeout)
                 return {
-                    Code: "1",
-                    Success: false,
-                    Message: "No response from server. Please check your internet connection.",
-                    StatusCode: 503, // Service Unavailable
-                    ResponseData: [],
+                    code: "1",
+                    success: false,
+                    message: "No response from server. Please check your internet connection.",
+                    statusCode: 503, // Service Unavailable
+                    responseData: [],
                 };
             } else {
                 // Something happened in setting up the request that triggered an Error
                 return {
-                    Code: "1",
-                    Success: false,
-                    Message: error.message || "An unexpected request error occurred.",
-                    StatusCode: 500, // Internal Server Error
-                    ResponseData: [],
+                    code: "1",
+                    success: false,
+                    message: error.message || "An unexpected request error occurred.",
+                    statusCode: 500, // Internal Server Error
+                    responseData: [],
                 };
             }
         } else if (error instanceof Error) {
             // General JavaScript Error (e.g., parsing error, type error)
             return {
-                Code: "1",
-                Success: false,
-                Message: error.message || "An unexpected client-side error occurred.",
-                StatusCode: 500,
-                ResponseData: [],
+                code: "1",
+                success: false,
+                message: error.message || "An unexpected client-side error occurred.",
+                statusCode: 500,
+                responseData: [],
             };
         }
 
         // Fallback for any other unknown error type
         return {
-            Code: "1",
-            Success: false,
-            Message: "An unhandled error occurred during the search operation.",
-            StatusCode: 500,
-            ResponseData: [],
+            code: "1",
+            success: false,
+            message: "An unhandled error occurred during the search operation.",
+            statusCode: 500,
+            responseData: [],
         };
     }
 };

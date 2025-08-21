@@ -43,11 +43,11 @@ const HomePage = () => {
         setProductsLoading(true);
         setProductsError(null);
         const res = await GetAllProdAPI();
-        if (res.Code !== "0") {
-          throw new Error(res.Message || "Failed to fetch products");
+        if (res.code !== "0") {
+          throw new Error(res.message || "Failed to fetch products");
         }
-        setProducts(res.ResponseData);
-        console.log("Fetched Products:", res.ResponseData.length, "items");
+        setProducts(res.responseData);
+        console.log("Fetched Products:", res.responseData.length, "items");
       } catch (error) {
         console.error("Error fetching products:", error);
         setProductsError(error instanceof Error ? error.message : "Failed to fetch products");

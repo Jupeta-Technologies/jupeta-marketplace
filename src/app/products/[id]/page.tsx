@@ -26,8 +26,8 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         const res = await GetAllProdAPI()
-        if (res.Code === "0" && res.ResponseData) {
-          const foundProduct = res.ResponseData.find((p: Product) => p.id === productId)
+        if (res.code === "0" && res.responseData) {
+          const foundProduct = res.responseData.find((p: Product) => p.id === productId)
           if (foundProduct) {
             setProduct(foundProduct)
           }
