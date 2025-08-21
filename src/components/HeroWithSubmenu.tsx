@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { usePathname } from 'next/navigation';
 import { CategoryData, CategoryHeroConfig } from '@/types/category';
-import { categoryData } from '@/types/category';
+import { useCategoryDataImmediate } from '@/hooks/useCategoryData'; // Dynamic category data
 import { useHeroContent } from '@/context/HeroContentContext'; // Update import for HeroContentToDisplay & HeroCustomComponent
 
 // Import ALL your possible hero images for static hero displays
@@ -75,6 +75,10 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
   const { heroContent, setHeroContent } = useHeroContent();
   const isSticky = false;
 
+  // Get dynamic category data for submenu generation
+  const categoryData = useCategoryDataImmediate();
+  console.log(categoryData);
+
   const normalizedPath = pathname.split('?')[0];
   const isHomepage = normalizedPath === '/';
 
@@ -125,8 +129,8 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
 
 
   const finalSubmenu: SubmenuItem[] = submenu ?? (isHomepage
-    ? categoryData.filter(cat => cat.id !== 'home' && cat.name.toLowerCase() !== 'home')
-                  .map((cat) => ({
+    ? categoryData.filter((cat: CategoryData) => cat.slug !== 'home' && cat.name.toLowerCase() !== 'home')
+                  .map((cat: CategoryData) => ({
                     name: cat.name,
                     link: `/${cat.slug || cat.id}`,
                     image: cat.image,

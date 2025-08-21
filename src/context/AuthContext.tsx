@@ -50,8 +50,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!email) email = localStorage.getItem('userEmail') || undefined;
       if (email) {
         const res = await GetUserDetails(email);
-        if (res && res.code === "0") {
-          setUser(res.responseData);
+        if (res && res.Code === "0") {
+          setUser(res.ResponseData);
         } else {
           setUser(null);
         }

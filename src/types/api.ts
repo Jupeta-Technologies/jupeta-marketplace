@@ -43,11 +43,11 @@ export interface Product {
   }
   
   export interface APIResponse<T> {
-    message: string;
-    statusCode: number;
-    success:boolean;
-    code: string;
-    responseData: T;
+    Message: string;      // Changed from message to Message
+    StatusCode: number;   // Changed from statusCode to StatusCode
+    Success: boolean;     // Changed from success to Success
+    Code: string;         // Changed from code to Code
+    ResponseData: T;      // Changed from responseData to ResponseData
   }
 
   export interface MockProduct extends Product {

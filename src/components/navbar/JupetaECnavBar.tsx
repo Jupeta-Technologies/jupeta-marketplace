@@ -65,7 +65,7 @@ const JupetaECnavBar = () => {
       setShowSearchSuggestions(false);
       return;
     }
-
+  closeSearchBar();
   router.push(`/SearchResult?keyword=${encodeURIComponent(searchKey.trim())}`);
 
   };
@@ -99,7 +99,7 @@ const JupetaECnavBar = () => {
     // setFavorited(favorites ?? []); // This line was removed as per the edit hint
   }, [favorites]);
 
-  console.log(isAuthenticated, user);
+  //console.log(isAuthenticated, user);
 
   return (
     <>
@@ -132,6 +132,11 @@ const JupetaECnavBar = () => {
                   value={searchKey}
                   placeholder="Search for product..."
                   onChange={handleSearchInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearchSubmit();
+                    }
+                  }}
                   // autoFocus // Managed by ref in handleSearchIconClick for better control
                 />
               </div>

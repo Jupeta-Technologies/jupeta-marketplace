@@ -96,7 +96,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     try {
       const response = await sendOTP(form.email);
       
-      if (response.code === "0") {
+      if (response.Code === "0") {
         setEmail(form.email);
         setTempData(form);
         setShowOTP(true);
@@ -126,12 +126,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         }
         try {
           const response = await UserSignUp(submitForm);
-          if (response && response.code === "0") {
+          if (response && response.Code === "0") {
             setRegCompleted(true);
             setEmail(form.email); // Set email for further use
             setTempData(form); // Store the form data in context or state
           } else {
-            setError(response.message || 'Registration failed');
+            setError(response.Message || 'Registration failed');
           }
         } catch (error) {
           setError('An error occurred during registration. Please try again.');

@@ -65,6 +65,19 @@ const ItemCard = ({
     const description = prodData.description || '';
     const { addFavorite, removeFavorite, isFavorite } = useFavorites();
     
+    // Debug logging to see what data we're actually receiving
+    console.log('ItemCard prodData:', {
+        id,
+        productName,
+        price,
+        imageFileUrl,
+        productImages,
+        sellingType,
+        condition,
+        hasProductImages: productImages?.length > 0,
+        fullProdData: prodData
+    });
+    
     // Get the primary image or first image from productImages array, fallback to imageFileUrl
     const getImageUrl = () => {
         if (productImages && productImages.length > 0) {

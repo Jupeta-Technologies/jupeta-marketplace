@@ -1,0 +1,109 @@
+[
+  {
+    "id": "68a546b5cf64368334f66eb7",
+    "name": "Automobile",
+    "slug": "automobile",
+    "image": {
+      "src": "/assets/images/auto_1.png",
+      "height": 300,
+      "width": 400,
+      "blurDataURL": "",
+      "blurWidth": 0,
+      "blurHeight": 0
+    },
+    "hero": {
+      "componentName": "AutoPromotionHero",
+      "props": {
+        "promoCode": "DRIVEFAST",
+        "campaignId": "summer-2025"
+      }
+    }
+  },
+  {
+    "id": "68a51fa6003a33996cedc460",
+    "name": "Electronics",
+    "slug": "electronics",
+    "image": {
+      "src": "/assets/images/electronics.png",
+      "height": 300,
+      "width": 400,
+      "blurDataURL": "",
+      "blurWidth": 0,
+      "blurHeight": 0
+    },
+    "hero": {
+      "title": "\"\"",
+      "subtitle": "",
+      "image": {
+        "src": "",
+        "height": 400,
+        "width": 600,
+        "blurDataURL": "",
+        "blurWidth": 0,
+        "blurHeight": 0
+      }
+    }
+  },
+  {
+    "id": "68a5475ecf64368334f66eb8",
+    "name": "Fashion",
+    "slug": "fashion",
+    "image": {
+      "src": "/assets/images/fashion_1.png",
+      "height": 300,
+      "width": 400,
+      "blurDataURL": "",
+      "blurWidth": 0,
+      "blurHeight": 0
+    },
+    "hero": {
+      "title": "Style That Speaks",
+      "subtitle": "Dress to impress with our curated collections.",
+      "image": {
+        "src": "",
+        "height": 400,
+        "width": 600,
+        "blurDataURL": "",
+        "blurWidth": 0,
+        "blurHeight": 0
+      }
+    }
+  },
+  {
+    "id": "68a3e533b84cfd9c2ebd47da",
+    "name": "Home & Kitchen",
+    "slug": "home-and-kitchen",
+    "image": {
+      "src": "/assets/images/home_2.png",
+      "height": 300,
+      "width": 400,
+      "blurDataURL": "",
+      "blurWidth": 0,
+      "blurHeight": 0
+    },
+    "hero": {
+      "title": "Home & Kitchen!",
+      "subtitle": "Your adventure begins here.",
+      "image": {
+        "src": "/assets/images/home.jpg",
+        "height": 400,
+        "width": 600,
+        "blurDataURL": "",
+        "blurWidth": 0,
+        "blurHeight": 0
+      }
+    },
+    "children": [
+      {
+        "id": "68a516db3928a40ec0c01b62",
+        "name": "Appliances",
+        "slug": "appliances"
+      },
+      {
+        "id": "68a461444460c6777b1267b6",
+        "name": "Furniture",
+        "slug": "furniture"
+      }
+    ]
+  }
+]

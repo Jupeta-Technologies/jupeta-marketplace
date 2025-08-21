@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { GetAllProdAPI } from "@/lib/api/GetAllProdAPI";
 import { CategoryData } from "@/types/category";
-import { categoryData } from "@/types/category"; // Make sure this provides the homepage hero config
+import { useCategoryDataImmediate } from "@/hooks/useCategoryData"; // Dynamic category data
 
 import CategoryContent from "@/components/CategoryContent";
 import HeroWithSubmenu from "@/components/HeroWithSubmenu";
@@ -23,39 +23,51 @@ import ItemCardExamples from "@/components/examples/ItemCardExamples";
 const HomePage = () => {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState<string | null>(null);
   // currentCategory and subCategories are likely not needed for the homepage hero context,
   // unless your CategoryContent component implicitly relies on currentCategory being null
   // for a homepage-specific display. For the hero, we directly fetch the homepage config.
   const [currentCategory] = useState<CategoryData | null>(null);
   const [subCategories] = useState<CategoryData[]>([]);
 
+  // Get dynamic category data with immediate fallback
+  const categoryData = useCategoryDataImmediate();
+
+  console.log("Category Data:", categoryData);
   const recentViewed: Product[] = []; // Still appears to be unused, consider removing if not implemented
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setProductsLoading(true);
+        setProductsError(null);
         const res = await GetAllProdAPI();
-        if (res.code !== "0") {
-          throw new Error("Failed to fetch products");
+        if (res.Code !== "0") {
+          throw new Error(res.Message || "Failed to fetch products");
         }
-        setProducts(res.responseData);
+        setProducts(res.ResponseData);
+        console.log("Fetched Products:", res.ResponseData.length, "items");
       } catch (error) {
         console.error("Error fetching products:", error);
+        setProductsError(error instanceof Error ? error.message : "Failed to fetch products");
+      } finally {
+        setProductsLoading(false);
       }
     };
     fetchProducts();
   }, []);
 
-  // Find the hero configuration for the homepage from your centralized categoryData
-  // Assuming 'home' is the id for your homepage entry in categoryData
+  // Find the hero configuration for the homepage from dynamic categoryData
+  // Assuming 'home' is the slug for your homepage entry in categoryData
   const homepageHeroConfig =
-    categoryData.find((cat) => cat.id === "home")?.hero || null;
+    categoryData.find((cat: CategoryData) => cat.slug === "home")?.hero || null;
 
   // The submenu generation logic remains here as it's specific to the homepage structure
   // Filter out the "home" category from the submenu
   const submenu = categoryData
-    .filter((cat) => cat.id !== "home" && cat.name.toLowerCase() !== "home") // Exclude by 'id' and 'name'
-    .map((cat) => ({
+    .filter((cat: CategoryData) => cat.slug !== "home" && cat.name.toLowerCase() !== "home") // Exclude by 'slug' and 'name'
+    .map((cat: CategoryData) => ({
       name: cat.name,
       link: `/category/${cat.slug || cat.id}`,
       image: cat.image,
@@ -81,6 +93,32 @@ const HomePage = () => {
         subCategories={subCategories}
       />
       <div className="container">
+        {/* Products Loading/Error States */}
+        {productsLoading && (
+          <div className="text-center py-8">
+            <p>Loading products...</p>
+          </div>
+        )}
+        
+        {productsError && (
+          <div className="text-center py-8 text-red-600">
+            <p>Error: {productsError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Show products count for debugging */}
+        {!productsLoading && !productsError && (
+          <div className="text-sm text-gray-600 mb-4">
+            Loaded {products.length} products
+          </div>
+        )}
+
         {recentViewed.length > 0 && (
           <div className="recentViewed">
             <h6>Recently viewed</h6>
@@ -106,106 +144,127 @@ const HomePage = () => {
 
           {/* Example auction cards with different ending states */}
           <div className="grid-auto-fit-300 mb-8">
-            {/* Auction ending very soon (30 minutes) */}
-            <ItemCard
-              prodData={{
-                ...products[0],
-                sellingType: 'Auction'
-              }}
-              variant="minimal"
-              auctionEndDate={new Date(Date.now() + 30 * 60 * 1000).toISOString()}
-            />
+            {/* Only render ItemCards if we have enough products */}
+            {products.length >= 1 && (
+              <ItemCard
+                prodData={{
+                  ...products[0],
+                  sellingType: 'Auction'
+                }}
+                variant="minimal"
+                auctionEndDate={new Date(Date.now() + 30 * 60 * 1000).toISOString()}
+              />
+            )}
             
-            {/* Auction ending soon (2 hours) */}
-            <ItemCard
-              prodData={{
-                ...products[1],
-                sellingType: 'Auction'
-              }}
-              variant="minimal"
-              auctionEndDate={new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()}
-            />
+            {products.length >= 2 && (
+              <ItemCard
+                prodData={{
+                  ...products[1],
+                  sellingType: 'Auction'
+                }}
+                variant="minimal"
+                auctionEndDate={new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()}
+              />
+            )}
             
-            {/* Regular auction (not ending soon) */}
-            <ItemCard
-              prodData={{
-                ...products[2],
-                sellingType: 'Auction'
-              }}
-              variant="minimal"
-              auctionEndDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()}
-            />
+            {products.length >= 3 && (
+              <ItemCard
+                prodData={{
+                  ...products[2],
+                  sellingType: 'Auction'
+                }}
+                variant="minimal"
+                auctionEndDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()}
+              />
+            )}
             
-            {/* Buy now item (no auction indicator) */}
-            <ItemCard
-              prodData={{
-                ...products[3],
-                sellingType: 'BuyNow'
-              }}
-              variant="minimal"
-            />
+            {products.length >= 4 && (
+              <ItemCard
+                prodData={{
+                  ...products[3],
+                  sellingType: 'BuyNow'
+                }}
+                variant="minimal"
+              />
+            )}
           </div>
 
           
         </div>
-        <div>
-          <ItemCard
-            prodData={{
-              ...products[4],
-              sellingType: 'BuyNow'
-            }}
-            variant="custom"
-            width={348}
-            height={448}
-          />
-        </div>
-        <div className="grid-auto-fit-300 mb-8">
-          {products.slice(0, 4).map((product) => (
+        {products.length >= 5 && (
+          <div>
             <ItemCard
-              key={product.id}
               prodData={{
-                ...product,
+                ...products[4],
                 sellingType: 'BuyNow'
               }}
               variant="custom"
-              width={300}
+              width={348}
               height={448}
             />
-          ))}
-        </div>
-
-        <div className="featured-listing">
-          <ListingRow
-            heading="Auctions"
-            tag=""
-            items={products.slice(0, 6)}
-            viewMoreLink="/featured"
-          />
-        </div>
-
-        <FeaturedSeller
-          products={products}
-          name="Apple"
-          image="https://www.shareicon.net/data/256x256/2016/04/07/746116_apple_512x512.png"
-        />
-       
-        <div className="sponsored-listing">
-          <ListingRow
-            heading="New Arrivals"
-            tag=""
-            items={products.slice(0, 6)}
-            viewMoreLink="/sponsored"
-          />
-        </div>
-
-        <div className="featured-listing">
-          <ListingRow
-            heading="Engage your style"
-            tag=""
-            items={products.slice(6, 12)}
-            viewMoreLink="/featured"
-          />
           </div>
+        )}
+        <div className="grid-auto-fit-300 mb-8">
+          {products.length >= 4 ? (
+            products.slice(0, 4).map((product, key) => (
+              <ItemCard
+                key={key}
+                prodData={{
+                  ...product,
+                  sellingType: 'BuyNow'
+                }}
+                variant="custom"
+                width={300}
+                height={448}
+              />
+            ))
+          ) : !productsLoading && !productsError ? (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              <p>No products available at the moment.</p>
+            </div>
+          ) : null}
+        </div>
+
+        {products.length > 0 && (
+          <div className="featured-listing">
+            <ListingRow
+              heading="Auctions"
+              tag=""
+              items={products.slice(0, 6)}
+              viewMoreLink="/featured"
+            />
+          </div>
+        )}
+
+        {products.length > 0 && (
+          <FeaturedSeller
+            products={products}
+            name="Apple"
+            image="https://www.shareicon.net/data/256x256/2016/04/07/746116_apple_512x512.png"
+          />
+        )}
+       
+        {products.length > 0 && (
+          <div className="sponsored-listing">
+            <ListingRow
+              heading="New Arrivals"
+              tag=""
+              items={products.slice(0, 6)}
+              viewMoreLink="/sponsored"
+            />
+          </div>
+        )}
+
+        {products.length > 6 && (
+          <div className="featured-listing">
+            <ListingRow
+              heading="Engage your style"
+              tag=""
+              items={products.slice(6, 12)}
+              viewMoreLink="/featured"
+            />
+          </div>
+        )}
       </div>
     </>
   );

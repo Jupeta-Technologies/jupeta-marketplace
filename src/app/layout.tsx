@@ -12,6 +12,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import NotificationToasts from "@/components/NotificationToasts";
 import NavWrapper from "@/components/NavWrapper";
+import CategoryDataInitializer from "@/components/CategoryDataInitializer";
 import { Metadata } from 'next';
 
 // Prevent FontAwesome from adding its CSS since we did it manually above
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <HeroContentProvider>
               <CartProvider>
                 <FavoriteProvider>
+                  <CategoryDataInitializer />
                   <NotificationToasts />
                   <NavWrapper>{children}</NavWrapper>
                 </FavoriteProvider>

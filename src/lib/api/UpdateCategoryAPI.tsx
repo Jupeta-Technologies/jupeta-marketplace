@@ -7,7 +7,7 @@ export interface UpdateCategoryRequest {
   Description?: string;
   Slug: string;
   ParentId?: string | null;
-  ImageUrl: string;
+  ImageUrl?: string; // Made optional
   Hero?: {
     [key: string]: string;
   } | null;
@@ -75,7 +75,8 @@ export function validateUpdateCategoryData(data: Partial<UpdateCategoryRequest>)
     errors.push('Slug must be less than 150 characters');
   }
 
-  if (data.ImageUrl && !isValidImageUrl(data.ImageUrl)) {
+  // ImageUrl is now optional - only validate if provided
+  if (data.ImageUrl && data.ImageUrl.trim() && !isValidImageUrl(data.ImageUrl)) {
     errors.push('Please provide a valid image URL or path');
   }
 

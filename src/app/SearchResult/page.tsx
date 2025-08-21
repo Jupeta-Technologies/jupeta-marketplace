@@ -88,13 +88,13 @@ const SearchResult = () => {
       try {
         const response = await jupetaSearchEngine({ keyword });
 
-        if (response.code == '0' && response.responseData) {
-          setApiData(response.responseData);
+        if (response.Code == '0' && response.ResponseData) {
+          setApiData(response.ResponseData);
           // Reset pagination to first page when new search results arrive
           setCurrentPage(1);
         } else {
           // If API call succeeded but 'success' is false
-          setError(response.message || 'Failed to load search results.');
+          setError(response.Message || 'Failed to load search results.');
           setApiData([]); // Clear data on error
         }
       } catch (err: unknown) {

@@ -8,7 +8,7 @@ interface CreateCategoryRequest {
   Slug: string;
   ParentId?: string | null; // Optional for subcategories
   DisplayOrder: number;
-  ImageUrl: string;
+  ImageUrl?: string; // Made optional
   // Hero object (only for main categories, not subcategories)
   Hero?: {
     title?: string; // Already optional
@@ -65,7 +65,7 @@ export async function CreateCategory(categoryData: CreateCategoryRequest): Promi
 export async function CreateMainCategory(
   name: string,
   description: string = '',
-  imageUrl: string,
+  imageUrl: string = '',
   heroData: {
     title?: string;
     subtitle?: string;
@@ -84,7 +84,7 @@ export async function CreateMainCategory(
     Description: description,
     Slug: slug,
     DisplayOrder: displayOrder,
-    ImageUrl: imageUrl,
+    ...(imageUrl && { ImageUrl: imageUrl }),
     Hero: Object.keys(heroData).length > 0 ? {
       title: heroData.title || '',
       subtitle: heroData.subtitle || '',
@@ -107,7 +107,7 @@ export async function CreateSubcategory(
   name: string,
   description: string = '',
   parentId: string,
-  imageUrl: string,
+  imageUrl: string = '',
   displayOrder: number = 0
 ): Promise<CreateCategoryResponse> {
   const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -118,7 +118,7 @@ export async function CreateSubcategory(
     Slug: slug,
     ParentId: parentId,
     DisplayOrder: displayOrder,
-    ImageUrl: imageUrl,
+    ...(imageUrl && { ImageUrl: imageUrl }),
     // No Hero object for subcategories
     // No MetaTitle/MetaDescription for subcategories
   });
@@ -137,7 +137,7 @@ export async function CreateSubcategory(
 export async function CreateComponentHeroCategory(
   name: string,
   description: string = '',
-  imageUrl: string,
+  imageUrl: string = '',
   componentName: string,
   componentProps: Record<string, any> = {},
   metaData: {
@@ -153,7 +153,7 @@ export async function CreateComponentHeroCategory(
     Description: description,
     Slug: slug,
     DisplayOrder: displayOrder,
-    ImageUrl: imageUrl,
+    ...(imageUrl && { ImageUrl: imageUrl }),
     Hero: {
       componentName: componentName,
       props: JSON.stringify(componentProps),
@@ -184,10 +184,8 @@ export function validateCategoryData(
 
   // Description is now optional - no validation needed
 
-  // Image is required for main categories, optional for subcategories
-  if (isMainCategory && (!data.ImageUrl || data.ImageUrl.trim().length === 0)) {
-    errors.push('Category image is required for main categories');
-  }
+  // Image is now optional for both main categories and subcategories
+  // No image validation required
 
   // For main categories, validate hero content and SEO
   if (isMainCategory) {

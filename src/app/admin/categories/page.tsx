@@ -483,7 +483,7 @@ const CategoryManagement: React.FC = () => {
         Slug: formData.slug,
         ParentId: formData.categoryType === 'sub' ? formData.parentId : null,
         DisplayOrder: formData.displayOrder,
-        ImageUrl: formData.imageUrl,
+        ...(formData.imageUrl && formData.imageUrl.trim() && { ImageUrl: formData.imageUrl }),
         IsActive: formData.isActive,
         // For main categories, include hero (if any) and meta fields
         ...(formData.categoryType === 'main' && {
@@ -647,7 +647,7 @@ const CategoryManagement: React.FC = () => {
           {/* Category Image */}
           <div className="form-group">
             <label>
-              Category Image{formData.categoryType === 'sub' ? ' (Optional)' : ' *'}:
+              Category Image (Optional):
             </label>
             <div className="image-input-options">
               <label>
@@ -685,7 +685,7 @@ const CategoryManagement: React.FC = () => {
                 placeholder="Enter image URL"
                 value={formData.imageUrl}
                 onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                required={formData.categoryType === 'main'}
+                required={false}
               />
             )}
 
@@ -697,7 +697,7 @@ const CategoryManagement: React.FC = () => {
                   const file = e.target.files?.[0];
                   if (file) handleImageUpload(file);
                 }}
-                required={formData.categoryType === 'main'}
+                required={formData.categoryType === 'main' || false}
               />
             )}
 
@@ -705,7 +705,7 @@ const CategoryManagement: React.FC = () => {
               <select
                 value={formData.imageUrl}
                 onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                required={formData.categoryType === 'main'}
+                required={formData.categoryType === 'main' || false}
               >
                 <option value="">Select static image</option>
                 {staticImageOptions.map(option => (

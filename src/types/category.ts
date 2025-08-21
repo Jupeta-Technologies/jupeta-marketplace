@@ -5,8 +5,11 @@ import electronic_hero from "@/assets/images/electroic_hero.jpg";
 import fashion_hero from "@/assets/images/fashion_hero.png";
 import heroImage from "@/assets/images/led-speaker.jpg"; // default
 
-// Import categoryData from JSON file
-import categoryDataJson from "@/data/categoryData.json";
+// Import static categoryData as fallback only
+import categoryDataJsonFallback from "@/data/categoryData.json";
+
+// Dynamic category data provider
+import { getCategoryData, getCategoryDataSync } from '@/lib/categoryDataProvider';
 
 // API Response Types - Matching actual GetAllCategories endpoint
 export interface CategoryAPIResponse {
@@ -87,6 +90,26 @@ export interface CategoryData {
   children?: CategoryData[];
 }
 
-// --- CategoryData imported from JSON file ---
-// You can now update categoryData.json file and the changes will be reflected
-export const categoryData: CategoryData[] = categoryDataJson as CategoryData[];
+// --- Dynamic CategoryData Provider ---
+// Primary source: API data transformed to legacy format
+// Fallback: Static JSON file
+
+/**
+ * Get category data dynamically from API with fallback to static JSON
+ * @param forceRefresh - Force refresh from API even if cache is valid
+ * @returns Promise<CategoryData[]>
+ */
+export const getCategoryDataDynamic = getCategoryData;
+
+/**
+ * Get category data synchronously (cached or fallback)
+ * Use when you need immediate data and can't await async calls
+ * @returns CategoryData[]
+ */
+export const getCategoryDataImmediate = getCategoryDataSync;
+
+/**
+ * Static fallback category data (for backward compatibility)
+ * @deprecated Use getCategoryDataDynamic() or getCategoryDataImmediate() instead
+ */
+export const categoryData: CategoryData[] = categoryDataJsonFallback as CategoryData[];
