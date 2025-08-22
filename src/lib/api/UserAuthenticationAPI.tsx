@@ -12,7 +12,7 @@ export const UserLogin = async (data: Record<string, any>): Promise<APIResponse<
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             data: data,
-            withCredentials: true // Ensure cookies are sent with the request
+            withCredentials: false // Ensure cookies are sent with the request
         });
         return response.data;
     } catch (error: any) {

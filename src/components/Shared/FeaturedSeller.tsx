@@ -48,8 +48,33 @@ const FeaturedSeller: React.FC<FeaturedSellerProps> = ({ products, name, image, 
             href={`/products/${x.id}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
-            <img src={getProductImageUrl(x)} alt={x.productName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            <span style={{ position: "relative", bottom: "30px", left: "10px", padding: "2px 14px", borderRadius: "14px", backgroundColor: "#FFF" }}>
+            <img 
+              src={getProductImageUrl(x)} 
+              alt={x.productName} 
+              style={{ 
+                width: "100%", 
+                height: "100%", 
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0
+              }} 
+            />
+            <span 
+              className="price-tag"
+              style={{ 
+                position: "absolute", 
+                bottom: "10px", 
+                left: "10px", 
+                padding: "4px 12px", 
+                borderRadius: "12px", 
+                backgroundColor: "#FFF",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                zIndex: 2
+              }}
+            >
               {x.price}
             </span>
           </a>

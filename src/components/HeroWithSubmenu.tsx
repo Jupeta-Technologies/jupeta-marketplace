@@ -186,11 +186,11 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
 
       {finalSubmenu.length > 0 && (
         <nav className={`GCMenu_Container ${isSticky ? 'sticky' : ''}`}>
-          <ul className="flex justify-around bg-white shadow py-4">
+          <ul>
             {finalSubmenu.map((item) => {
               const displaySubmenuImage = item.image?.src ? allImportedImages[item.image.src] : null;
               return (
-                <li key={item.link} className="text-center">
+                <li key={item.link}>
                   <Link href={item.link}>
                     <div>
                       {displaySubmenuImage && (
@@ -199,7 +199,6 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
                           alt={item.name}
                           width={60}
                           height={60}
-                          className="mx-auto rounded-full"
                         />
                       )}
                       <span>{item.name}</span>
