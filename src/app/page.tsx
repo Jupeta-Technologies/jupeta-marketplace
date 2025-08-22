@@ -164,13 +164,6 @@ const HomePage = () => {
         )}
 
         <div style={{ margin: "32px 0" }}>
-          {/* <AdComponent
-            image="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
-            link="/ad-details"
-            tag="Ad"
-            alt="Homepage Advertisement"
-            style={{ maxWidth: "100%",maxHeight:'500px',overflow:'hidden', margin: "0 auto" }}
-          /> */}
 
           {/* Example auction cards with different ending states */}
           <div className="grid-auto-fit-300 mb-8">
