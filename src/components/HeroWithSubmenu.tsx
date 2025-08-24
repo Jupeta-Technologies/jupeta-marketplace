@@ -77,7 +77,6 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
 
   // Get dynamic category data for submenu generation
   const categoryData = useCategoryDataImmediate();
-  console.log(categoryData);
 
   const normalizedPath = pathname.split('?')[0];
   const isHomepage = normalizedPath === '/';

@@ -100,7 +100,7 @@ const HomePage = () => {
         {productsLoading && (
           <div className="space-y-8">
             {/* Hero product skeletons */}
-            <div className="grid-auto-fit-300 mb-8">
+            <div className="scroll-horizontal mb-8">
               <ItemCardSkeleton variant="minimal" />
               <ItemCardSkeleton variant="minimal" />
               <ItemCardSkeleton variant="minimal" />
@@ -111,7 +111,7 @@ const HomePage = () => {
             <ItemCardSkeleton variant="custom" width={348} height={448} />
             
             {/* Main products grid skeleton */}
-            <div className="grid-auto-fit-300 mb-8">
+            <div className="scroll-horizontal mb-8">
               <ItemCardSkeleton variant="custom" width={300} height={448} />
               <ItemCardSkeleton variant="custom" width={300} height={448} />
               <ItemCardSkeleton variant="custom" width={300} height={448} />
@@ -166,7 +166,7 @@ const HomePage = () => {
         <div style={{ margin: "32px 0" }}>
 
           {/* Example auction cards with different ending states */}
-          <div className="grid-auto-fit-300 mb-8">
+          <div className="scroll-horizontal mb-8">
             {/* Only render ItemCards if we have enough products */}
             {products.length >= 1 && (
               <ItemCard
@@ -227,7 +227,7 @@ const HomePage = () => {
             />
           </div>
         )}
-        <div className="grid-auto-fit-300 mb-8">
+        <div className="scroll-horizontal mb-8">
           {products.length >= 4 ? (
             products.slice(0, 4).map((product, key) => (
               <ItemCard

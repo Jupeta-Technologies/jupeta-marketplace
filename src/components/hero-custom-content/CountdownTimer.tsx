@@ -26,12 +26,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ endTime, message = 'Sal
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
-    return () => clearTimeout(timer);
-  });
+    return () => clearInterval(timer);
+  }, [endTime]);
 
   const timerComponents: JSX.Element[] = [];
 

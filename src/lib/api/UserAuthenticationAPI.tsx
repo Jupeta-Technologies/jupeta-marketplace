@@ -16,7 +16,7 @@ export const UserLogin = async (data: Record<string, any>): Promise<APIResponse<
         });
         return response.data;
     } catch (error: any) {
-        return error?.ResponseData || { Success: false, Message: error?.message || 'Login failed', Code: "1", StatusCode: 500, ResponseData: null };
+        return error?.responseData || { success: false, message: error?.message || 'Login failed', code: "1", statusCode: 500, responseData: null };
     }
 }
 

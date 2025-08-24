@@ -3,6 +3,7 @@ import "@/styles/jupeta-ec-v1.global.css";
 import "@/styles/Loginpage.css"
 import "@/styles/ProductDetail.css"
 import "@/styles/Checkoutpage.css"
+import "@/styles/featuredItemgrid-fix.css"; // Fix for featuredItemgrid positioning
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { CartProvider } from "@/context/CartContext";

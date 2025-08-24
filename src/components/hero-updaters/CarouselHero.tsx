@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { useHeroContent } from '@/context/HeroContentContext';
 import Image, { StaticImageData } from 'next/image';
 
@@ -80,11 +80,43 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentVisible, setContentVisible] = useState(true);
   const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastUpdateRef = useRef<number>(0);
 
-  // Update hero content with smooth transition
+  // Preload all carousel images to prevent loading delays during transitions
+  useEffect(() => {
+    slides.forEach((slide) => {
+      // Create a link element for preloading with Next.js optimization
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = slide.image.src;
+      document.head.appendChild(link);
+    });
+
+    // Cleanup function to remove preload links
+    return () => {
+      const preloadLinks = document.querySelectorAll('link[rel="preload"][as="image"]');
+      preloadLinks.forEach(link => {
+        if (slides.some(slide => slide.image.src === (link as HTMLLinkElement).href)) {
+          document.head.removeChild(link);
+        }
+      });
+    };
+  }, [slides]);
+
+  // Update hero content with smooth transition and debouncing
   const updateHeroContent = useCallback((slideIndex: number, immediate = false) => {
     const slide = slides[slideIndex];
     if (!slide) return;
+
+    const now = Date.now();
+    
+    // Debounce rapid updates (except for immediate updates)
+    if (!immediate && now - lastUpdateRef.current < 100) {
+      return;
+    }
+    
+    lastUpdateRef.current = now;
 
     if (immediate) {
       // Immediate update without transition (for initial load)
@@ -173,11 +205,26 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
   };
 
   return (
-    <div 
-      className={`carousel-hero-controls ${isTransitioning ? 'transitioning' : ''} ${contentVisible ? 'content-visible' : 'content-hidden'}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <>
+      {/* Hidden preloader for Next.js Image optimization */}
+      <div style={{ display: 'none' }}>
+        {slides.map((slide, index) => (
+          <Image
+            key={`preload-${slide.id}`}
+            src={slide.image}
+            alt={`Preload ${slide.title}`}
+            width={1}
+            height={1}
+            priority={index < 2} // Prioritize first 2 images
+          />
+        ))}
+      </div>
+
+      <div 
+        className={`carousel-hero-controls ${isTransitioning ? 'transitioning' : ''} ${contentVisible ? 'content-visible' : 'content-hidden'}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
       {/* Navigation Arrows */}
       {showArrows && slides.length > 1 && (
         <>
@@ -233,7 +280,8 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
         </div>
       )}
     </div>
+    </>
   );
 };
 
-export default CarouselHero;
+export default memo(CarouselHero);

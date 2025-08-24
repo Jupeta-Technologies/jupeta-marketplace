@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./ListingRow.module.css";
 import SimpleItemCard from "@/components/Shared/SimpleItemCard";
 import { Product } from "@/types/api";
+import ItemCard from "../card/ItemCard";
 
 interface ListingRowProps {
   heading: string;
@@ -72,7 +73,7 @@ const ListingRow: React.FC<ListingRowProps> = ({ heading, tag, items, viewMoreLi
         >
           {items.map((item) => (
             <div key={item.id}>
-              <SimpleItemCard prodData={item} />
+              <ItemCard prodData={item}  variant="minimal"/>
             </div>
           ))}
         </div>

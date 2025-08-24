@@ -38,6 +38,7 @@ interface ValidationErrors {
   dateOfBirth?: string;
   confirmPassword?: string;
   terms?: string;
+  general?: string; // For general errors like registration failures
 }
 
 enum RegistrationStep {
@@ -276,10 +277,26 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         setEmail(form.email);
         setTempData(form);
       } else {
-        setErrors({ email: response.message || 'Registration failed' });
+        // Handle error response structure: code "1" with message in responseData
+        let errorMessage = 'Registration failed';
+        
+        if (response?.responseData && typeof response.responseData === 'string') {
+          errorMessage = response.responseData;
+        } else if (response?.message) {
+          errorMessage = response.message;
+        }
+        
+        setErrors({ general: errorMessage });
       }
     } catch (error) {
-      setErrors({ email: 'An error occurred during registration. Please try again.' });
+      // Check if it's a 504 Gateway Timeout error
+      if (error instanceof Error && error.message.includes('504')) {
+        setErrors({ general: 'An error occurred during registration. Please try again.' });
+      } else if (error && typeof error === 'object' && 'status' in error && error.status === 504) {
+        setErrors({ general: 'An error occurred during registration. Please try again.' });
+      } else {
+        setErrors({ general: 'An error occurred during registration. Please try again.' });
+      }
     } finally {
       setLoading(false);
     }
@@ -533,6 +550,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             )}
           </div>
         </div>
+        
+        {errors.general && (
+          <div className="error-message" style={{ marginBottom: "1rem", textAlign: "center" }}>
+            <PiWarningCircleFill />
+            <span>{errors.general}</span>
+          </div>
+        )}
         
         <button type="submit" className="form__button" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : "Create account"}

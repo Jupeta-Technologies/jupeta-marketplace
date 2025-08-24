@@ -17,26 +17,26 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ currentCategory, subC
   if (subCategories && subCategories.length > 0) {
     // If the current category has subcategories, display them
     return (
-      <div className="container mx-auto py-8">
-        <h2 className="text-2xl font-semibold mb-4">
+      <div className="container">
+        <h2 className="category-title">
           {currentCategory.name}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="category-grid">
           {subCategories.map((subCategory) => (
             <div
               key={subCategory.id}
-              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200"
+              className="category-card"
             >
               <Link
                 href={`/category/${subCategory.slug || subCategory.id}`} // Construct the link
-                className="block"
+                className="category-link"
               >
-                <h3 className="text-lg font-medium">{subCategory.name}</h3>
+                <h3 className="category-label">{subCategory.name}</h3>
                 {subCategory.image && ( //check if image exists
                   <img
                     src={subCategory.image.src}
                     alt={subCategory.name}
-                    className="w-full h-48 object-cover rounded-md mt-2"
+                    className="category-image"
                   />
                 )}
               </Link>
@@ -50,22 +50,22 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ currentCategory, subC
     //  This is a placeholder.  In a real e-commerce site, you'd fetch and display
     //  the products associated with this category.
     return (
-      <div className="container mx-auto py-8">
-        <h2 className="text-2xl font-semibold mb-4">
+      <div className="container">
+        <h2 className="category-title">
           Products in {currentCategory.name}
         </h2>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-700">
+        <div className="category-card">
+          <p className="category-description">
             {/* Placeholder:  */}
             This is a placeholder for the product listing page.  You would fetch and display the actual products
             for the &quot;{currentCategory.name}&quot; category here.
           </p>
           {/* Example of a grid of product cards (you'd replace this with your actual product data) */}
           {/*
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            <div className="border rounded-md p-4">Product 1</div>
-            <div className="border rounded-md p-4">Product 2</div>
-            <div className="border rounded-md p-4">Product 3</div>
+          <div className="category-grid">
+            <div className="category-card">Product 1</div>
+            <div className="category-card">Product 2</div>
+            <div className="category-card">Product 3</div>
           </div>
           */}
         </div>

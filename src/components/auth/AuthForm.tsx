@@ -35,7 +35,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="login-body" style={{backgroundImage: 'url(/login_bg.jpg)'}}>
+    <div className="login-body" style={{backgroundImage:'url(https://images.unsplash.com/photo-1637004732258-4b792ce8f474?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTMxfHxibGFjayUyMHRleHR1cmVkfGVufDB8fDB8fHww)'}}>
                     <AiOutlineClose style={{padding:'4px', borderRadius:'50%', background:'#FFF',color:'#000',position:'absolute', right:'16px', top:'16px', fontSize:'2rem', cursor:'pointer'}} onClick={()=>window.history.back()}/>
       <div className="container-login" >
                     <div className="head-label">
