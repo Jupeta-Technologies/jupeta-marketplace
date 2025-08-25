@@ -29,34 +29,34 @@ export async function GetAllCategories(): Promise<CategoryResponse[]> {
 export function organizeCategoriesHierarchy(categories: CategoryResponse[]): CategoryResponse[] {
   // Create a map for quick lookup
   const categoryMap = new Map<string, CategoryResponse>();
-  
+
   // First pass: create map and prepare children arrays
   categories.forEach(category => {
-    categoryMap.set(category.Id, { ...category, Children: [] });
+    categoryMap.set(category.id, { ...category, children: [] });
   });
-  
+
   // Second pass: organize hierarchy
   const rootCategories: CategoryResponse[] = [];
-  
+
   categories.forEach(category => {
-    const categoryWithChildren = categoryMap.get(category.Id)!;
-    
-    if (category.ParentId && category.ParentId !== "") {
+    const categoryWithChildren = categoryMap.get(category.id)!;
+
+    if (category.parentId && category.parentId !== "") {
       // This is a child category
-      const parent = categoryMap.get(category.ParentId);
+      const parent = categoryMap.get(category.parentId);
       if (parent) {
-        parent.Children.push(categoryWithChildren);
-        parent.HasChildren = true;
+        parent.children.push(categoryWithChildren);
+        parent.hasChildren = true;
       }
     } else {
       // This is a root category
       rootCategories.push(categoryWithChildren);
     }
   });
-  
+
   // Sort by display order
   sortByDisplayOrder(rootCategories);
-  
+
   return rootCategories;
 }
 
@@ -65,10 +65,10 @@ export function organizeCategoriesHierarchy(categories: CategoryResponse[]): Cat
  * @param categories - Categories to sort
  */
 function sortByDisplayOrder(categories: CategoryResponse[]): void {
-  categories.sort((a, b) => a.DisplayOrder - b.DisplayOrder);
+  categories.sort((a, b) => a.displayOrder - b.displayOrder);
   categories.forEach(category => {
-    if (category.Children && category.Children.length > 0) {
-      sortByDisplayOrder(category.Children);
+    if (category.children && category.children.length > 0) {
+      sortByDisplayOrder(category.children);
     }
   });
 }
@@ -80,16 +80,16 @@ function sortByDisplayOrder(categories: CategoryResponse[]): void {
  */
 export function flattenCategories(categories: CategoryResponse[]): CategoryResponse[] {
   const flattened: CategoryResponse[] = [];
-  
+
   function flatten(cats: CategoryResponse[], level: number = 0) {
     cats.forEach(category => {
-      flattened.push({ ...category, Level: level });
-      if (category.Children && category.Children.length > 0) {
-        flatten(category.Children, level + 1);
+      flattened.push({ ...category, level });
+      if (category.children && category.children.length > 0) {
+        flatten(category.children, level + 1);
       }
     });
   }
-  
+
   flatten(categories);
   return flattened;
 }
@@ -101,7 +101,7 @@ export function flattenCategories(categories: CategoryResponse[]): CategoryRespo
  * @returns Categories at specified level
  */
 export function getCategoriesByLevel(categories: CategoryResponse[], level: number): CategoryResponse[] {
-  return categories.filter(category => category.Level === level);
+  return categories.filter(category => category.level === level);
 }
 
 /**
@@ -112,11 +112,11 @@ export function getCategoriesByLevel(categories: CategoryResponse[], level: numb
  */
 export function findCategoryById(categories: CategoryResponse[], id: string): CategoryResponse | null {
   for (const category of categories) {
-    if (category.Id === id) {
+    if (category.id === id) {
       return category;
     }
-    if (category.Children && category.Children.length > 0) {
-      const found = findCategoryById(category.Children, id);
+    if (category.children && category.children.length > 0) {
+      const found = findCategoryById(category.children, id);
       if (found) return found;
     }
   }
@@ -124,12 +124,12 @@ export function findCategoryById(categories: CategoryResponse[], id: string): Ca
 }
 
 /**
- * Gets only root categories (Level 0)
+ * Gets only root categories (level 0)
  * @param categories - Array of categories
  * @returns Root categories only
  */
 export function getRootCategories(categories: CategoryResponse[]): CategoryResponse[] {
-  return categories.filter(category => category.IsRootCategory || category.Level === 0);
+  return categories.filter(category => category.isRootCategory || category.level === 0);
 }
 
 /**
@@ -139,5 +139,5 @@ export function getRootCategories(categories: CategoryResponse[]): CategoryRespo
  * @returns Subcategories of the parent
  */
 export function getSubcategories(categories: CategoryResponse[], parentId: string): CategoryResponse[] {
-  return categories.filter(category => category.ParentId === parentId);
+  return categories.filter(category => category.parentId === parentId);
 }
