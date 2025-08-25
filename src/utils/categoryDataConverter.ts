@@ -213,7 +213,7 @@ export async function saveCategoryDataJsonToFile(
  * @returns Root categories in legacy format
  */
 export function getRootCategoriesInLegacyFormat(apiCategories: CategoryResponse[]): CategoryData[] {
-  const rootCategories = apiCategories.filter(cat => !cat.ParentId);
+  const rootCategories = apiCategories.filter(cat => !cat.parentId);
   return convertApiCategoriesToLegacy(rootCategories);
 }
 
