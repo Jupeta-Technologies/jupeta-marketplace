@@ -31,26 +31,26 @@ function convertApiCategoryToLegacy(apiCategory: CategoryResponse): CategoryData
   // Convert hero object
   let hero: CategoryData['hero'] = undefined;
   
-  if (apiCategory.Hero) {
+  if (apiCategory.hero) {
     // Check if it's a component hero (has componentName)
-    if ('componentName' in apiCategory.Hero && apiCategory.Hero.componentName) {
+    if ('componentName' in apiCategory.hero && apiCategory.hero.componentName) {
       // Component hero
-      const props = apiCategory.Hero.props ? 
-        (typeof apiCategory.Hero.props === 'string' ? 
-          JSON.parse(apiCategory.Hero.props) : 
-          apiCategory.Hero.props) : {};
+      const props = apiCategory.hero.props ? 
+        (typeof apiCategory.hero.props === 'string' ? 
+          JSON.parse(apiCategory.hero.props) : 
+          apiCategory.hero.props) : {};
       
       hero = {
-        componentName: apiCategory.Hero.componentName as any,
+        componentName: apiCategory.hero.componentName as any,
         props
       };
-    } else if (apiCategory.Hero.title || apiCategory.Hero.subtitle || apiCategory.Hero.image) {
+    } else if (apiCategory.hero.title || apiCategory.hero.subtitle || apiCategory.hero.image) {
       // Static hero
       hero = {
-        title: apiCategory.Hero.title,
-        subtitle: apiCategory.Hero.subtitle,
+        title: apiCategory.hero.title,
+        subtitle: apiCategory.hero.subtitle,
         image: {
-          src: apiCategory.Hero.image || '',
+          src: apiCategory.hero.image || '',
           height: 400, // Default values since API doesn't include dimensions
           width: 600,
           blurDataURL: '',
@@ -78,9 +78,9 @@ function convertApiCategoryToLegacy(apiCategory: CategoryResponse): CategoryData
   const children = apiCategory.Children?.map(child => convertApiCategoryToLegacy(child)) || [];
 
   const categoryData: CategoryData = {
-    id: apiCategory.Id,
-    name: apiCategory.Name,
-    slug: apiCategory.Slug,
+    id: apiCategory.id,
+    name: apiCategory.name,
+    slug: apiCategory.slug,
     image,
     hero,
     children: children.length > 0 ? children : undefined
