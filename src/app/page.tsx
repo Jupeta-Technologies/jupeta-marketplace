@@ -69,7 +69,7 @@ const HomePage = () => {
   // The submenu generation logic remains here as it's specific to the homepage structure
   // Filter out the "home" category from the submenu
   const submenu = categoryData
-    .filter((cat: CategoryData) => cat.slug !== "home" && cat.name.toLowerCase() !== "home") // Exclude by 'slug' and 'name'
+    .filter((cat: CategoryData) => cat && cat.slug !== "home" && cat.name && cat.name.toLowerCase() !== "home") // Exclude by 'slug' and 'name'
     .map((cat: CategoryData) => ({
       name: cat.name,
       link: `/category/${cat.slug || cat.id}`,

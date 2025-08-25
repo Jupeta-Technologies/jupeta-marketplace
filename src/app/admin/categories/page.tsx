@@ -112,32 +112,32 @@ const CategoryManagement: React.FC = () => {
     let heroComponentName = '';
     let heroComponentProps = '{}';
     
-    if (category.Hero) {
-      if ('componentName' in category.Hero) {
+    if (category.hero) {
+      if ('componentName' in category.hero) {
         heroType = 'component';
-        heroComponentName = category.Hero.componentName || '';
-        heroComponentProps = category.Hero.props || '{}';
+        heroComponentName = category.hero.componentName || '';
+        heroComponentProps = category.hero.props || '{}';
       } else {
         heroType = 'static';
-        heroTitle = category.Hero.title || '';
-        heroSubtitle = category.Hero.subtitle || '';
-        heroImage = category.Hero.image || '';
+        heroTitle = category.hero.title || '';
+        heroSubtitle = category.hero.subtitle || '';
+        heroImage = category.hero.image || '';
       }
     }
     
     // Fill form with category data
     setFormData({
-      name: category.Name,
-      slug: category.Slug,
-      description: category.Description,
-      metaTitle: category.MetaTitle,
-      metaDescription: category.MetaDescription,
-      imageUrl: category.ImageUrl,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      metaTitle: category.metaTitle,
+      metaDescription: category.metaDescription,
+      imageUrl: category.imageUrl,
       imageType: 'url',
       imageFile: null,
       staticImagePath: '',
-      categoryType: category.ParentId ? 'sub' : 'main',
-      parentId: category.ParentId || '',
+      categoryType: category.parentId ? 'sub' : 'main',
+      parentId: category.parentId || '',
       heroType,
       heroTitle,
       heroSubtitle,
@@ -147,8 +147,8 @@ const CategoryManagement: React.FC = () => {
       heroStaticImagePath: '',
       heroComponentName,
       heroComponentProps,
-      displayOrder: category.DisplayOrder,
-      isActive: category.IsActive
+      displayOrder: category.displayOrder,
+      isActive: category.isActive
     });
   };
 
@@ -381,17 +381,17 @@ const CategoryManagement: React.FC = () => {
     let validation;
     if (isEditing && editingCategory) {
       validation = validateUpdateCategoryData({
-        Id: editingCategory.Id,
-        Name: formData.name,
-        Description: formData.description,
-        Slug: formData.slug,
-        ImageUrl: formData.imageUrl,
-        ParentId: formData.categoryType === 'sub' ? formData.parentId : null,
-        Hero: heroForValidation,
-        MetaTitle: formData.metaTitle,
-        MetaDescription: formData.metaDescription,
-        DisplayOrder: formData.displayOrder,
-        IsActive: formData.isActive,
+        id: editingCategory.id,
+        name: formData.name,
+        description: formData.description,
+        slug: formData.slug,
+        imageUrl: formData.imageUrl,
+        parentId: formData.categoryType === 'sub' ? formData.parentId : null,
+        hero: heroForValidation,
+        metaTitle: formData.metaTitle,
+        metaDescription: formData.metaDescription,
+        displayOrder: formData.displayOrder,
+        isActive: formData.isActive,
       });
       
       if (validation.length > 0) {
@@ -413,16 +413,16 @@ const CategoryManagement: React.FC = () => {
       }
     } else {
       validation = validateCategoryData({
-        Name: formData.name,
-        Description: formData.description,
-        ImageUrl: formData.imageUrl,
+        name: formData.name,
+        description: formData.description,
+        imageUrl: formData.imageUrl,
         ...(formData.categoryType === 'main' && heroForValidation && {
-          Hero: heroForValidation,
-          MetaTitle: formData.metaTitle,
-          MetaDescription: formData.metaDescription,
+          hero: heroForValidation,
+          metaTitle: formData.metaTitle,
+          metaDescription: formData.metaDescription,
         }),
         ...(formData.categoryType === 'sub' && {
-          ParentId: formData.parentId,
+          parentId: formData.parentId,
         }),
       }, formData.categoryType === 'main');
 
@@ -477,19 +477,19 @@ const CategoryManagement: React.FC = () => {
 
       // Prepare API request data
       const requestData = {
-        ...(isEditing && editingCategory && { Id: editingCategory.Id }),
-        Name: formData.name,
-        Description: formData.description,
-        Slug: formData.slug,
-        ParentId: formData.categoryType === 'sub' ? formData.parentId : null,
-        DisplayOrder: formData.displayOrder,
-        ...(formData.imageUrl && formData.imageUrl.trim() && { ImageUrl: formData.imageUrl }),
-        IsActive: formData.isActive,
+        ...(isEditing && editingCategory && { id: editingCategory.id }),
+        name: formData.name,
+        description: formData.description,
+        slug: formData.slug,
+        parentId: formData.categoryType === 'sub' ? formData.parentId : null,
+        displayOrder: formData.displayOrder,
+        ...(formData.imageUrl && formData.imageUrl.trim() && { imageUrl: formData.imageUrl }),
+        isActive: formData.isActive,
         // For main categories, include hero (if any) and meta fields
         ...(formData.categoryType === 'main' && {
-          ...(heroObject && { Hero: heroObject }),
-          MetaTitle: formData.metaTitle,
-          MetaDescription: formData.metaDescription,
+          ...(heroObject && { hero: heroObject }),
+          metaTitle: formData.metaTitle,
+          metaDescription: formData.metaDescription,
         }),
       };
 
@@ -500,7 +500,7 @@ const CategoryManagement: React.FC = () => {
         response = await CreateCategory(requestData);
       }
 
-      if (response.Code === "0") {
+      if (response.code === "0") {
         setSubmitSuccess(true);
         setShowForm(false);
         setIsEditing(false);
@@ -515,7 +515,7 @@ const CategoryManagement: React.FC = () => {
         // Hide success message after 3 seconds
         setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
-        throw new Error(response.Message || `Failed to ${isEditing ? 'update' : 'create'} category`);
+        throw new Error(response.message || `Failed to ${isEditing ? 'update' : 'create'} category`);
       }
     } catch (error: any) {
       console.error(`Error ${isEditing ? 'updating' : 'creating'} category:`, error);
@@ -528,10 +528,10 @@ const CategoryManagement: React.FC = () => {
   // Get parent category options for subcategories
   const getParentCategoryOptions = () => {
     return categories
-      .filter(cat => !cat.ParentId) // Only root-level categories
+      .filter(cat => !cat.parentId) // Only root-level categories
       .map(cat => ({
-        id: cat.Id,
-        name: cat.Name
+        id: cat.id,
+        name: cat.name
       }));
   };
 
@@ -1002,7 +1002,7 @@ const CategoryManagement: React.FC = () => {
         {!isLoadingCategories && !categoriesError && categories.length > 0 && (
           <div className="categories-tree">
             {categories.map(category => (
-              <CategoryTreeItem key={category.Id} category={category} level={0} onEdit={startEditing} />
+              <CategoryTreeItem key={category.id} category={category} level={0} onEdit={startEditing} />
             ))}
           </div>
         )}
@@ -1028,19 +1028,19 @@ const CategoryTreeItem: React.FC<{
     <div className={`category-tree-item level-${level}`}>
       <div className="category-item-header">
         <div className="category-main-content" onClick={() => setIsExpanded(!isExpanded)}>
-          {category.Children && category.Children.length > 0 && (
+          {category.children && category.children.length > 0 && (
             <span className={`expand-icon ${isExpanded ? 'expanded' : ''}`}>
               {isExpanded ? '▼' : '▶'}
             </span>
           )}
           <div className="category-info">
-            <span className="category-name">{category.Name}</span>
-            <span className="category-id">ID: {category.Id}</span>
-            {category.Slug && <span className="category-slug">Slug: {category.Slug}</span>}
-            {category.ParentId && <span className="category-parent">Parent: {category.ParentId}</span>}
-            {category.Hero && (
+            <span className="category-name">{category.name}</span>
+            <span className="category-id">ID: {category.id}</span>
+            {category.slug && <span className="category-slug">Slug: {category.slug}</span>}
+            {category.parentId && <span className="category-parent">Parent: {category.parentId}</span>}
+            {category.hero && (
               <span className="category-hero">
-                Hero: {('componentName' in category.Hero) ? `Component (${category.Hero.componentName})` : 'Static'}
+                Hero: {('componentName' in category.hero) ? `Component (${category.hero.componentName})` : 'Static'}
               </span>
             )}
           </div>
@@ -1066,11 +1066,11 @@ const CategoryTreeItem: React.FC<{
           </button>
         </div>
       </div>
-      
-      {isExpanded && category.Children && (
+
+      {isExpanded && category.children && (
         <div className="category-children">
-          {category.Children.map((child: CategoryResponse) => (
-            <CategoryTreeItem key={child.Id} category={child} level={level + 1} onEdit={onEdit} />
+          {category.children.map((child: CategoryResponse) => (
+            <CategoryTreeItem key={child.id} category={child} level={level + 1} onEdit={onEdit} />
           ))}
         </div>
       )}

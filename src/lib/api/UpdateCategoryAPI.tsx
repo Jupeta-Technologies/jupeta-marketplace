@@ -2,31 +2,31 @@
 import { CategoryResponse } from '@/types/category';
 
 export interface UpdateCategoryRequest {
-  Id: string;
-  Name: string;
-  Description?: string;
-  Slug: string;
-  ParentId?: string | null;
-  ImageUrl?: string; // Made optional
-  Hero?: {
+  id: string;
+  name: string;
+  description?: string;
+  slug: string;
+  parentId?: string | null;
+  imageUrl?: string; // Made optional
+  hero?: {
     [key: string]: string;
   } | null;
-  MetaTitle?: string;
-  MetaDescription?: string;
-  DisplayOrder?: number;
-  IsActive?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  displayOrder?: number;
+  isActive?: boolean;
 }
 
 export interface UpdateCategoryAPIResponse {
-  Code: string;
-  Message: string;
-  ResponseData: CategoryResponse | null;
+  code: string;
+  message: string;
+  responseData: CategoryResponse | null;
 }
 
 export async function UpdateCategoryAPI(categoryData: UpdateCategoryRequest): Promise<UpdateCategoryAPIResponse> {
   try {
     // Validate required fields
-    if (!categoryData.Id || !categoryData.Name) {
+    if (!categoryData.id || !categoryData.name) {
       throw new Error('Category ID and Name are required');
     }
 
@@ -44,8 +44,8 @@ export async function UpdateCategoryAPI(categoryData: UpdateCategoryRequest): Pr
 
     const data: UpdateCategoryAPIResponse = await response.json();
     
-    if (data.Code !== "0") {
-      throw new Error(data.Message || 'Failed to update category');
+    if (data.code !== "0") {
+      throw new Error(data.message || 'Failed to update category');
     }
 
     return data;
@@ -59,24 +59,24 @@ export async function UpdateCategoryAPI(categoryData: UpdateCategoryRequest): Pr
 export function validateUpdateCategoryData(data: Partial<UpdateCategoryRequest>): string[] {
   const errors: string[] = [];
 
-  if (!data.Id) {
+  if (!data.id) {
     errors.push('Category ID is required');
   }
 
-  if (!data.Name || data.Name.trim().length === 0) {
+  if (!data.name || data.name.trim().length === 0) {
     errors.push('Category name is required');
   }
 
-  if (data.Name && data.Name.trim().length > 100) {
+  if (data.name && data.name.trim().length > 100) {
     errors.push('Category name must be less than 100 characters');
   }
 
-  if (data.Slug && data.Slug.trim().length > 150) {
+  if (data.slug && data.slug.trim().length > 150) {
     errors.push('Slug must be less than 150 characters');
   }
 
-  // ImageUrl is now optional - only validate if provided
-  if (data.ImageUrl && data.ImageUrl.trim() && !isValidImageUrl(data.ImageUrl)) {
+  // imageUrl is now optional - only validate if provided
+  if (data.imageUrl && data.imageUrl.trim() && !isValidImageUrl(data.imageUrl)) {
     errors.push('Please provide a valid image URL or path');
   }
 

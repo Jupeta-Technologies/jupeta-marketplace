@@ -19,29 +19,29 @@ export interface CategoryAPIResponse {
 }
 
 export interface CategoryResponse {
-  Id: string;
-  Name: string;
-  Description: string;
-  Slug: string;
-  ParentId: string | null;
-  Level: number;
-  Path: string[];
-  PathIds: string[];
-  IsActive: boolean;
-  DisplayOrder: number;
-  ImageUrl: string;
-  Hero: {
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  parentId: string | null;
+  level: number;
+  path: string[];
+  pathIds: string[];
+  isActive: boolean;
+  displayOrder: number;
+  imageUrl: string;
+  hero: {
     [key: string]: string; // Flexible hero object
   } | null;
-  MetaTitle: string;
-  MetaDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  Children: CategoryResponse[];
-  Parent: CategoryResponse | null;
-  HasChildren: boolean;
-  ProductCount: number;
-  IsRootCategory: boolean;
+  metaTitle: string;
+  metaDescription: string;
+  createdAt: string;
+  updatedAt: string;
+  children: CategoryResponse[];
+  parent: CategoryResponse | null;
+  hasChildren: boolean;
+  productCount: number;
+  isRootCategory: boolean;
 }
 
 // Legacy types for existing components (keep for backward compatibility)
