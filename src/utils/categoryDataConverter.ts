@@ -63,9 +63,9 @@ function convertApiCategoryToLegacy(apiCategory: CategoryResponse): CategoryData
 
   // Convert image data
   let image: CategoryData['image'] = undefined;
-  if (apiCategory.ImageUrl) {
+  if (apiCategory.imageUrl) {
     image = {
-      src: apiCategory.ImageUrl,
+      src: apiCategory.imageUrl,
       height: 300, // Default values
       width: 400,
       blurDataURL: '',
@@ -75,7 +75,7 @@ function convertApiCategoryToLegacy(apiCategory: CategoryResponse): CategoryData
   }
 
   // Recursively convert children
-  const children = apiCategory.Children?.map(child => convertApiCategoryToLegacy(child)) || [];
+  const children = apiCategory.children?.map(child => convertApiCategoryToLegacy(child)) || [];
 
   const categoryData: CategoryData = {
     id: apiCategory.id,
