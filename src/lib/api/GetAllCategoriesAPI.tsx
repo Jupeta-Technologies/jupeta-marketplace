@@ -9,8 +9,9 @@ import { CategoryAPIResponse, CategoryResponse } from '@/types/category';
 export async function GetAllCategories(): Promise<CategoryResponse[]> {
   try {
     const response = await APIManager.get<CategoryAPIResponse>('User/GetAllCategories');
+    console.log('GetAllCategories API Response:', response.data);
 
-    if (response.data.code === "0" && response.data.message === "Success") {
+    if (response.status === 200 && response.data.code === "0") {
       return organizeCategoriesHierarchy(response.data.responseData);
     } else {
       throw new Error(response.data.message || 'Failed to fetch categories');

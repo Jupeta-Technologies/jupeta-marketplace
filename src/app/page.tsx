@@ -19,6 +19,7 @@ import FeaturedSeller from "@/components/Shared/FeaturedSeller";
 import FeaturedSellerSkeleton from "@/components/Shared/FeaturedSellerSkeleton";
 import AdComponent from "@/components/Shared/AdComponent";
 import ItemCardExamples from "@/components/examples/ItemCardExamples";
+import RecentlyViewed from "@/components/Shared/RecentlyViewed";
 
 // You no longer need to import heroImage here specifically for the hero section
 // import heroImage from '@/assets/images/led-speaker.jpg';
@@ -38,7 +39,6 @@ const HomePage = () => {
   const categoryData = useCategoryDataImmediate();
 
   console.log("Category Data:", categoryData);
-  const recentViewed: Product[] = []; // Still appears to be unused, consider removing if not implemented
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -95,6 +95,12 @@ const HomePage = () => {
         currentCategory={currentCategory as CategoryData} // Type assertion might be risky if it's genuinely null
         subCategories={subCategories}
       />
+      
+      {/* Recently Viewed Component */}
+      <div className="container">
+        <RecentlyViewed />
+      </div>
+      
       <div className="container">
         {/* Products Loading/Error States */}
         {productsLoading && (
@@ -146,20 +152,6 @@ const HomePage = () => {
         {!productsLoading && !productsError && (
           <div className="text-sm text-gray-600 mb-4">
             Loaded {products.length} products
-          </div>
-        )}
-
-        {recentViewed.length > 0 && (
-          <div className="recentViewed">
-            <h6>Recently viewed</h6>
-            <div
-              style={{
-                width: "248px",
-                height: "148px",
-                backgroundColor: "#F5F5F7",
-                borderRadius: "20px",
-              }}
-            />
           </div>
         )}
 
@@ -288,6 +280,7 @@ const HomePage = () => {
             />
           </div>
         )}
+
       </div>
     </>
   );

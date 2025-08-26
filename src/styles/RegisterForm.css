@@ -125,7 +125,6 @@
 
 .socialAuth > div {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
 }
@@ -198,12 +197,12 @@
   }
   
   .socialAuth {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
   }
   
   .socialAuth > div {
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
   }
 }

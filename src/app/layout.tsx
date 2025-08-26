@@ -8,6 +8,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { CartProvider } from "@/context/CartContext";
 import { FavoriteProvider } from "@/context/FavoriteContext";
+import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import { HeroContentProvider } from "@/context/HeroContentContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { NotificationProvider } from "@/context/NotificationContext";
@@ -48,9 +49,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <HeroContentProvider>
               <CartProvider>
                 <FavoriteProvider>
-                  <CategoryDataInitializer />
-                  <NotificationToasts />
-                  <NavWrapper>{children}</NavWrapper>
+                  <RecentlyViewedProvider>
+                    <CategoryDataInitializer />
+                    <NotificationToasts />
+                    <NavWrapper>{children}</NavWrapper>
+                  </RecentlyViewedProvider>
                 </FavoriteProvider>
               </CartProvider>
             </HeroContentProvider>

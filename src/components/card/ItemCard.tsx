@@ -2,6 +2,7 @@ import React from "react";
 import {AiFillHeart, AiOutlineHeart} from "react-icons/ai"
 import ProductAction from "../Shared/ProductAction";
 import { useFavorites } from '@/context/FavoriteContext';
+import { useRecentlyViewed } from '@/context/RecentlyViewedContext';
 import Link from "next/link";
 import { Product } from "@/types/api";
 
@@ -64,9 +65,10 @@ const ItemCard = ({
     const {price, productName, imageFileUrl, productImages, sellingType, condition, id} = prodData;
     const description = prodData.description || '';
     const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+    const { addToRecentlyViewed } = useRecentlyViewed();
     
     // Debug logging to see what data we're actually receiving
-    console.log('ItemCard prodData:', {
+    /* console.log('ItemCard prodData:', {
         id,
         productName,
         price,
@@ -76,7 +78,7 @@ const ItemCard = ({
         condition,
         hasProductImages: productImages?.length > 0,
         fullProdData: prodData
-    });
+    }); */
     
     // Get the primary image or first image from productImages array, fallback to imageFileUrl
     const getImageUrl = () => {
@@ -146,6 +148,15 @@ const ItemCard = ({
             removeFavorite(prodData.id);
         } else {
             addFavorite(prodData);
+        }
+    };
+
+    const handleItemClick = () => {
+        // Add to recently viewed when user clicks on the item
+        addToRecentlyViewed(prodData);
+        // Call the optional onClick prop if provided
+        if (onClick) {
+            onClick(prodData);
         }
     };
 
@@ -244,7 +255,7 @@ const ItemCard = ({
                 onClick={handleCardClick}
             >
                 {defaultElements.endingSoon}
-                <Link href={`/products/${id}`} className='item_link'>
+                <Link href={`/products/${id}`} className='item_link' onClick={handleItemClick}>
                     {defaultElements.image}
                     {defaultElements.title}
                 </Link>
@@ -261,7 +272,7 @@ const ItemCard = ({
                 onClick={handleCardClick}
             >
                 {defaultElements.endingSoon}
-                <Link href={`/products/${id}`} className='item_link'>
+                <Link href={`/products/${id}`} className='item_link' onClick={handleItemClick}>
                     {defaultElements.condition}
                     {defaultElements.favorite}
                     {defaultElements.image}
@@ -281,7 +292,7 @@ const ItemCard = ({
             key={id}
         >
             {defaultElements.endingSoon}
-            <Link href={`/products/${id}`} className='item_link'>
+            <Link href={`/products/${id}`} className='item_link' onClick={handleItemClick}>
                 {defaultElements.condition}
                 {defaultElements.favorite}
                 {defaultElements.image}
