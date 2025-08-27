@@ -206,19 +206,6 @@ const HomePage = () => {
 
           
         </div>
-        {products.length >= 5 && (
-          <div>
-            <ItemCard
-              prodData={{
-                ...products[4],
-                sellingType: 'BuyNow'
-              }}
-              variant="custom"
-              width={348}
-              height={448}
-            />
-          </div>
-        )}
         <div className="scroll-horizontal mb-8">
           {products.length >= 4 ? (
             products.slice(0, 4).map((product, key) => (

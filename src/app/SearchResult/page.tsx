@@ -9,6 +9,7 @@ import { Product } from '@/types/api'; // Your API response types
 import { AxiosError } from 'axios'; // For specific error handling
 import Pagination from '@/components/Pagination';
 import ProductFilterSidebar from '@/components/ProductFilterSidebar';
+import ItemCard from '@/components/card/ItemCard';
 
 // Assuming you have these components/styles defined elsewhere
 //import '@/components/Allcategories.css';
@@ -42,6 +43,9 @@ const SearchResult = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 10000]);
   const [selectedCondition, setSelectedCondition] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  
+  // Mobile filter state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // Get all unique categories from apiData
   const categories = Array.from(new Set(apiData.map(p => p.category || ''))).filter(Boolean);
@@ -135,26 +139,28 @@ const SearchResult = () => {
   return (
     <>
       {/* <SearchFilter /> */} {/* Uncomment if you're using this component */}
-      <div className="products-page" style={{ display: 'flex', gap: 24, marginTop: '50px' }}>
-        <ProductFilterSidebar
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          priceRange={[minPrice, maxPrice]}
-          selectedPriceRange={selectedPriceRange}
-          onPriceRangeChange={setSelectedPriceRange}
-          onReset={() => {
-            setSelectedCategory('');
-            setSelectedPriceRange([minPrice, maxPrice]);
-            setSelectedCondition('');
-            setSelectedType('');
-          }}
-          selectedCondition={selectedCondition}
-          onConditionChange={setSelectedCondition}
-          selectedType={selectedType}
-          onTypeChange={setSelectedType}
-        />
-        <div className="products-container" style={{ flex: 1 }}>
+      <div className="products-page">
+        <div className="desktop-filter-sidebar">
+          <ProductFilterSidebar
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            priceRange={[minPrice, maxPrice]}
+            selectedPriceRange={selectedPriceRange}
+            onPriceRangeChange={setSelectedPriceRange}
+            onReset={() => {
+              setSelectedCategory('');
+              setSelectedPriceRange([minPrice, maxPrice]);
+              setSelectedCondition('');
+              setSelectedType('');
+            }}
+            selectedCondition={selectedCondition}
+            onConditionChange={setSelectedCondition}
+            selectedType={selectedType}
+            onTypeChange={setSelectedType}
+          />
+        </div>
+        <div className="products-container">
           <section className="product-view--sort" style={{ width:'100%' }}>
             {loading && (
               <div>
@@ -176,10 +182,138 @@ const SearchResult = () => {
             {!loading && !error && apiData.length === 0 && !keyword.trim() && (
               <p>Please enter a search term.</p>
             )}
+            
+            {/* Mobile Filter Section - Only visible on screens ≤768px */}
             {!loading && !error && paginatedItems.length > 0 && (
-              <div className="grid grid-cols-4" style={{gap:'14px', padding:'8px'}}>
+              <div className="mobile-filter-section">
+                <div className="mobile-filter-header">
+                  <button 
+                    className="mobile-filter-toggle"
+                    onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+                    aria-expanded={isMobileFilterOpen}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18M7 12h10m-7 6h4"/>
+                    </svg>
+                    <span>Filters</span>
+                    <span className="filter-count">
+                      {[selectedCategory, selectedCondition, selectedType].filter(f => f !== '').length > 0 && 
+                        `(${[selectedCategory, selectedCondition, selectedType].filter(f => f !== '').length})`
+                      }
+                    </span>
+                    <svg 
+                      className={`filter-chevron ${isMobileFilterOpen ? 'open' : ''}`}
+                      width="16" 
+                      height="16" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                    >
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </button>
+                  <span className="results-count">
+                    {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                
+                {isMobileFilterOpen && (
+                  <div className="mobile-filter-content">
+                    <div className="mobile-filter-grid">
+                      {/* Category Filter */}
+                      <div className="filter-group">
+                        <label className="filter-label">Category</label>
+                        <select 
+                          value={selectedCategory} 
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="filter-select"
+                        >
+                          <option value="">All Categories</option>
+                          {categories.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Condition Filter */}
+                      <div className="filter-group">
+                        <label className="filter-label">Condition</label>
+                        <select 
+                          value={selectedCondition} 
+                          onChange={(e) => setSelectedCondition(e.target.value)}
+                          className="filter-select"
+                        >
+                          <option value="">Any Condition</option>
+                          <option value="new">New</option>
+                          <option value="used">Used</option>
+                          <option value="refurbished">Refurbished</option>
+                        </select>
+                      </div>
+
+                      {/* Type Filter */}
+                      <div className="filter-group">
+                        <label className="filter-label">Type</label>
+                        <select 
+                          value={selectedType} 
+                          onChange={(e) => setSelectedType(e.target.value)}
+                          className="filter-select"
+                        >
+                          <option value="">All Types</option>
+                          <option value="buynow">Buy Now</option>
+                          <option value="auction">Auction</option>
+                        </select>
+                      </div>
+
+                      {/* Price Range */}
+                      <div className="filter-group price-filter">
+                        <label className="filter-label">
+                          Price Range: ¢{selectedPriceRange[0]} - ¢{selectedPriceRange[1]}
+                        </label>
+                        <div className="price-inputs">
+                          <input
+                            type="range"
+                            min={minPrice}
+                            max={maxPrice}
+                            value={selectedPriceRange[0]}
+                            onChange={(e) => setSelectedPriceRange([Number(e.target.value), selectedPriceRange[1]])}
+                            className="price-slider"
+                          />
+                          <input
+                            type="range"
+                            min={minPrice}
+                            max={maxPrice}
+                            value={selectedPriceRange[1]}
+                            onChange={(e) => setSelectedPriceRange([selectedPriceRange[0], Number(e.target.value)])}
+                            className="price-slider"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reset Button */}
+                    <div className="mobile-filter-actions">
+                      <button 
+                        className="reset-filters-btn"
+                        onClick={() => {
+                          setSelectedCategory('');
+                          setSelectedPriceRange([minPrice, maxPrice]);
+                          setSelectedCondition('');
+                          setSelectedType('');
+                        }}
+                      >
+                        Reset Filters
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {!loading && !error && paginatedItems.length > 0 && (
+              <div className="grid-responsive" style={{gap:'14px', padding:'8px'}}>
                 {paginatedItems.map((prodData) => (
-                  <ItemCardglobal prodData={prodData} key={prodData.id} />
+                  <ItemCard prodData={prodData} key={prodData.id} />
                 ))}
               </div>
             )}
