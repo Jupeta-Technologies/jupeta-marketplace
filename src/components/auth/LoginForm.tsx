@@ -136,7 +136,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated === true));
         // Ensure AuthContext is up-to-date before redirecting
         if (refreshUser) {
-          await refreshUser(formData.email);
+          await refreshUser(userId);
         }
         
         // Redirect to the page where login was triggered from
