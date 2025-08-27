@@ -13,9 +13,9 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  refreshUser: (email?: string) => Promise<void>;
+  refreshUser: (userId?: string) => Promise<void>;
   logout: () => void;
-  setUserEmail: (email: string) => void;
+  setUserId: (userId: string) => void;
   setUser: (user: User) => void;
 }
 
@@ -24,13 +24,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userEmail, setUserEmailState] = useState<string | null>(null);
+  const [userId, setUserIdState] = useState<string | null>(null);
 
 
-  const setUserEmail = (email: string) => {
-    setUserEmailState(email);
+  const setUserId = (id: string) => {
+    setUserIdState(id);
     // Optionally, persist to localStorage if you want to survive reloads
-    // localStorage.setItem('userEmail', email);
+    // localStorage.setItem('userId', id);
   };
 
   // Just update state, don't persist user in localStorage
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserState(userObj);
   };
 
-  const refreshUser = async (emailOverride?: string, forceRefresh: boolean = false) => {
+  const refreshUser = async (userIdOverride?: string, forceRefresh: boolean = false) => {
     setLoading(true);
     try {
       // If user is already set and not forcing refresh, skip API call
@@ -46,10 +46,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
         return;
       }
-      let email = emailOverride || userEmail || user?.email;
-      if (!email) email = localStorage.getItem('userEmail') || undefined;
-      if (email) {
-        const res = await GetUserDetails(email);
+      let userId = userIdOverride || user?.userId || user?.id;
+      if (!userId) userId = localStorage.getItem('userId') || undefined;
+      if (userId) {
+        const res = await GetUserDetails(userId);
         if (res && res.code === "0") {
           setUser(res.responseData);
         } else {
@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setUser(null);
       }
-    } catch {
+    } catch (err) {
       setUser(null);
     } finally {
       setLoading(false);
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // On mount, try to restore session using refresh token
     const tryRestoreSession = async () => {
       setLoading(true);
-      const refreshToken = getCookie('csrftoken'); // Change to your actual cookie name
+      const refreshToken = getCookie('refreshToken'); // Change to your actual cookie name
       if (refreshToken) {
         const result = await RefreshAccessToken(refreshToken);
         if (result.success) {
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up periodic token refresh (e.g., every 10 minutes)
     const interval = setInterval(async () => {
-      const refreshToken = getCookie('csrftoken');
+      const refreshToken = getCookie('refreshToken');
       if (!refreshToken) {
         setUser(null);
         return;
@@ -114,10 +114,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 10 * 60 * 1000); // 10 minutes
 
     return () => clearInterval(interval);
-  }, [userEmail]);
+  }, [userId]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, refreshUser, logout, setUserEmail, setUser }}>
+    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, refreshUser, logout, setUserId, setUser }}>
       {children}
     </AuthContext.Provider>
   );

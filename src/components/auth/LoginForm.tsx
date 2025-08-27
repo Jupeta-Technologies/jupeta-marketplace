@@ -28,7 +28,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
   const router = useRouter();
-  const { setUserEmail, refreshUser, setUser } = useAuth();
+  const { refreshUser, setUser } = useAuth();
 
   // Clear error when user starts typing
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,9 +116,24 @@ const LoginForm: React.FC<LoginFormProps> = ({
       
       if (response && (response.message === "Success" || response.code === "0") && response.responseData) {
         setEmail(formData.email);
-        setUserEmail(formData.email);
         setUser(response.responseData);
-        
+        // Store tokens and user info in localStorage
+        const {
+          accessToken,
+          refreshToken,
+          expiresAt,
+          email,
+          fullName,
+          userId,
+          isAuthenticated
+        } = response.responseData;
+        localStorage.setItem('accessToken', accessToken ?? '');
+        localStorage.setItem('refreshToken', refreshToken ?? '');
+        localStorage.setItem('expiresAt', expiresAt ?? '');
+        localStorage.setItem('email', email ?? '');
+        localStorage.setItem('fullName', fullName ?? '');
+        localStorage.setItem('userId', userId ?? '');
+        localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated === true));
         // Ensure AuthContext is up-to-date before redirecting
         if (refreshUser) {
           await refreshUser(formData.email);

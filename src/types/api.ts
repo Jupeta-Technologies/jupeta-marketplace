@@ -35,11 +35,17 @@ export interface Product {
   export interface User{
     id: string,
     name: string,
-    cart:[]
+    cart: [],
     email: string,
     fullName: string,
     phoneNumber: number,
-    dateOfBirth: string
+    dateOfBirth: string,
+    // --- API login response fields ---
+    accessToken?: string,
+    refreshToken?: string,
+    expiresAt?: string,
+    userId?: string,
+    isAuthenticated?: boolean
   }
   
   export interface APIResponse<T> {
@@ -69,4 +75,4 @@ export interface Product {
     location: string;
     lookingFor: string;
   }
-  
+
