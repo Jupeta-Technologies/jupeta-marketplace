@@ -63,10 +63,9 @@ export const VerifyReg_OTP = async (data: Record<string, any>): Promise<APIRespo
 }
 
 
-export const GetUserDetails = async (userId: string): Promise<APIResponse<User>> => {
+export const GetUserDetails = async (email: string): Promise<APIResponse<User>> => {
     try {
-        const response = await APIManager(`/User/GetUserById/${userId}`, { // Adjust endpoint as needed
-            // This endpoint should return user details based on the userId
+        const response = await APIManager(`/User/GetUserById?email=${encodeURIComponent(email)}`, {
             method: "GET",
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true

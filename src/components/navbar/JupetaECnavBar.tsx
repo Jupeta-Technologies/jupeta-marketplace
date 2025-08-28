@@ -39,7 +39,7 @@ const JupetaECnavBar = () => {
   const [justOpened, setJustOpened] = useState(false); // Flag to prevent immediate close
 
   // Other states
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, loading } = useAuth();
   const [cart, setCart] = useState<Product[]>([]);
   const { products, clearFromcart } = useCart();
   const {favorites} = useFavorites();
@@ -542,7 +542,11 @@ const JupetaECnavBar = () => {
               </li>
 
               <li>
-                {isAuthenticated && user ? (
+                {loading ? (
+                  <div className="user-avatar skeleton-avatar" id="userIcon" style={{ width: 32, height: 32, borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : isAuthenticated && user ? (
                   <div className="user-avatar" id="userIcon">
                     {user.fullName ? user.fullName.trim().charAt(0).toUpperCase() : user.name ? user.name.trim().charAt(0).toUpperCase() : "U"}
                   </div>

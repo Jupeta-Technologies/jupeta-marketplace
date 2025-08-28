@@ -13,7 +13,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  refreshUser: (userId?: string) => Promise<void>;
+  refreshUser: (email?: string) => Promise<void>;
   logout: () => void;
   setUserId: (userId: string) => void;
   setUser: (user: User) => void;
@@ -36,9 +36,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Just update state, don't persist user in localStorage
   const setUser = (userObj: User | null) => {
     setUserState(userObj);
+    if (userObj && userObj.email) {
+      localStorage.setItem('email', userObj.email);
+    }
   };
 
-  const refreshUser = async (userIdOverride?: string, forceRefresh: boolean = false) => {
+  const refreshUser = async (emailOverride?: string, forceRefresh: boolean = false) => {
     setLoading(true);
     try {
       // If user is already set and not forcing refresh, skip API call
@@ -46,10 +49,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
         return;
       }
-      let userId = userIdOverride || user?.userId || user?.id;
-      if (!userId) userId = localStorage.getItem('userId') || undefined;
-      if (userId) {
-        const res = await GetUserDetails(userId);
+      let email = emailOverride || user?.email;
+      if (!email) email = localStorage.getItem('email') || undefined;
+      if (email) {
+        const res = await GetUserDetails(email);
         if (res && res.code === "0") {
           setUser(res.responseData);
         } else {
@@ -82,11 +85,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // On mount, try to restore session using refresh token
     const tryRestoreSession = async () => {
       setLoading(true);
-      const refreshToken = getCookie('refreshToken'); // Change to your actual cookie name
-      if (refreshToken) {
-        const result = await RefreshAccessToken(refreshToken);
-        if (result.success) {
-          await refreshUser(undefined, true);
+      //const refreshToken = getCookie('refreshToken'); // Change to your actual cookie name
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken'); // Change to your actual storage mechanism
+      const payload = { jwtToken: accessToken, refreshToken: refreshToken };
+
+      console.log("Attempting token refresh with:", payload);
+
+      if (payload.jwtToken && payload.refreshToken) {
+        const result = await RefreshAccessToken(payload);
+        console.log("Token refresh result:", result.responseData);
+        if (result.message === "Success") {
+          localStorage.setItem('accessToken', result.responseData.accessToken);
+          localStorage.setItem('refreshToken', result.responseData.refreshToken);
+          // If user info is present in the refresh response, set it immediately
+          if (result.responseData.email && result.responseData.fullName) {
+            setUser(result.responseData);
+          } else {
+            await refreshUser(undefined, true);
+          }
         } else {
           setUser(null);
         }
@@ -100,17 +117,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up periodic token refresh (e.g., every 10 minutes)
     const interval = setInterval(async () => {
-      const refreshToken = getCookie('refreshToken');
-      if (!refreshToken) {
-        setUser(null);
-        return;
+      //const refreshToken = getCookie('refreshToken');
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken'); // Change to your actual storage mechanism
+      const payload = { jwtToken: accessToken, refreshToken: refreshToken };
+
+      console.log("Attempting token refresh with:", payload);
+
+  if (payload.jwtToken && payload.refreshToken) {
+    const result = await RefreshAccessToken(payload);
+    if (result.success && result.responseData) {
+      // Type guard to check if result has accessToken and refreshToken
+      if (
+        typeof (result as any).accessToken === "string" &&
+        typeof (result as any).refreshToken === "string"
+      ) {
+        localStorage.setItem('accessToken', (result as any).accessToken);
+        localStorage.setItem('refreshToken', (result as any).refreshToken);
       }
-      const result = await RefreshAccessToken(refreshToken);
-      if (result.success) {
-        await refreshUser(undefined, true);
-      } else {
-        setUser(null);
-      }
+      await refreshUser(undefined, true);
+    } else {
+      setUser(null);
+    }
+  }
     }, 10 * 60 * 1000); // 10 minutes
 
     return () => clearInterval(interval);

@@ -28,7 +28,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
   const router = useRouter();
-  const { refreshUser, setUser } = useAuth();
+  const { setUser } = useAuth();
 
   // Clear error when user starts typing
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,10 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         localStorage.setItem('fullName', fullName ?? '');
         localStorage.setItem('userId', userId ?? '');
         localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated === true));
-        // Ensure AuthContext is up-to-date before redirecting
-        if (refreshUser) {
-          await refreshUser(userId);
-        }
+        // No need to call refreshUser here
         
         // Redirect to the page where login was triggered from
         const referrer = document.referrer;

@@ -1272,20 +1272,16 @@ const SellListing = () => {
     setIsPublishing(true);
 
     try {
-      // Map selling type to CategoryId as required by API
-      const getCategoryId = (sellingType: string): number => {
-        switch (sellingType.toLowerCase()) {
-          case 'buynow':
-          case 'buy now':
-            return 1;
-          case 'auction':
-            return 2;
-          case 'trade':
-            return 3;
-          default:
-            return 1; // Default to buy now
-        }
-      };
+      // Import category data for id lookup
+      // @ts-ignore
+      const categoryData = require("@/data/categoryData-3.json");
+
+      // Find the category id by matching the name
+      const matchedCategory = categoryData.find((cat: any) => cat.name.toLowerCase() === category.toLowerCase());
+      const categoryId = matchedCategory ? matchedCategory.id : "";
+      if (!categoryId) {
+        throw new Error(`Category ID not found for category: ${category}`);
+      }else {console.log("Matched Category ID:", categoryId);}
 
       // Generate a random VendorId (you can replace this with actual user ID)
       const generateVendorId = (): string => {
@@ -1304,7 +1300,7 @@ const SellListing = () => {
         Condition: listData.Condition, // Use dynamic condition
         Specification: JSON.stringify(listData.Specification),
         VendorId: generateVendorId(), // Required field
-        CategoryId: getCategoryId(listData.sellType), // Required field: 1=BuyNow, 2=Auction, 3=Trade
+        CategoryId: categoryId, // Use id from categoryData-3.json
       };
 
       const fd = new FormData();
@@ -1756,8 +1752,8 @@ const SellListing = () => {
                           <input
                             type="radio"
                             name="sellType"
-                            value="Buy now"
-                            checked={listData.sellType === "Buy now"}
+                            value="BuyNow"
+                            checked={listData.sellType === "BuyNow"}
                             onChange={handelDataChange}
                           />
                           <span>Buy now</span>
@@ -1776,8 +1772,8 @@ const SellListing = () => {
                           <input
                             type="radio"
                             name="sellType"
-                            value="Trade"
-                            checked={listData.sellType === "Trade"}
+                            value="TradeIn"
+                            checked={listData.sellType === "TradeIn"}
                             onChange={handelDataChange}
                           />
                           <span>Trade</span>
@@ -1869,14 +1865,14 @@ const SellListing = () => {
                 {/* DYNAMIC PRICING SECTION BASED ON SELLING TYPE */}
                 <section className="form-section slide-up">
                   <h2 className="form-section-title">
-                    {listData.sellType === "Buy now" && "Pricing"}
+                    {listData.sellType === "BuyNow" && "Pricing"}
                     {listData.sellType === "Auction" && "Auction Settings"}
-                    {listData.sellType === "Trade" && "Trade Setup"}
+                    {listData.sellType === "TradeIn" && "Trade Setup"}
                     {!listData.sellType && "Pricing"}
                   </h2>
                   
                   {/* BUY NOW PRICING */}
-                  {(listData.sellType === "Buy now" || !listData.sellType) && (
+                  {(listData.sellType === "BuyNow" || !listData.sellType) && (
                     <div className="pricing-content">
                       <div className="pricing-main">
                         <div className="form-field-group">
@@ -2790,7 +2786,7 @@ const SellListing = () => {
                   <div className="preview-header">
                     <h3 className="preview-title">{listData.Title || "No title"}</h3>
                     <div className="preview-price">
-                      {listData.sellType === "Buy now" && (
+                      {listData.sellType === "BuyNow" && (
                         <span className="price-tag">GH₵{listData.Price || "0.00"}</span>
                       )}
                       {listData.sellType === "Auction" && (
@@ -2867,7 +2863,7 @@ const SellListing = () => {
                   )}
 
                   {/* Trade specific details */}
-                  {listData.sellType === "Trade" && (
+                  {listData.sellType === "TradeIn" && (
                     <div className="preview-trade-details">
                       <h4>Trade Details</h4>
                       {listData.tradeDescription && (
