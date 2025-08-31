@@ -5,11 +5,9 @@ import electronic_hero from "@/assets/images/electroic_hero.jpg";
 import fashion_hero from "@/assets/images/fashion_hero.png";
 import heroImage from "@/assets/images/led-speaker.jpg"; // default
 
-// Import static categoryData as fallback only
-import categoryDataJsonFallback from "@/data/categoryData.json";
-
-// Dynamic category data provider
+// Import dynamic and fallback category data providers
 import { getCategoryData, getCategoryDataSync } from '@/lib/categoryDataProvider';
+import categoryDataJsonFallback from "@/data/categoryData-3.json";
 
 // API Response Types - Matching actual GetAllCategories endpoint
 export interface CategoryAPIResponse {
@@ -94,6 +92,7 @@ export interface CategoryData {
 // Primary source: API data transformed to legacy format
 // Fallback: Static JSON file
 
+
 /**
  * Get category data dynamically from API with fallback to static JSON
  * @param forceRefresh - Force refresh from API even if cache is valid
@@ -110,6 +109,6 @@ export const getCategoryDataImmediate = getCategoryDataSync;
 
 /**
  * Static fallback category data (for backward compatibility)
- * @deprecated Use getCategoryDataDynamic() or getCategoryDataImmediate() instead
+ * Use getCategoryDataDynamic() as the primary provider.
  */
 export const categoryData: CategoryData[] = categoryDataJsonFallback as CategoryData[];

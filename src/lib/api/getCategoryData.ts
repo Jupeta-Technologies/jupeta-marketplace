@@ -2,6 +2,7 @@
 
 import { CategoryData } from "@/types/category";
 import { categoryData as initialCategoryData } from "@/types/category"; // or wherever you store your initial categories
+import { getCategoryDataDynamic } from "@/types/category";
 
 export default async function getCategoryData(
   categoryPath?: string[]
@@ -9,7 +10,7 @@ export default async function getCategoryData(
   currentCategory: CategoryData | null;
   subCategories: CategoryData[];
 }> {
-  let currentLevelCategories: CategoryData[] = initialCategoryData;
+  let currentLevelCategories: CategoryData[] = await getCategoryDataDynamic();
   let currentCategory: CategoryData | null = null;
 
   if (categoryPath) {

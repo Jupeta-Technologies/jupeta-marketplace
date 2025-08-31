@@ -5,6 +5,7 @@ import HeroWithSubmenu from '@/components/HeroWithSubmenu';
 import CategoryContent from '@/components/CategoryContent';
 import { CategoryData } from '@/types/category'; // Ensure CategoryHeroConfig is imported via CategoryData
 import { categoryData as initialCategoryData } from '@/types/category'; // Used for generateStaticParams
+import { getCategoryDataDynamic } from '@/types/category';
 import getCategoryData from '@/lib/api/getCategoryData'; // Your server-side data fetching
 import heroImage from '@/assets/images/led-speaker.jpg'; // Default fallback image for page.tsx itself
 
@@ -15,13 +16,19 @@ interface Pageprops {
 };
 export const dynamicParams = true;
 
-export default async function Page({ params }: Pageprops) {
-  const {categoryPath} = await params;
 
-  // getCategoryData should ideally return the CategoryData with the 'hero' property
-  const { currentCategory, subCategories } = await getCategoryData(categoryPath);
+export default async function Page({ params }: Pageprops) {
+  const { categoryPath } = await params;
+  console.log('categoryPath:', categoryPath);
+
+  // If categoryPath is undefined or empty, treat as root category
+  const effectiveCategoryPath = !categoryPath || categoryPath.length === 0 ? undefined : categoryPath;
+  const { currentCategory, subCategories } = await getCategoryData(effectiveCategoryPath);
+  console.log('currentCategory:', currentCategory);
 
   if (!currentCategory) {
+    // Show a more helpful error for debugging
+    console.error('404: No category found for path', categoryPath);
     notFound();
   }
 
@@ -30,23 +37,21 @@ export default async function Page({ params }: Pageprops) {
   const heroConfig = currentCategory?.hero || {
     title: 'Browse Category',
     subtitle: '',
-    // Note: You must pass the string path for the image here, not the StaticImageData object
     image: { src: heroImage.src, width: heroImage.width, height: heroImage.height },
   };
 
   const submenu = subCategories.map((child) => ({
     name: child.name,
     link: `/category/${[...(categoryPath || []), child.slug || child.id].join('/')}`,
-    image: child.image, // Ensure child.image is structured correctly { src, width, height }
+    image: child.image,
   }));
 
   return (
     <>
-      {/* Pass the heroConfig to HeroWithSubmenu */}
       <HeroWithSubmenu
         heroConfig={heroConfig}
         submenu={submenu}
-        currentCategory={currentCategory} // Still useful for submenu derivation
+        currentCategory={currentCategory}
       />
       <CategoryContent currentCategory={currentCategory} subCategories={subCategories} />
     </>
@@ -68,7 +73,8 @@ export async function generateStaticParams() {
     });
   };
 
-  const paths = flattenCategories(initialCategoryData);
+  // Use dynamic fetching to get the most up-to-date category data
+  const paths = flattenCategories(await getCategoryDataDynamic());
 
   return paths;
 }

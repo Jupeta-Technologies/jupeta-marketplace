@@ -129,11 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (result.success && result.responseData) {
       // Type guard to check if result has accessToken and refreshToken
       if (
-        typeof (result as any).accessToken === "string" &&
-        typeof (result as any).refreshToken === "string"
+        typeof result.responseData.accessToken === "string" &&
+        typeof result.responseData.refreshToken === "string"
       ) {
-        localStorage.setItem('accessToken', (result as any).accessToken);
-        localStorage.setItem('refreshToken', (result as any).refreshToken);
+        localStorage.setItem('accessToken', result.responseData.accessToken);
+        localStorage.setItem('refreshToken', result.responseData.refreshToken);
       }
       await refreshUser(undefined, true);
     } else {

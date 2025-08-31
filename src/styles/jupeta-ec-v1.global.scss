@@ -356,7 +356,7 @@ ol li {
 /* Mobile Menu Overlay */
 .mobile-menu-overlay {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -496,17 +496,24 @@ ol li {
 .navbar__menu li:hover .navbar__icon {
     cursor: pointer;
     z-index: 1000; 
-  background-color: #d9d9d9;
+    background-color: #d9d9d9;
     border-radius: 50%; 
     padding: 10px; 
     font-size: 3rem; 
     transform: translateY(10px);
+    transition: all 0.3s ease;
   }
+
+.navbar__menu li:hover .user-avatar {
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
 
 .navbar__icon {
     padding: 10px;
     font-size: 2.5rem;
   }
+
 
   /* Dropdown Menu */
   .navbar__dropdown {
@@ -2357,13 +2364,15 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  object-fit: cover;
   background-color: var(--primary-button);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
   cursor: pointer;
+  padding: 20px;
+  font-size: 1.5rem;
 }
 
 /* ===== Products Page ===== */
@@ -9450,6 +9459,10 @@ input[type="date"], input[type="time"] {
     align-self: start !important;
   }
 
+  .user-avatar:hover {
+   transform: none !important;
+  }
+
   .showSearchResult {
     height: auto;
     background-color: #fff;
@@ -9458,6 +9471,7 @@ input[type="date"], input[type="time"] {
     width: 100%;
     position: absolute;
     left: 0;
+    top: 4px;
     z-index: 99;
   }
   

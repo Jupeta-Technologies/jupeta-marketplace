@@ -544,7 +544,7 @@ const JupetaECnavBar = () => {
               <li>
                 {loading ? (
                   <div className="user-avatar skeleton-avatar" id="userIcon" style={{ width: 32, height: 32, borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden"><AiOutlineUser /></span>
                   </div>
                 ) : isAuthenticated && user ? (
                   <div className="user-avatar" id="userIcon">
