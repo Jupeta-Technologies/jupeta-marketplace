@@ -69,8 +69,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await APIManager.post("/User/Logout"); // Adjust endpoint as needed
-    setUser(null);
+    try {
+      const res = await APIManager.post("/User/Logout"); // Adjust endpoint as needed
+      // If API returns success, clear user and localStorage
+      if (res?.data?.code === "0" || res?.status === 200) {
+        setUser(null);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('email');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('expiresAt');
+      } else {
+        // Optionally, show a message or handle error
+        console.error('Logout failed:', res?.data?.message || 'Unknown error');
+      }
+    } catch (error) {
+      // Optionally, show a message or handle error
+      console.error('Logout error:', error);
+    }
   };
 
   useEffect(() => {

@@ -187,19 +187,37 @@ const HeroWithSubmenu: React.FC<HeroWithSubmenuProps> = ({
         <nav className={`GCMenu_Container ${isSticky ? 'sticky' : ''}`}>
           <ul>
             {finalSubmenu.map((item) => {
-              const displaySubmenuImage = item.image?.src ? allImportedImages[item.image.src] : null;
+              let imgSrc: string | undefined = undefined;
+              let importedImg: StaticImageData | undefined = undefined;
+              if (item.image?.src) {
+                if (item.image.src.startsWith('http://') || item.image.src.startsWith('https://')) {
+                  imgSrc = item.image.src;
+                } else if (allImportedImages[item.image.src]) {
+                  importedImg = allImportedImages[item.image.src];
+                } else {
+                  imgSrc = item.image.src; // fallback to raw string
+                }
+              }
               return (
                 <li key={item.link}>
                   <Link href={item.link}>
                     <div>
-                      {displaySubmenuImage && (
+                      {importedImg ? (
                         <Image
-                          src={displaySubmenuImage.src}
+                          src={importedImg.src || importedImg}
                           alt={item.name}
                           width={60}
                           height={60}
                         />
-                      )}
+                      ) : imgSrc ? (
+                        <img
+                          src={imgSrc}
+                          alt={item.name}
+                          width={60}
+                          height={60}
+                          style={{ objectFit: 'cover', borderRadius: '8px' }}
+                        />
+                      ) : null}
                       <span>{item.name}</span>
                     </div>
                   </Link>

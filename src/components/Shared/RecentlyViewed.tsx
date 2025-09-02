@@ -8,7 +8,7 @@ import Link from 'next/link';
 const RecentlyViewed: React.FC = () => {
   const { recentlyViewed, clearRecentlyViewed, getViewCount } = useRecentlyViewed();
 
-  // Show only the first 4 items
+  // Show only the first 4 items on homepage
   const displayItems = recentlyViewed.slice(0, 4);
 
   if (displayItems.length === 0) {
@@ -21,6 +21,7 @@ const RecentlyViewed: React.FC = () => {
         <h3 className="recently-viewed-title">
           Recently Viewed ({recentlyViewed.length})
         </h3>
+        <a href="/recently-viewed" className="recently-viewed-viewall-link">View All</a>
         <button 
           onClick={clearRecentlyViewed}
           className="recently-viewed-clear"
@@ -29,7 +30,6 @@ const RecentlyViewed: React.FC = () => {
           Clear All
         </button>
       </div>
-      
       <div className="recently-viewed-grid">
         {displayItems.map((product) => {
           const viewCount = getViewCount(product.id);

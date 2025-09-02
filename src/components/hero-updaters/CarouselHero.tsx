@@ -228,6 +228,7 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
       {/* Navigation Arrows */}
       {showArrows && slides.length > 1 && (
         <>
+        <div className="carousel-arrow-container">
           <button
             className={`carousel-arrow carousel-arrow-left ${isTransitioning ? 'disabled' : ''}`}
             onClick={goToPrevious}
@@ -244,6 +245,7 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
           >
             ›
           </button>
+        </div>
         </>
       )}
 
@@ -263,9 +265,9 @@ const CarouselHero: React.FC<CarouselHeroProps> = ({
       )}
 
       {/* Slide Counter */}
-      <div className="carousel-counter">
+      {/* <div className="carousel-counter">
         {currentSlide + 1} / {slides.length}
-      </div>
+      </div> */}
 
       {/* Progress Bar */}
       {autoPlay && !isHovered && (

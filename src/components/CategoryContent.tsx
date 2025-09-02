@@ -1,5 +1,26 @@
 //CategoryContent.tsx
 import React from 'react';
+import home from '@/assets/images/home.jpg';
+import home_2 from '@/assets/images/home_2.png';
+import elec from '@/assets/images/electronics.png';
+import automob from '@/assets/images/auto_1.png';
+import fashion from '@/assets/images/fashion_1.png';
+import auto_hero from '@/assets/images/auto_hero.jpg';
+import fashion_hero from '@/assets/images/fashion_hero.png';
+import electronic_hero from '@/assets/images/electroic_hero.jpg';
+import heroImage from '@/assets/images/led-speaker.jpg';
+
+const staticCategoryImages: { [key: string]: any } = {
+  '/assets/images/led-speaker.jpg': heroImage,
+  '/assets/images/home.jpg': home,
+  '/assets/images/home_2.png': home_2,
+  '/assets/images/electronics.png': elec,
+  '/assets/images/auto_1.png': automob,
+  '/assets/images/fashion_1.png': fashion,
+  '/assets/images/auto_hero.jpg': auto_hero,
+  '/assets/images/fashion_hero.png': fashion_hero,
+  '/assets/images/electroic_hero.jpg': electronic_hero,
+};
 import { CategoryData } from '@/types/category'; // Import the CategoryData type
 import Link from 'next/link';
 //import { cn } from "@/lib/utils" // uncomment to apply conditional css classes
@@ -32,13 +53,26 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ currentCategory, subC
                 className="category-link"
               >
                 <h3 className="category-label">{subCategory.name}</h3>
-                {subCategory.image && ( //check if image exists
-                  <img
-                    src={subCategory.image.src}
-                    alt={subCategory.name}
-                    className="category-image"
-                  />
-                )}
+                {subCategory.image && (() => {
+                  const src = subCategory.image.src;
+                  let imgSrc: string | undefined = undefined;
+                  if (typeof src === 'string') {
+                    if (src.startsWith('http://') || src.startsWith('https://')) {
+                      imgSrc = src;
+                    } else if (staticCategoryImages[src]) {
+                      imgSrc = staticCategoryImages[src].src || staticCategoryImages[src];
+                    } else {
+                      imgSrc = src; // fallback to raw string
+                    }
+                  }
+                  return imgSrc ? (
+                    <img
+                      src={imgSrc}
+                      alt={subCategory.name}
+                      className="category-image"
+                    />
+                  ) : null;
+                })()}
               </Link>
             </div>
           ))}

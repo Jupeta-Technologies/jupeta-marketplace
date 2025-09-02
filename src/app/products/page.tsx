@@ -127,18 +127,6 @@ export default function ProductsPage() {
         onTypeChange={setSelectedType}
       />
       <div className="products-container" style={{ flex: 1 }}>
-        <div className="products-header">
-          <h1>All Products</h1>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
         <div className="products-grid">
           {filteredProducts.map((product) => (
             <ItemCardglobal key={product.id} prodData={product} />

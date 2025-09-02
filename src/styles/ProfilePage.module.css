@@ -3888,9 +3888,8 @@ a:focus-visible {
 }
 .recently-viewed-container .recently-viewed-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
   gap: 1rem;
-  max-width: 160px;
 }
 .recently-viewed-container .recently-viewed-item {
   display: block;
@@ -3898,7 +3897,7 @@ a:focus-visible {
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border-radius: 8px;
+  border-radius: var(--primary-border-radius);
   overflow: hidden;
   background: #f9fafb;
 }
@@ -3911,11 +3910,9 @@ a:focus-visible {
 }
 .recently-viewed-container .recently-viewed-item .recently-viewed-image-container {
   position: relative;
-  width: 200px;
   height: 248px;
   overflow: hidden;
   background: #f3f4f6;
-  border-radius: var(--primary-border-radius);
 }
 .recently-viewed-container .recently-viewed-item .recently-viewed-image-container .recently-viewed-image {
   width: 100%;
@@ -8408,18 +8405,29 @@ input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-c
   opacity: 1;
 }
 
-.carousel-arrow {
+.carousel-arrow-container {
   position: absolute;
+  width: 120px;
+  bottom: 14px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  pointer-events: none;
+}
+
+.carousel-arrow {
+  position: relative;
   top: 50%;
-  transform: translateY(-50%);
   background: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
-  width: 55px;
-  height: 55px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   font-size: 28px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -8432,23 +8440,23 @@ input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-c
 }
 .carousel-arrow:hover {
   background: rgba(0, 0, 0, 0.85);
-  transform: translateY(-50%) scale(1.15);
+  transform: scale(1.15);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
 }
 .carousel-arrow:active {
-  transform: translateY(-50%) scale(1.05);
+  transform: translateY(0%) scale(1.05);
 }
 .carousel-arrow.disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: translateY(-50%) scale(0.95);
+  transform: translateY(0%) scale(0.95);
 }
 .carousel-arrow.carousel-arrow-left {
-  left: 25px;
+  left: 0;
   padding-right: 3px;
 }
 .carousel-arrow.carousel-arrow-right {
-  right: 25px;
+  right: 0;
   padding-left: 3px;
 }
 

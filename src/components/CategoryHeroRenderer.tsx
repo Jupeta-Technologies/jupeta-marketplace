@@ -67,12 +67,19 @@ const CategoryHeroRenderer: React.FC<CategoryHeroRendererProps> = ({
   useEffect(() => {
     // If it's a static hero configuration
     if (heroConfig && !("componentName" in heroConfig)) {
-      const staticHeroImage =
-        staticHeroImages[heroConfig.image.src] || heroImage;
+      let imageToUse: any = heroImage;
+      const src = heroConfig.image?.src;
+      if (typeof src === 'string') {
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+          imageToUse = src; // Use external URL directly
+        } else if (staticHeroImages[src]) {
+          imageToUse = staticHeroImages[src];
+        }
+      }
       setHeroContent({
         title: heroConfig.title,
         subtitle: heroConfig.subtitle,
-        image: staticHeroImage,
+        image: imageToUse,
       });
     }
     // If it's a component-driven hero, the component itself will call setHeroContent

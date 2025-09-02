@@ -1,4 +1,6 @@
 // lib/api/UpdateCategoryAPI.tsx
+
+import APIManager from './APIManager';
 import { CategoryResponse } from '@/types/category';
 
 export interface UpdateCategoryRequest {
@@ -16,13 +18,11 @@ export interface UpdateCategoryRequest {
   displayOrder?: number;
   isActive?: boolean;
 }
-
 export interface UpdateCategoryAPIResponse {
   code: string;
   message: string;
   responseData: CategoryResponse | null;
 }
-
 export async function UpdateCategoryAPI(categoryData: UpdateCategoryRequest): Promise<UpdateCategoryAPIResponse> {
   try {
     // Validate required fields
@@ -30,30 +30,23 @@ export async function UpdateCategoryAPI(categoryData: UpdateCategoryRequest): Pr
       throw new Error('Category ID and Name are required');
     }
 
-    const response = await fetch('/api/User/UpdateCategory', {
+    const response = await APIManager('/User/UpdateCategory', {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(categoryData),
+      headers: { 'Content-Type': 'application/json' },
+      data: categoryData,
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: UpdateCategoryAPIResponse = await response.json();
-    
+    const data: UpdateCategoryAPIResponse = response.data;
     if (data.code !== "0") {
       throw new Error(data.message || 'Failed to update category');
     }
-
     return data;
   } catch (error) {
     console.error('Error updating category:', error);
     throw error;
   }
 }
+
 
 // Helper function to validate category data before update
 export function validateUpdateCategoryData(data: Partial<UpdateCategoryRequest>): string[] {

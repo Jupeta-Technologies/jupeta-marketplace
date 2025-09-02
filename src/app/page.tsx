@@ -79,7 +79,7 @@ const HomePage = () => {
   return (
     <>
       {/* This component will set the hero content in the context based on homepageHeroConfig */}
-      <CategoryHeroRenderer heroConfig={homepageHeroConfig} />
+      {/* <CategoryHeroRenderer heroConfig={homepageHeroConfig} /> */}
 
       {/* HeroWithSubmenu now automatically reads from the context that CategoryHeroRenderer populates */}
       <HeroWithSubmenu
@@ -91,10 +91,10 @@ const HomePage = () => {
         // It might be better to pass the 'home' CategoryData object here if CategoryContent expects it.
         currentCategory={currentCategory}
       />
-      <CategoryContent
+      {/* <CategoryContent
         currentCategory={currentCategory as CategoryData} // Type assertion might be risky if it's genuinely null
         subCategories={subCategories}
-      />
+      /> */}
       
       {/* Recently Viewed Component */}
       <div className="container">

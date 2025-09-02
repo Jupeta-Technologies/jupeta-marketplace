@@ -350,28 +350,37 @@ const CategoryManagement: React.FC = () => {
     setFormErrors({});
     setSubmitError(null);
 
+    // Patch: Copy static image paths to main fields if type is 'static'
+    let patchedFormData = { ...formData };
+    if (formData.imageType === 'static' && formData.staticImagePath) {
+      patchedFormData.imageUrl = formData.staticImagePath;
+    }
+    if (formData.heroType === 'static' && formData.heroImageType === 'static' && formData.heroStaticImagePath) {
+      patchedFormData.heroImage = formData.heroStaticImagePath;
+    }
+
     // Validate form data
     let heroForValidation = null;
-    if (formData.categoryType === 'main') {
-      if (formData.heroType === 'static') {
+    if (patchedFormData.categoryType === 'main') {
+      if (patchedFormData.heroType === 'static') {
         // Only create hero object if there's actual content
-        const hasStaticContent = formData.heroTitle.trim() || 
-                                formData.heroSubtitle.trim() || 
-                                formData.heroImage.trim();
+        const hasStaticContent = patchedFormData.heroTitle.trim() || 
+                                patchedFormData.heroSubtitle.trim() || 
+                                patchedFormData.heroImage.trim();
         
         if (hasStaticContent) {
           heroForValidation = {
-            title: formData.heroTitle.trim(),
-            subtitle: formData.heroSubtitle.trim(),
-            image: formData.heroImage.trim(),
+            title: patchedFormData.heroTitle.trim(),
+            subtitle: patchedFormData.heroSubtitle.trim(),
+            image: patchedFormData.heroImage.trim(),
           };
         }
-      } else if (formData.heroType === 'component') {
+      } else if (patchedFormData.heroType === 'component') {
         // Only create hero object if component name is provided
-        if (formData.heroComponentName.trim()) {
+        if (patchedFormData.heroComponentName.trim()) {
           heroForValidation = {
-            componentName: formData.heroComponentName.trim(),
-            props: formData.heroComponentProps || '{}',
+            componentName: patchedFormData.heroComponentName.trim(),
+            props: patchedFormData.heroComponentProps || '{}',
           };
         }
       }
@@ -382,16 +391,16 @@ const CategoryManagement: React.FC = () => {
     if (isEditing && editingCategory) {
       validation = validateUpdateCategoryData({
         id: editingCategory.id,
-        name: formData.name,
-        description: formData.description,
-        slug: formData.slug,
-        imageUrl: formData.imageUrl,
-        parentId: formData.categoryType === 'sub' ? formData.parentId : null,
+        name: patchedFormData.name,
+        description: patchedFormData.description,
+        slug: patchedFormData.slug,
+        imageUrl: patchedFormData.imageUrl,
+        parentId: patchedFormData.categoryType === 'sub' ? patchedFormData.parentId : null,
         hero: heroForValidation,
-        metaTitle: formData.metaTitle,
-        metaDescription: formData.metaDescription,
-        displayOrder: formData.displayOrder,
-        isActive: formData.isActive,
+        metaTitle: patchedFormData.metaTitle,
+        metaDescription: patchedFormData.metaDescription,
+        displayOrder: patchedFormData.displayOrder,
+        isActive: patchedFormData.isActive,
       });
       
       if (validation.length > 0) {
@@ -413,18 +422,18 @@ const CategoryManagement: React.FC = () => {
       }
     } else {
       validation = validateCategoryData({
-        name: formData.name,
-        description: formData.description,
-        imageUrl: formData.imageUrl,
-        ...(formData.categoryType === 'main' && heroForValidation && {
+        name: patchedFormData.name,
+        description: patchedFormData.description,
+        imageUrl: patchedFormData.imageUrl,
+        ...(patchedFormData.categoryType === 'main' && heroForValidation && {
           hero: heroForValidation,
-          metaTitle: formData.metaTitle,
-          metaDescription: formData.metaDescription,
+          metaTitle: patchedFormData.metaTitle,
+          metaDescription: patchedFormData.metaDescription,
         }),
-        ...(formData.categoryType === 'sub' && {
-          parentId: formData.parentId,
+        ...(patchedFormData.categoryType === 'sub' && {
+          parentId: patchedFormData.parentId,
         }),
-      }, formData.categoryType === 'main');
+      }, patchedFormData.categoryType === 'main');
 
       if (!validation.isValid) {
         const fieldErrors: FormErrors = {};
@@ -450,26 +459,26 @@ const CategoryManagement: React.FC = () => {
     try {
       // Prepare hero object based on hero type
       let heroObject = null;
-      if (formData.categoryType === 'main') {
-        if (formData.heroType === 'static') {
+      if (patchedFormData.categoryType === 'main') {
+        if (patchedFormData.heroType === 'static') {
           // Only create hero object if there's actual content
-          const hasStaticContent = formData.heroTitle.trim() || 
-                                  formData.heroSubtitle.trim() || 
-                                  formData.heroImage.trim();
+          const hasStaticContent = patchedFormData.heroTitle.trim() || 
+                                  patchedFormData.heroSubtitle.trim() || 
+                                  patchedFormData.heroImage.trim();
           
           if (hasStaticContent) {
             heroObject = {
-              title: formData.heroTitle.trim(),
-              subtitle: formData.heroSubtitle.trim(),
-              image: formData.heroImage.trim(),
+              title: patchedFormData.heroTitle.trim(),
+              subtitle: patchedFormData.heroSubtitle.trim(),
+              image: patchedFormData.heroImage.trim(),
             };
           }
-        } else if (formData.heroType === 'component') {
+        } else if (patchedFormData.heroType === 'component') {
           // Only create hero object if component name is provided
-          if (formData.heroComponentName.trim()) {
+          if (patchedFormData.heroComponentName.trim()) {
             heroObject = {
-              componentName: formData.heroComponentName.trim(),
-              props: formData.heroComponentProps || '{}',
+              componentName: patchedFormData.heroComponentName.trim(),
+              props: patchedFormData.heroComponentProps || '{}',
             };
           }
         }
@@ -478,18 +487,18 @@ const CategoryManagement: React.FC = () => {
       // Prepare API request data
       const requestData = {
         ...(isEditing && editingCategory && { id: editingCategory.id }),
-        name: formData.name,
-        description: formData.description,
-        slug: formData.slug,
-        parentId: formData.categoryType === 'sub' ? formData.parentId : null,
-        displayOrder: formData.displayOrder,
-        ...(formData.imageUrl && formData.imageUrl.trim() && { imageUrl: formData.imageUrl }),
-        isActive: formData.isActive,
+        name: patchedFormData.name,
+        description: patchedFormData.description,
+        slug: patchedFormData.slug,
+        parentId: patchedFormData.categoryType === 'sub' ? patchedFormData.parentId : null,
+        displayOrder: patchedFormData.displayOrder,
+        ...(patchedFormData.imageUrl && patchedFormData.imageUrl.trim() && { imageUrl: patchedFormData.imageUrl }),
+        isActive: patchedFormData.isActive,
         // For main categories, include hero (if any) and meta fields
-        ...(formData.categoryType === 'main' && {
+        ...(patchedFormData.categoryType === 'main' && {
           ...(heroObject && { hero: heroObject }),
-          metaTitle: formData.metaTitle,
-          metaDescription: formData.metaDescription,
+          metaTitle: patchedFormData.metaTitle,
+          metaDescription: patchedFormData.metaDescription,
         }),
       };
 

@@ -588,7 +588,7 @@ const JupetaECnavBar = () => {
                     <li
                       onClick={async () => {
                         await logout();
-                        router.push('/Login');
+                        router.push('/');
                       }}
                     >
                       <AiOutlineLogout id="uMicon" />
