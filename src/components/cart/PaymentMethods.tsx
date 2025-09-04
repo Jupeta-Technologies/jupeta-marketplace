@@ -5,7 +5,7 @@ import {
   faCcMastercard, 
   faCcDiscover, 
   faCcPaypal, 
-  faApplePay 
+  faCcApplePay 
 } from '@fortawesome/free-brands-svg-icons';
 
 const PaymentMethods: React.FC = () => {
@@ -14,7 +14,7 @@ const PaymentMethods: React.FC = () => {
     { icon: faCcMastercard, name: 'Mastercard' },
     { icon: faCcDiscover, name: 'Discover' },
     { icon: faCcPaypal, name: 'PayPal' },
-    { icon: faApplePay, name: 'jpta Pay' }
+    { icon: faCcApplePay, name: 'Apple Pay' }
   ];
 
   return (
