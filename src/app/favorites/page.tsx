@@ -22,7 +22,9 @@ const FavoritesPage = () => {
       productName: product.productName,
       price: product.price,
       imageFileUrl: product.imageFileUrl,
-      qty: 1
+      qty: 1,
+      itemNumber: product.itemNumber,
+      sellerId: product.sellerId
     });
   };
 
