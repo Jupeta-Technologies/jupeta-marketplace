@@ -21,6 +21,8 @@ const sampleProduct: Product = {
   addedAt: new Date().toISOString(),
   modifiedOn: new Date().toISOString(),
   qty: 1,
+  itemNumber: 5,
+  selleId: "Seller-001"
   onAdd: () => {} // Mock function
 };
 
