@@ -22,7 +22,7 @@ const sampleProduct: Product = {
   modifiedOn: new Date().toISOString(),
   qty: 1,
   itemNumber: 5,
-  sellerId: "Seller-001"
+  sellerId: "Seller-001",
   onAdd: () => {} // Mock function
 };
 
