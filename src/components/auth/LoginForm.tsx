@@ -3,7 +3,7 @@
 
 import React, { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Fajpta, FaFacebookF } from "react-icons/fa";
+import { FaApple, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { UserLogin, GoogleLogin } from "@/lib/api/UserAuthenticationAPI";
 import { useAuth } from "@/context/AuthContext";
@@ -277,7 +277,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               <div className="socialAuth">
               <div><button className="btns" onClick={handleGoogleLogin}><span><FcGoogle /></span></button><span>Google</span></div>
               <div><button className="btns" onClick={handleFacebookLogin}><span style={{color:'#3B5998'}}><FaFacebookF /></span></button><span>Facebook</span></div>
-              <div><button className="btns"><span><Fajpta /></span></button><span>jpta</span></div>
+              <div><button className="btns"><span><FaApple /></span></button><span>Apple</span></div>
               </div>
               <p className="terms">
                 By clicking the submit button, I hereby agree to and accept the
