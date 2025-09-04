@@ -5,6 +5,9 @@ export interface Product {
     qty: number;
     imageFileUrl: string;
     source?: 'buy-button' | 'cart-page' | 'checkout'; // Track how product was added
+    itemNumber: number;
+    sellerId: string;
+    // ... You can add more fields as needed
   };
   
  export interface CartContextType{

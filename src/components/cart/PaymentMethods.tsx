@@ -14,7 +14,7 @@ const PaymentMethods: React.FC = () => {
     { icon: faCcMastercard, name: 'Mastercard' },
     { icon: faCcDiscover, name: 'Discover' },
     { icon: faCcPaypal, name: 'PayPal' },
-    { icon: faApplePay, name: 'Apple Pay' }
+    { icon: faApplePay, name: 'jpta Pay' }
   ];
 
   return (

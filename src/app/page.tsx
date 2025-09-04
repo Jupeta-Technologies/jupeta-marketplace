@@ -241,8 +241,8 @@ const HomePage = () => {
         {products.length > 0 && (
           <FeaturedSeller
             products={products}
-            name="Apple"
-            image="https://www.shareicon.net/data/256x256/2016/04/07/746116_apple_512x512.png"
+            name="jpta"
+            image="https://www.shareicon.net/data/256x256/2016/04/07/746116_jpta_512x512.png"
           />
         )}
        

@@ -49,7 +49,7 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
       </div>
       
       <div className='cartproductname'>
-        <p>Item number: 31450</p>
+        <p>Item number: {item.itemNumber}</p>
         <h5>{item.productName}</h5>
         <p>Color: Red</p>
         <p style={{ marginTop: '15px' }}>
@@ -63,8 +63,8 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
           <h5>{item.qty}</h5>
           <button onClick={handleAdd}>+</button>
         </div>
-        <button className="bag">Save to wishlist</button>
-        <button className="delivery">Save for later</button>
+        <button className="" style={{ marginBottom: '8px' }}>Save to wishlist</button>
+        <button className="">Save for later</button>
       </div>
       
       <FontAwesomeIcon 

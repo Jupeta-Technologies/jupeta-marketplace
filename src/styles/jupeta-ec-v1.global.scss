@@ -5,20 +5,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== SCSS Color Scheme Variables ===== */
+$nyanza-100: rgb(232, 242, 234);
+$nyanza: #d8f3dcff;
+$celadon: #b7e4c7ff;
+$celadon-2: #95d5b2ff;
+$mint: #74c69dff;
+$mint-2: #52b788ff;
+$sea-green: #40916cff;
+$dartmouth-green: #2d6a4fff;
+$brunswick-green: #1b4332ff;
+$dark-green: #081c15ff;
+
 :root {
-    /* Color Scheme */
-  --primary-card-color: #f5f5f7;
-  /* Option A: Indigo primary */
-  --primary: #4f46e5; /* indigo-600 */
-  --primary-600: #4f46e5;
-  --primary-700: #4338ca; /* indigo-700 */
-  --primary-rgb: 79, 70, 229;
-  /* Secondary/Accent (cyan) */
-  --accent: #06b6d4; /* cyan-500 */
-  --accent-rgb: 6, 182, 212;
-  /* Success (emerald) */
-  --success: #10b981; /* emerald-500 */
-  --success-rgb: 16, 185, 129;
+    /* Green Color Scheme */
+  --primary-card-color: #{$nyanza-100}; /* Light green card background */
+  /* Primary colors using green palette */
+  --primary: #{$sea-green}; /* Main brand color */
+  --primary-600: #{$dartmouth-green}; /* Darker primary */
+  --primary-700: #{$brunswick-green}; /* Darkest primary */
+  --primary-rgb: 64, 145, 108; /* RGB values for sea-green */
+  /* Secondary/Accent colors */
+  --accent: #{$mint}; /* Accent color */
+  --accent-rgb: 116, 198, 157; /* RGB values for mint */
+  /* Success colors */
+  --success: #{$mint-2}; /* Success state */
+  --success-rgb: 82, 183, 136; /* RGB values for mint-2 */
+  /* Light variations */
+  --primary-light: #{$celadon}; /* Light primary */
+  --primary-lighter: #{$celadon-2}; /* Lighter primary */
   /* Backwards compatibility */
   --primary-button: var(--primary);
   
@@ -26,7 +41,7 @@
     --primary-border-radius: 20px;
     --text-color: #000;
     --text-light: #696663;
-  --background-color: #fff;
+  --background-color: #fbfbfd;
   --hover-background: #e9e9e9;
   --transparent-1: rgba(0, 0, 0, 0.3); //30% transparency
   --transparent-2: rgba(0, 0, 0, 0); //100% transparency
@@ -57,7 +72,7 @@
   body {
     background-color: var(--background-color);
     color: var(--text-color);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: system-ui, -jpta-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     margin: 0;
     padding: 0;
@@ -653,7 +668,6 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
     color: #fff;
     background-color: #000;
     height: 32px;
-    width: 100px;
     line-height: 12px;
     margin-top: 30px;
     margin-left: 190px;
@@ -2305,7 +2319,7 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
 
   /* === Changes made by Chris == */
   .go-to-cart-btn {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: var(--primary-700);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -4438,7 +4452,7 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
 
 /* Modern Button System */
 .btn-modern {
-  padding: 16px 32px;
+  padding: 4px 8px;
   border: none;
   border-radius: 50px;
   font-weight: 600;
@@ -4451,16 +4465,14 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 120px;
 
   &.btn-primary {
-    background: #3b82f6;
+    background: var(--primary-700);
     color: white;
 
     &:hover {
-      background: #2563eb;
+      background: var(--primary-600);
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
     }
   }
 
@@ -5100,39 +5112,6 @@ a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0
   }
 
 /* ===== CART PAGE STYLES ===== */
-
-/* Override global button reset with maximum specificity */
-.cartpage.cart-layout button,
-.cartpage.cart-layout input[type="button"],
-.cartpage.cart-layout input[type="submit"],
-div.cartpage.cart-layout button,
-body .cartpage.cart-layout button,
-html body .cartpage.cart-layout button {
-  background: var(--primary) !important;
-  border: 1px solid var(--primary) !important;
-  color: white !important;
-  padding: 8px 12px !important;
-  border-radius: 50px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  appearance: button !important;
-  -webkit-appearance: button !important;
-  -moz-appearance: button !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  font-size: 14px !important;
-  text-decoration: none !important;
-  display: inline-block !important;
-}
-
-.cartpage.cart-layout button:hover,
-div.cartpage.cart-layout button:hover,
-body .cartpage.cart-layout button:hover,
-html body .cartpage.cart-layout button:hover {
-  background: var(--primary-700) !important;
-  border-color: var(--primary-700) !important;
-  transform: translateY(-1px) !important;
-}
 
 /* Cart Page Layout */
 .cartpage.cart-layout {
@@ -5791,25 +5770,8 @@ html body .cartpage.cart-layout button:hover {
   font-weight: bold;
 }
 
-.checkout-button {
-  display: block !important;
-  width: 100% !important;
-  padding: 12px 20px !important;
+.btn-checkout {
   margin-top: 24px !important;
-  border: none !important;
-  border-radius: 50px !important;
-  background: var(--primary, #111827) !important;
-  color: white !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  text-decoration: none !important;
-  text-align: center !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: none !important;
-  appearance: button !important;
-  -webkit-appearance: button !important;
-  -moz-appearance: button !important;
 }
 
 /* Quantity buttons and remove buttons - flat style */
@@ -5841,11 +5803,6 @@ html body .cartpage.cart-layout button:hover {
   transform: translateY(-1px) !important;
 }
 
-.checkout-button:hover {
-  background: var(--primary-700, #0b1220) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-}
 
 .payment-methods-section {
   margin-top: 24px;
@@ -5869,6 +5826,8 @@ html body .cartpage.cart-layout button:hover {
   border-radius: 16px !important;
   padding: 24px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .cart-header{ 
@@ -5923,6 +5882,7 @@ html body .cartpage.cart-layout button:hover {
   display: flex; 
   gap: 12px;
   margin-bottom: 12px;
+  align-items: center;
 }
 .input-with-icon{ position: relative; flex: 1; }
 .input-icon{ position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
@@ -5943,7 +5903,7 @@ html body .cartpage.cart-layout button:hover {
 }
 /* flat design with rounded buttons - Force override */
 .apply-btn{ 
-  padding: 10px 16px !important; 
+  padding: 4px 8px !important; 
   border-radius: 50px !important;
   border: none !important;
   background: var(--accent, #06b6d4) !important; 
@@ -6008,8 +5968,8 @@ html body .cartpage.cart-layout button:hover {
 .link-inline{ color: var(--accent, #06b6d4); text-decoration: none; }
 .link-inline:hover{ color: var(--primary, #4f46e5); }
 
-.checkout-button:disabled{ background: #9ca3af; cursor: not-allowed; }
-.checkout-button:disabled:hover{ background: #9ca3af; }
+.btn-checkout:disabled{ background: #9ca3af; cursor: not-allowed; }
+.btn-checkout:disabled:hover{ background: #9ca3af; }
 
 .security-badges{ 
   margin: 16px 0 0 0;
@@ -7189,7 +7149,7 @@ input[type="date"], input[type="time"] {
     background: var(--primary);
     border: 2px solid var(--primary);
     color: white;
-    border-radius: 8px;
+    border-radius: 50%;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -7200,8 +7160,8 @@ input[type="date"], input[type="time"] {
     gap: 0.5rem;
     
     &:hover {
-      background: var(--primary-dark, #2c5aa0);
-      border-color: var(--primary-dark, #2c5aa0);
+      background: var(--primary-lighter);
+      border-color: var(--primary-lighter);
     }
 
     &:disabled {
@@ -8063,17 +8023,17 @@ input[type="date"], input[type="time"] {
 }
 
 .search-btn {
-  padding: 0.75rem 1.5rem;
+  padding: var(--padding-sm, 0.5rem 1rem);
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 24px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   
   &:hover {
-    background: var(--primary-dark, #2c5aa0);
+    background: var(--primary-light, #3b82f6);
   }
 }
 

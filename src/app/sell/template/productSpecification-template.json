@@ -5,7 +5,7 @@
           "brand": {
             "label": "Brand",
             "type": "text",
-            "placeholder": "e.g., Apple, Samsung",
+            "placeholder": "e.g., jpta, Samsung",
             "required": true
           },
           "model": {
@@ -37,7 +37,7 @@
           "brand": {
             "label": "Brand",
             "type": "text",
-            "placeholder": "e.g., Apple, Dell",
+            "placeholder": "e.g., jpta, Dell",
             "required": true
           },
           "model": {
@@ -49,7 +49,7 @@
           "processor": {
             "label": "Processor",
             "type": "text",
-            "placeholder": "e.g., Intel Core i7, Apple M1",
+            "placeholder": "e.g., Intel Core i7, jpta M1",
             "required": true
           },
           "ram": {

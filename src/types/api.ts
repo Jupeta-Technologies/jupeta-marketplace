@@ -29,6 +29,9 @@ export interface Product {
     modifiedOn: string;
     qty: number;
     onAdd: (product: Product) => void; // <--- This line is crucial
+    itemNumber: number; // "1001"
+    sellerId: string; // "5f8d0d55b54764421b7156c1"
+    // ... You can add more fields as needed
     // Add all the fields returned from your API
   }
 

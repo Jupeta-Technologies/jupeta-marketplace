@@ -48,7 +48,7 @@ const JupetaECnavBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autoFocus control
 
   // Static list for search suggestions (consider fetching this from an API if dynamic)
-  const SearchKeyIndexes = ['Apple', 'Samsung', 'Macbook', 'Laptop'];
+  const SearchKeyIndexes = ['jpta', 'Samsung', 'Macbook', 'Laptop'];
 
   // Handlers
   const handleSearchIconClick = () => {
@@ -510,7 +510,7 @@ const JupetaECnavBar = () => {
                     <p style={{ width: '100%', textAlign: 'center' }}>Cart is empty</p>
                   )}
                   {cart.length > 0 && (
-                    <button className="go-to-cart-btn" onClick={() => router.push('/cart')}>
+                    <button className="btn-modern btn-primary" onClick={() => router.push('/cart')}>
                       Go to cart
                     </button>
                   )}
@@ -534,7 +534,7 @@ const JupetaECnavBar = () => {
                     <p style={{ width: '100%', textAlign: 'center' }}>No favorites yet</p>
                   )}
                   {favorites.length > 0 && (
-                    <button className="go-to-cart-btn" onClick={() => router.push('/favorites')}>
+                    <button className="btn-modern btn-primary" onClick={() => router.push('/favorites')}>
                       View all favorites
                     </button>
                   )}

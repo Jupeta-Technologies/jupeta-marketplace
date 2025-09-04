@@ -19,7 +19,7 @@ interface Order {
 const mockOrders: Order[] = [
   {
     id: 'ORD-2024-001',
-    itemName: 'Apple MacBook Pro 14" M3 Chip',
+    itemName: 'jpta MacBook Pro 14" M3 Chip',
     itemImage: laptop,
     totalCost: 2499.99,
     quantity: 1,
@@ -52,7 +52,7 @@ const mockOrders: Order[] = [
   },
   {
     id: 'ORD-2024-004',
-    itemName: 'Apple AirPods Pro (2nd Gen)',
+    itemName: 'jpta AirPods Pro (2nd Gen)',
     itemImage: laptop, // Using laptop as placeholder
     totalCost: 249.99,
     quantity: 2,

@@ -263,7 +263,9 @@ const SellListing = () => {
         qty: 1,
         onAdd: () => {},
         seller: "John Doe",
-        location: "Accra, Ghana"
+        location: "Accra, Ghana",
+        itemNumber: 1,
+        sellerId: "SELLER-001"
       },
       {
         id: "2",
@@ -293,7 +295,9 @@ const SellListing = () => {
         qty: 1,
         onAdd: () => {},
         seller: "Jane Smith",
-        location: "Kumasi, Ghana"
+        location: "Kumasi, Ghana",
+        itemNumber: 2,
+        sellerId: "SELLER-002"
       },
       {
         id: "3",
@@ -325,7 +329,9 @@ const SellListing = () => {
         tradeValue: "2000.00",
         tradeLookingFor: "iPhone or MacBook",
         seller: "Mike Johnson",
-        location: "Tema, Ghana"
+        location: "Tema, Ghana",
+        itemNumber: 3,
+        sellerId: "SELLER-003"
       },
       {
         id: "4",
@@ -355,7 +361,9 @@ const SellListing = () => {
         qty: 1,
         onAdd: () => {},
         seller: "Sarah Wilson",
-        location: "Takoradi, Ghana"
+        location: "Takoradi, Ghana",
+        itemNumber: 4,
+        sellerId: "SELLER-004"
       },
       {
         id: "5",
@@ -385,7 +393,9 @@ const SellListing = () => {
         qty: 1,
         onAdd: () => {},
         seller: "David Chen",
-        location: "Accra, Ghana"
+        location: "Accra, Ghana",
+        itemNumber: 5,
+        sellerId: "SELLER-005"
       },
       {
         id: "6",
@@ -417,8 +427,12 @@ const SellListing = () => {
         tradeValue: "2800.00",
         tradeLookingFor: "Gaming laptop or cash",
         seller: "Lisa Brown",
-        location: "Kumasi, Ghana"
+        location: "Kumasi, Ghana",
+        itemNumber: 6,
+        sellerId: "SELLER-006"
       }
+        
+      
     ];
 
     // Filter items based on search query
@@ -563,7 +577,7 @@ const SellListing = () => {
         image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
         condition: "Excellent",
         estimatedValue: 2800,
-        description: "iPad Pro 12.9-inch with M2 chip, Apple Pencil, and Magic Keyboard. Perfect for creative work and productivity.",
+        description: "iPad Pro 12.9-inch with M2 chip, jpta Pencil, and Magic Keyboard. Perfect for creative work and productivity.",
         category: "Electronics",
         seller: "Lisa Brown",
         location: "Kumasi, Ghana",
@@ -1419,7 +1433,7 @@ const SellListing = () => {
                   className="main-search-input"
                   required
                 />
-                <button type="submit" className="search-btn">
+                <button type="submit" className="btn-modern btn-primary">
                   Search Items
                 </button>
               </div>

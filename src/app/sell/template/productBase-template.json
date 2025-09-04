@@ -80,7 +80,7 @@
               "brand": {
                 "label": "Brand",
                 "type": "text",
-                "placeholder": "e.g., Apple, Samsung",
+                "placeholder": "e.g., jpta, Samsung",
                 "required": true,
                 "default": "Samsung"
               },
@@ -171,7 +171,7 @@
               "brand": {
                 "label": "Brand",
                 "type": "text",
-                "placeholder": "e.g., Apple, Dell, Lenovo",
+                "placeholder": "e.g., jpta, Dell, Lenovo",
                 "required": true,
                 "default": "Dell"
               },
@@ -199,7 +199,7 @@
               "processor": {
                 "label": "Processor",
                 "type": "text",
-                "placeholder": "e.g., Intel Core i7, Apple M1",
+                "placeholder": "e.g., Intel Core i7, jpta M1",
                 "required": true,
                 "default": "Intel Core i5"
               },

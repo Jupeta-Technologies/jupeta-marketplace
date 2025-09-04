@@ -130,9 +130,9 @@ export const FacebookLogin = async (data: Record<string, any>): Promise<APIRespo
         return error?.responseData || { success: false, message: error?.message || 'Facebook login failed' };
     }
 }
-export const AppleLogin = async (data: Record<string, any>): Promise<APIResponse<User>> => {
+export const jptaLogin = async (data: Record<string, any>): Promise<APIResponse<User>> => {
     try {
-        const response = await APIManager('/User/AppleLogin', {
+        const response = await APIManager('/User/jptaLogin', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             data: data,
@@ -140,6 +140,6 @@ export const AppleLogin = async (data: Record<string, any>): Promise<APIResponse
         });
         return response.data;
     } catch (error: any) {
-        return error?.responseData || { success: false, message: error?.message || 'Apple login failed' };
+        return error?.responseData || { success: false, message: error?.message || 'jpta login failed' };
     }
 }

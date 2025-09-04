@@ -350,7 +350,7 @@ export default function CartPage() {
                     className="promo-input" 
                   />
                 </div>
-                <button type="submit" className="apply-btn">Apply</button>
+                <button type="submit" className="btn-modern btn-primary" style={{height: '32px'}}>Apply</button>
               </div>
               {promoError && (
                 <div className="promo-error">
@@ -396,7 +396,7 @@ export default function CartPage() {
             
             <button 
               onClick={handleCheckout} 
-              className="checkout-button"
+              className="btn-modern btn-primary btn-checkout"
               disabled={isCheckingOut}
             >
               {isCheckingOut ? 'Processing...' : 'Proceed to Checkout'}

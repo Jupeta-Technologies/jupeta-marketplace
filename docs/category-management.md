@@ -388,7 +388,7 @@ Your category management system now **fetches live data** from:
   heroTitle: "Latest Smartphones",
   heroSubtitle: "Stay connected with the newest models", 
   metaTitle: "Smartphones - Latest Models | Jupeta Electronics",
-  metaDescription: "Browse the newest smartphones from Apple, Samsung, Google and more with competitive prices.",
+  metaDescription: "Browse the newest smartphones from jpta, Samsung, Google and more with competitive prices.",
   displayOrder: 1
 }
 ```
