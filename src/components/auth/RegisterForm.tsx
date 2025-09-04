@@ -7,7 +7,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import PasswordStrengthMeter from "./PasswordStrength";
 import { PiWarningCircleFill } from "react-icons/pi";
 import { FcGoogle } from "react-icons/fc";
-import { Fajpta, FaFacebookF } from "react-icons/fa";
+import { FaApple, FaFacebookF } from "react-icons/fa";
 import { BsCheck2Circle, BsFillCheckCircleFill, BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import { SlArrowRight } from "react-icons/sl";
 import { User, Loader2 } from "lucide-react";
@@ -403,9 +403,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           </div>
           <div>
             <button type="button" className="btns">
-              <span><Fajpta /></span>
+              <span><FaApple /></span>
             </button>
-            <span>jpta</span>
+            <span>Apple</span>
           </div>
         </div>
       </div>
